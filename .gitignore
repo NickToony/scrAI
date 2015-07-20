@@ -43,7 +43,7 @@ Desktop.ini
 # if you remove the above rule, at least ignore the following:
 
 # User-specific stuff:
-# .idea/workspace.xml
+.idea/workspace.xml
 # .idea/tasks.xml
 # .idea/dictionaries
 
@@ -69,7 +69,6 @@ Desktop.ini
 
 # IntelliJ
 /out/
-workspace.xml
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
