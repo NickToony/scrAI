@@ -1,41 +1,25 @@
+var Constants = require('Constants');
+
+CreepMiner.CREEP_ID = 1;
+
 function CreepMiner() {
 
 }
 
-CreepMiner.prototype.createAbilities = function(level) {
-    var abilities;
+CreepMiner.getAbilities = function(tier) {
+    switch (tier) {
 
-    if(level <= 1) {
-        abilities = [WORK, CARRY, MOVE];
-    } else
-    if(level <= 2) {
-        abilities = [WORK, WORK, CARRY, MOVE];
-    } else
-    if(level <= 3) {
-        abilities = [WORK, WORK, CARRY, MOVE, MOVE];
-    } else
-    if(level <= 4) {
-        abilities = [WORK, WORK, WORK, CARRY, MOVE, MOVE];
-    } else
-    if(level <= 5) {
-        abilities = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE];
-    } else
-    if(level <= 6) {
-        abilities = [WORK, WORK, WORK, WORK, CARRY, MOVE, MOVE];
-    } else
-    if(level <= 7) {
-        abilities = [WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE];
-    } else
-    if(level <= 8) {
-        abilities = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE];
-    } else
-    if(level <= 9) {
-        abilities = [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
-    } else
-    if(level >= 10) {
-        abilities = [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
+        case Constants.TIER_HIGH:
+            return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
+
+        case Constants.TIER_MEDIUM:
+            return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE];
+
+        case Constants.TIER_LOW:
+        default:
+            return [WORK, CARRY, MOVE];
+
     }
-    return abilities;
-}
+};
 
 module.exports = CreepMiner;

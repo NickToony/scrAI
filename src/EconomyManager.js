@@ -1,12 +1,17 @@
+var CreepMiner = require('CreepMiner');
+var Constants = require('Constants');
 
-
-function EconomyManager(room, depositsManager) {
-    this.room = room;
-    this.depositsManager = depositsManager;
+function EconomyManager(roomController) {
+    this.roomController = roomController;
+    this.tier = Constants.TIER_LOW;
 }
 
 EconomyManager.prototype.step = function() {
+    if (this.roomController.getSourcesManager().getSourcesCount() > this.roomController.getPopulationManager().getSortedCreeps(CreepMiner.CREEP_ID).length) {
+        return CreepMiner.getAbilities(this.tier);
+    }
 
+    return false;
 };
 
 module.exports = EconomyManager;
