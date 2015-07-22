@@ -2,16 +2,11 @@ var EconomyManager = require("EconomyManager");
 var MilitaryManager = require("MilitaryManager");
 var SourcesManager = require("SourcesManager");
 var PopulationManager = require("PopulationManager");
-
-RoomController.ALERT_STATUS_CRITICAL = 1; // 100% military, 0% economy
-RoomController.ALERT_STATUS_HIGH = 2; //
-RoomController.ALERT_STATUS_MEDIUM = 3; // 50% military, 50% ecconomy
-RoomController.ALERT_STATUS_LOW = 4; //
-RoomController.ALERT_STATUS_NONE = 5; // 0% military, 100% economy
+var Constants = require("Constants");
 
 function RoomController(room) {
     this.room = room;
-    this.alertStatus = this.ALERT_STATUS_NONE;
+    this.alertStatus = Constants.ALERT_STATUS_NONE;
 
     this.sourcesManager = new SourcesManager(this);
     this.populationManager = new PopulationManager(this);
@@ -31,9 +26,9 @@ RoomController.prototype.step = function() {
 
     // Perform depending on ratio
     var doMilitary = false;
-    if (this.alertStatus == this.ALERT_STATUS_CRITICAL) {
+    if (this.alertStatus == Constants.ALERT_STATUS_CRITICAL) {
         doMilitary = true;
-    } else if (this.alertStatus == this.ALERT_STATUS_NONE) {
+    } else if (this.alertStatus == Constants.ALERT_STATUS_NONE) {
         doMilitary = false;
     }
 

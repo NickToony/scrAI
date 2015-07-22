@@ -1,4 +1,5 @@
 var RoomController = require('RoomController');
+var Constants = require('Constants');
 
 function GlobalController() {
     // Init rooms
@@ -9,7 +10,7 @@ function GlobalController() {
 
     this.roomControllers.forEach( function (roomController)
     {
-        roomController.setAlertStatus(RoomController.ALERT_STATUS_CRITICAL);
+        roomController.setAlertStatus(Constants.ALERT_STATUS_CRITICAL);
         roomController.step();
     });
 }

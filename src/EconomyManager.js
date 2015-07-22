@@ -7,7 +7,7 @@ function EconomyManager(roomController) {
 }
 
 EconomyManager.prototype.step = function() {
-    if (this.roomController.getSourcesManager().getSourcesCount() > this.roomController.getPopulationManager().getSortedCreeps(CreepMiner.CREEP_ID).length) {
+    if (this.roomController.getSourcesManager().getSafeSourcesCount() > this.roomController.getPopulationManager().getSortedCreeps(CreepMiner.CREEP_ID).length) {
         return CreepMiner.getAbilities(this.tier);
     }
 
