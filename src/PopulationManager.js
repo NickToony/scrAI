@@ -3,7 +3,8 @@ function PopulationManager(roomController) {
 
     this.allCreeps = this.roomController.getRoom().find(FIND_MY_CREEPS);
     this.sortedCreeps = {};
-    for (var creep in this.allCreeps) {
+    for (var i in this.allCreeps) {
+        var creep = this.allCreeps[i];
         this.getSortedCreeps(creep.name.charAt(0)).push(creep);
     }
 }

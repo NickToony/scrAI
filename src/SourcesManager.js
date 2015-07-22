@@ -21,10 +21,10 @@ function SourcesManager(roomController) {
 
 SourcesManager.prototype.getSourcesCount = function() {
     return this.sources.length;
-}
+};
 
 SourcesManager.prototype.getSafeSourcesCount = function() {
     return this.safeSources.length;
-}
+};
 
 module.exports = SourcesManager;

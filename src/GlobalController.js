@@ -10,7 +10,13 @@ function GlobalController() {
 
     this.roomControllers.forEach( function (roomController)
     {
-        roomController.setAlertStatus(Constants.ALERT_STATUS_CRITICAL);
+        // If we have no spawns in this room
+        if (roomController.getSpawnsManager().getSpawnsCount()) {
+            // Immediately jump to alert
+            roomController.setAlertStatus(Constants.ALERT_STATUS_CRITICAL);
+        } else {
+            roomController.setAlertStatus(Constants.ALERT_STATUS_LOW);
+        }
         roomController.step();
     });
 }

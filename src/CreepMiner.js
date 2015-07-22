@@ -1,25 +1,32 @@
 var Constants = require('Constants');
 
-CreepMiner.CREEP_ID = 1;
+CreepMiner.CREEP_ID = Constants.CREEP_MINER;
 
 function CreepMiner() {
 
 }
 
-CreepMiner.getAbilities = function(tier) {
+CreepMiner.getCreep = function(tier) {
+
+    var abilities;
     switch (tier) {
 
         case Constants.TIER_HIGH:
-            return [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
+            abilities = [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
 
         case Constants.TIER_MEDIUM:
-            return [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE];
+            abilities = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE];
 
         case Constants.TIER_LOW:
         default:
-            return [WORK, CARRY, MOVE];
+            abilities = [WORK, CARRY, MOVE];
 
     }
+
+    return {
+        "abilities": abilities,
+        "id": this.CREEP_ID
+    };
 };
 
 module.exports = CreepMiner;
