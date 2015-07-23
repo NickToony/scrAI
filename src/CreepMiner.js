@@ -2,9 +2,15 @@ var Constants = require('Constants');
 
 CreepMiner.CREEP_ID = Constants.CREEP_MINER;
 
-function CreepMiner() {
-
+function CreepMiner(roomController, creep) {
+    this.roomController = roomController;
+    this.creep = creep;
 }
+
+CreepMiner.prototype.step = function() {
+    
+};
+
 
 CreepMiner.getCreep = function(tier) {
 

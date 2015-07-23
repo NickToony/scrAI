@@ -64,6 +64,8 @@ RoomController.prototype.step = function() {
         }
     }
 
+    this.populationManager.actAllCreeps();
+
 };
 
 RoomController.prototype.getRoom = function() {

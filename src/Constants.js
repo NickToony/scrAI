@@ -9,7 +9,7 @@ Constants.ALERT_STATUS_LOW = 4; //
 Constants.ALERT_STATUS_NONE = 5; // 0% military, 100% economy
 
 // Creep ids
-Constants.CREEP_MINER = 1;
+Constants.CREEP_MINER = "1";
 
 // Creep settings (miner)
 Constants.CREEP_MINER_PER_SPAWN = 2;
