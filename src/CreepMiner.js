@@ -8,8 +8,14 @@ function CreepMiner(roomController, creep) {
 }
 
 CreepMiner.prototype.step = function() {
-    
+    if (this.creep.memory['source_target'] == null) {
+        console.log("NEED A JOB");
+    }
 };
+
+var findSource = function(){
+    return this.roomController.getSourcesManager().getFreeSource();
+}
 
 
 CreepMiner.getCreep = function(tier) {
