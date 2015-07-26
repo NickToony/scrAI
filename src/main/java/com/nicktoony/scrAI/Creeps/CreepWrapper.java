@@ -1,5 +1,6 @@
 package com.nicktoony.scrAI.Creeps;
 
+import com.nicktoony.helpers.module;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.screeps.Creep;
 
@@ -7,7 +8,7 @@ import com.nicktoony.screeps.Creep;
  * Created by nick on 26/07/15.
  * var stjs = require("stjs");
  */
-public class CreepWrapper {
+public abstract class CreepWrapper {
     protected RoomController roomController;
     protected Creep creep;
 
@@ -16,6 +17,8 @@ public class CreepWrapper {
         this.creep = creep;
     }
 
+    public abstract void step();
+
     public Creep getCreep() {
         return creep;
     }
@@ -23,4 +26,6 @@ public class CreepWrapper {
     public RoomController getRoomController() {
         return roomController;
     }
+
+    static { module.exports = CreepWrapper.class; }
 }

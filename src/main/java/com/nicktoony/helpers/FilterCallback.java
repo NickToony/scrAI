@@ -1,6 +1,5 @@
 package com.nicktoony.helpers;
 
-import com.nicktoony.screeps.Source;
 import org.stjs.javascript.annotation.JavascriptFunction;
 
 /**

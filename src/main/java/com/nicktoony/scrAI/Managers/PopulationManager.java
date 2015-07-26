@@ -1,6 +1,7 @@
 package com.nicktoony.scrAI.Managers;
 
 import com.nicktoony.helpers.Lodash;
+import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.helpers.module;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
@@ -12,7 +13,6 @@ import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
-import org.stjs.javascript.functions.Callback1;
 
 /**
  * Created by nick on 26/07/15.
@@ -32,20 +32,21 @@ public class PopulationManager {
 
         Array<Creep> foundCreeps = (Array<Creep>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_CREEPS, JSCollections.$map());
         this.sortedCreeps = JSCollections.$map();
-        Lodash.forIn(foundCreeps, new Callback1<Creep>() {
+        Lodash.forIn(foundCreeps, new LodashCallback1<Creep>() {
             @Override
-            public void $invoke(Creep creep) {
+            public boolean invoke(Creep creep) {
                 String type = creep.name.substring(0, 1);
                 CreepWrapper creepWrapper = getCreepWrapper(type, creep);
                 if (creepWrapper != null) {
                     getSortedCreeps(type).push(creepWrapper);
                     allCreeps.push(creepWrapper);
                 }
+                return false;
             }
         }, this);
     }
 
-    private Array<CreepWrapper> getSortedCreeps(String id) {
+    public Array<CreepWrapper> getSortedCreeps(String id) {
         if (this.sortedCreeps.$get(id) == null) {
             this.sortedCreeps.$put(id, new Array<CreepWrapper>());
         }
@@ -53,7 +54,7 @@ public class PopulationManager {
     }
 
     private CreepWrapper getCreepWrapper(String id, Creep creep) {
-        if (id.contentEquals(Constants.CREEP_MINER)) {
+        if (id == Constants.CREEP_MINER_ID) {
             return new CreepMiner(roomController, creep);
         }
 

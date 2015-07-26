@@ -5,4 +5,5 @@ package com.nicktoony.screeps;
  */
 public class Creep {
     public String name;
+    public Position pos;
 }

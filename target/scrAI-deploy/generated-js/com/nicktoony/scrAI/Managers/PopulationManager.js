@@ -17,6 +17,7 @@ var PopulationManager = function(roomController) {
             this.getSortedCreeps(type).push(creepWrapper);
             this.allCreeps.push(creepWrapper);
         }
+        return false;
     }, this);
 };
 stjs.extend(PopulationManager, null, [], function(constructor, prototype) {
@@ -30,7 +31,7 @@ stjs.extend(PopulationManager, null, [], function(constructor, prototype) {
         return this.sortedCreeps[id];
     };
     prototype.getCreepWrapper = function(id, creep) {
-        if (id.contentEquals(Constants.CREEP_MINER)) {
+        if (id == Constants.CREEP_MINER_ID) {
             return new CreepMiner(this.roomController, creep);
         }
         return null;

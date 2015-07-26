@@ -1,5 +1,7 @@
 package com.nicktoony.scrAI;
 
+import com.nicktoony.helpers.module;
+
 /**
  * Created by nick on 26/07/15.
  * var stjs = require("stjs");
@@ -16,8 +18,11 @@ public class Constants {
     public static int ALERT_STATUS_NONE = 5; // 0% military, 100% economy
 
     // Creep ids
-    public static String CREEP_MINER = "1";
+    public static String CREEP_MINER_ID = "1";
+    public static String CREEP_MINER_NAME = "CreepMiner";
 
     // Creep settings (miner)
     public static int SETTING_MINER_PER_SPAWN = 2;
+
+    static { module.exports = Constants.class; }
 }

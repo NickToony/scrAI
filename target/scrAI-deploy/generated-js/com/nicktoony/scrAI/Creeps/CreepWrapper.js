@@ -16,3 +16,6 @@ stjs.extend(CreepWrapper, null, [], function(constructor, prototype) {
         return this.roomController;
     };
 }, {roomController: "RoomController", creep: "Creep"});
+(function() {
+    module.exports = CreepWrapper;
+})();

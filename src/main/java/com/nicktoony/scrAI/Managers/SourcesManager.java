@@ -1,17 +1,13 @@
 package com.nicktoony.scrAI.Managers;
 
-import com.nicktoony.helpers.FilterCallback;
-import com.nicktoony.helpers.Lodash;
-import com.nicktoony.helpers.TemporaryVariables;
-import com.nicktoony.helpers.module;
+import com.nicktoony.helpers.*;
 import com.nicktoony.scrAI.Controllers.RoomController;
+import com.nicktoony.screeps.Creep;
 import com.nicktoony.screeps.GlobalVariables;
+import com.nicktoony.screeps.ScreepsArray;
 import com.nicktoony.screeps.Source;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.JSCollections;
-import org.stjs.javascript.annotation.JavascriptFunction;
-import org.stjs.javascript.functions.Callback;
-import org.stjs.javascript.functions.Callback1;
 
 /**
  * Created by nick on 26/07/15.
@@ -22,18 +18,30 @@ import org.stjs.javascript.functions.Callback1;
 public class SourcesManager {
     private RoomController roomController;
     private Array<Source> sources;
-
+    private Array<Source> safeSources;
 
     public SourcesManager(RoomController roomController) {
         this.roomController = roomController;
 
-        FilterCallback callback = new FilterCallback<Source>() {
+        // Fetch ALL sources
+        this.sources = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_SOURCES,
+                null);
+
+        // And fetch SAFE sources
+        FilterCallback<Source> callback = new FilterCallback<Source>() {
             @Override
             public boolean invoke(Source source) {
-                return true;
+                // Check for enemies near the source
+                Array<Creep> targets = (Array<Creep>) source.pos.findInRange(GlobalVariables.FIND_HOSTILE_CREEPS, 3);
+
+                if (targets.$length() == 0) {
+                    return true;
+                }
+
+                return false;
             }
         };
-        this.sources = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_SOURCES,
+        this.safeSources = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_SOURCES,
                 JSCollections.$map("filter", callback));
     }
 
@@ -41,12 +49,17 @@ public class SourcesManager {
         return sources;
     }
 
+    public Array<Source> getSafeSources() {
+        return safeSources;
+    }
+
     public Source getFreeSource() {
         TemporaryVariables.tempSource = null;
-        Lodash.forIn(sources, new Callback1<Source>() {
+        Lodash.forIn(sources, new LodashCallback1<Source>() {
             @Override
-            public void $invoke(Source source) {
+            public boolean invoke(Source source) {
                 TemporaryVariables.tempSource = source;
+                return true;
             }
         }, this);
 

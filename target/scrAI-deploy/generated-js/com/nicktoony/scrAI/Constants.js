@@ -12,6 +12,10 @@ stjs.extend(Constants, null, [], function(constructor, prototype) {
     constructor.ALERT_STATUS_MEDIUM = 3;
     constructor.ALERT_STATUS_LOW = 4;
     constructor.ALERT_STATUS_NONE = 5;
-    constructor.CREEP_MINER = "1";
+    constructor.CREEP_MINER_ID = "1";
+    constructor.CREEP_MINER_NAME = "CreepMiner";
     constructor.SETTING_MINER_PER_SPAWN = 2;
 }, {});
+(function() {
+    module.exports = Constants;
+})();

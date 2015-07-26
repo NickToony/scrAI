@@ -54,8 +54,20 @@
                     <includes>
                         <include>target/**/scrAI/**/*.js</include>
                     </includes>
-                    <token>[ ]*\*[ ]+ var(.*)</token>
-                    <value>*/var $1/*</value>
+                    <replacements>
+                        <replacement>
+                            <token>([ ]*)TemporaryVariables.([\S]+[ ]*=[ ]*null)</token>
+                            <value>$1var $2</value>
+                        </replacement>
+                        <replacement>
+                            <token>[ ]*\*[ ]+ var(.*)</token>
+                            <value>*/var $1/*</value>
+                        </replacement>
+                        <replacement>
+                            <token>TemporaryVariables.</token>
+                            <value></value>
+                        </replacement>
+                    </replacements>
                 </configuration>
             </plugin>
             <plugin>
