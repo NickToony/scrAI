@@ -25,3 +25,6 @@ stjs.extend(SourcesManager, null, [], function(constructor, prototype) {
         return tempSource;
     };
 }, {roomController: "RoomController", sources: {name: "Array", arguments: ["Source"]}});
+(function() {
+    module.exports = SourcesManager;
+})();

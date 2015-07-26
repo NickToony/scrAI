@@ -3,6 +3,7 @@ package com.nicktoony.scrAI.Managers;
 import com.nicktoony.helpers.FilterCallback;
 import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.TemporaryVariables;
+import com.nicktoony.helpers.module;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Source;
@@ -51,4 +52,6 @@ public class SourcesManager {
 
         return TemporaryVariables.tempSource;
     }
+
+    static { module.exports = SourcesManager.class; }
 }
