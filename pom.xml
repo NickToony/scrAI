@@ -52,7 +52,7 @@
                 </executions>
                 <configuration>
                     <includes>
-                        <include>target/**/scrAI/*.js</include>
+                        <include>target/**/scrAI/**/*.js</include>
                     </includes>
                     <token>[ ]*\*[ ]+ var(.*)</token>
                     <value>*/var $1/*</value>
