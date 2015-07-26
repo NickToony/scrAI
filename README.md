@@ -5,6 +5,11 @@ About
 -------------
 **scrAI** is a Screeps AI written in Java. Through the use of ST-JS (http://st-js.github.io/) and some Maven magic, I can write my AI implementation in pure **Java**, compile it to **Javascript**, and push it to Screeps using **Grunt**.
 
+Status
+---------
+It can spawn miners. It cannot move the miners.
+
+This project is a work in progress. However, the Java->Javascript works if you're interested in that.
 
 Dependencies
 ----------
