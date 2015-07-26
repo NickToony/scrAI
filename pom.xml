@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>nicktoony</groupId>
+    <artifactId>scrAI</artifactId>
+    <version>deploy</version>
+    <packaging>war</packaging>
+    <name>scrAI</name>
+
+    <properties>
+        <stjs.version>3.0.3</stjs.version>
+    </properties>
+
+    <build>
+        <sourceDirectory>src/main/java/</sourceDirectory>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.st-js</groupId>
+                <artifactId>maven-plugin</artifactId>
+                <version>${stjs.version}</version>
+                <executions>
+                    <execution>
+                        <id>main</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>maven-replacer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>target/**/scrAI/*.js</include>
+                    </includes>
+                    <token>[ ]*\*[ ]+ var(.*)</token>
+                    <value>*/var $1/*</value>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>grunt</executable>
+                    <arguments>
+                        <argument>screeps</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- for the java libraries -->
+        <dependency>
+            <groupId>org.st-js.bridge</groupId>
+            <artifactId>html</artifactId>
+            <version>5.0.bv2</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+</project>

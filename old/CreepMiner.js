@@ -1,0 +1,64 @@
+var Constants = require('Constants');
+//function CreepMiner(roomController, creep) {
+//    this.roomController = roomController;
+//    this.creep = creep;
+//}
+//
+//CreepMiner.prototype.step = function() {
+//    if (this.creep.memory['source_target'] == null) {
+//        console.log("NEED A JOB");
+//    }
+//};
+//
+//var findSource = function(){
+//    return this.roomController.getSourcesManager().getFreeSource();
+//}
+
+
+
+class CreepMiner {
+    static CREEP_ID = Constants.CREEP_MINER;
+
+    constructor(roomController, creep) {
+        this.roomController = roomController;
+        this.creep = creep;
+    }
+
+    step() {
+        if (this.creep.memory['source_target'] == null) {
+            console.log("NEED A JOB");
+        }
+    }
+
+    findSource() {
+        return this.roomController.getSourcesManager().getFreeSource();
+    }
+
+    static getCreep(tier) {
+        getCreep = function(tier) {
+
+            var abilities;
+            switch (tier) {
+
+                case Constants.TIER_HIGH:
+                    abilities = [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE];
+
+                case Constants.TIER_MEDIUM:
+                    abilities = [WORK, WORK, WORK, CARRY, MOVE, MOVE, MOVE];
+
+                case Constants.TIER_LOW:
+                default:
+                    abilities = [WORK, CARRY, MOVE];
+
+            }
+
+            return {
+                "abilities": abilities,
+                "id": this.CREEP_ID
+            };
+        };
+    }
+}
+
+
+module.exports = CreepMiner;
