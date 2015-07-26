@@ -3,7 +3,7 @@ scrAI by NickToony
 
 About
 -------------
-**scrAI** is a Screeps AI written in Java. Through the use of ST-JS (http://st-js.github.io/) and some Maven magic, I can write my AI implementation is pure **Java**, compile it to **Javascript**, and push it to Screeps using **Grunt**.
+**scrAI** is a Screeps AI written in Java. Through the use of ST-JS (http://st-js.github.io/) and some Maven magic, I can write my AI implementation in pure **Java**, compile it to **Javascript**, and push it to Screeps using **Grunt**.
 
 
 Dependencies
