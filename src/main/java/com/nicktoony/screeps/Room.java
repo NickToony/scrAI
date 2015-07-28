@@ -10,6 +10,6 @@ import org.stjs.javascript.annotation.STJSBridge;
 @STJSBridge
 public abstract class Room {
     public String name;
-
+    public Map<String, Object> memory;
     public abstract Array<?> find(String type, Map parameters);
 }

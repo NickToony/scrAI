@@ -18,16 +18,6 @@ import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 26/07/15.
- *  var stjs = require("stjs");
- *  var Constants = require("Constants");
- *  var Lodash = require('lodash');
- *
- *  var PopulationManager = require("PopulationManager");
- *  var SourcesManager = require("SourcesManager");
- *  var SpawnsManager = require("SpawnsManager");
- *
- *  var EconomyAdvisor = require("EconomyAdvisor");
- *  var MilitaryAdvisor = require("MilitaryAdvisor");
  */
 public class RoomController {
 
@@ -51,6 +41,12 @@ public class RoomController {
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
         this.militaryAdvisor = new MilitaryAdvisor(this);
+
+        // Check if memory is defined
+        if (this.room.memory.$get("created") == null) {
+            // Finally we're created
+            this.room.memory.$put("created", true);
+        }
     }
 
     public void step() {

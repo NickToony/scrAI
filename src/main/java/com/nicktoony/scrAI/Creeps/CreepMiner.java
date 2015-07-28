@@ -4,6 +4,7 @@ import com.nicktoony.helpers.module;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.screeps.Creep;
+import com.nicktoony.screeps.Source;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.JSCollections;
 import static com.nicktoony.screeps.GlobalVariables.*;
@@ -20,9 +21,18 @@ public class CreepMiner extends CreepWrapper {
         super(roomController, creep);
     }
 
+    private Source target;
+
+    @Override
+    public void create() {
+
+    }
+
     @Override
     public void step() {
-
+        if (target != null) {
+            // Go mine it
+        }
     }
 
     public static CreepDefinition define(RoomController roomController, int tier) {
