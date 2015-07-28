@@ -54,6 +54,4 @@ public class GlobalController {
             }
         });
     }
-
-    static { module.exports = GlobalController.class; }
 }

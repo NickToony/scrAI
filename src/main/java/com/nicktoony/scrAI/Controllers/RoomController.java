@@ -119,8 +119,6 @@ public class RoomController {
         return spawnsManager;
     }
 
-    static { module.exports = RoomController.class; }
-
     public void setAlertStatus(int alertStatus) {
         this.alertStatus = alertStatus;
     }

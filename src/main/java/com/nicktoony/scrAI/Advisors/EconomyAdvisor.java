@@ -35,6 +35,4 @@ public class EconomyAdvisor extends Advisor {
         return null;
     }
 
-
-    static { module.exports = EconomyAdvisor.class; }
 }

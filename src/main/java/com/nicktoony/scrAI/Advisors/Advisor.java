@@ -17,6 +17,4 @@ public abstract class Advisor {
     }
 
     public abstract CreepDefinition step();
-
-    static { module.exports = Advisor.class; }
 }

@@ -39,6 +39,4 @@ public class CreepMiner extends CreepWrapper {
         return new CreepDefinition(Constants.CREEP_MINER_ID, Constants.CREEP_MINER_NAME,
                 abilities, roomController);
     }
-
-    static { module.exports = CreepMiner.class; }
 }

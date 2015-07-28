@@ -8,7 +8,7 @@ module.exports = function(grunt) {
                 password: '<your password>'
             },
             dist: {
-                src: ['target/scrAI-deploy/**/scrAI/**/*.js', 'src/main/javascript/*.js']
+                src: ['target/scrAI-deploy/main.js']
             }
         }
     });

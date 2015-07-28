@@ -30,6 +30,4 @@ public class CreepDefinition {
     public Array<String> getAbilities() {
         return abilities;
     }
-
-    static { module.exports = CreepDefinition.class; }
 }

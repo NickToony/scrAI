@@ -23,6 +23,4 @@ public class Constants {
 
     // Creep settings (miner)
     public static int SETTING_MINER_PER_SPAWN = 2;
-
-    static { module.exports = Constants.class; }
 }

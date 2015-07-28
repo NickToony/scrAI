@@ -64,6 +64,4 @@ public class PopulationManager {
     public Array<CreepWrapper> getAllCreeps() {
         return allCreeps;
     }
-
-    static { module.exports = PopulationManager.class; }
 }

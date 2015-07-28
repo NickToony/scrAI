@@ -17,6 +17,8 @@
  * methods added to JS prototypes
  */
 
+var Lodash = require('lodash');
+
 var NOT_IMPLEMENTED = function(){
     throw "This method is not implemented in Javascript.";
 }
@@ -27,7 +29,7 @@ var JavalikeEquals = function(value){
     if (value.valueOf)
         return this.valueOf() === value.valueOf();
     return this === value;
-}
+};
 
 /* String */
 if (!String.prototype.equals) {
@@ -221,7 +223,7 @@ if (!Number.prototype.equals) {
 //force valueof to match approximately the Java's behavior (for Integer.valueOf it returns in fact a double)
 Number.valueOf=function(value){
     return new Number(value).valueOf();
-}
+};
 
 /* Boolean */
 if (!Boolean.prototype.equals) {
@@ -231,7 +233,7 @@ if (!Boolean.prototype.equals) {
 //force valueof to match the Java's behavior
 Boolean.valueOf=function(value){
     return new Boolean(value).valueOf();
-}
+};
 
 
 
@@ -720,5 +722,3 @@ var RuntimeException = function(message, cause){
 };
 stjs.extend(RuntimeException, Exception, [], function(constructor, prototype){
 }, {});
-
-module.exports = stjs;

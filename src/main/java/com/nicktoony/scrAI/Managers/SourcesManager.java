@@ -65,6 +65,4 @@ public class SourcesManager {
 
         return TemporaryVariables.tempSource;
     }
-
-    static { module.exports = SourcesManager.class; }
 }

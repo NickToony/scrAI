@@ -26,6 +26,4 @@ public abstract class CreepWrapper {
     public RoomController getRoomController() {
         return roomController;
     }
-
-    static { module.exports = CreepWrapper.class; }
 }

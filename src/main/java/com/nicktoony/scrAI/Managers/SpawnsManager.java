@@ -45,6 +45,4 @@ public class SpawnsManager {
 
         return TemporaryVariables.tempSpawn;
     }
-
-    static { module.exports = SpawnsManager.class; }
 }

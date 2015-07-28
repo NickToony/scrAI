@@ -22,6 +22,4 @@ public class MilitaryAdvisor extends Advisor {
         return null;
     }
 
-
-    static { module.exports = MilitaryAdvisor.class; }
 }
