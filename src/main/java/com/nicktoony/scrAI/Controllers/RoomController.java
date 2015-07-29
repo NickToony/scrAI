@@ -2,12 +2,11 @@ package com.nicktoony.scrAI.Controllers;
 
 import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
-import com.nicktoony.helpers.module;
 import com.nicktoony.scrAI.Advisors.EconomyAdvisor;
 import com.nicktoony.scrAI.Advisors.MilitaryAdvisor;
 import com.nicktoony.scrAI.Constants;
-import com.nicktoony.scrAI.Creeps.CreepDefinition;
-import com.nicktoony.scrAI.Creeps.CreepWrapper;
+import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
+import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.scrAI.Managers.PopulationManager;
 import com.nicktoony.scrAI.Managers.SourcesManager;
 import com.nicktoony.scrAI.Managers.SpawnsManager;
@@ -15,6 +14,8 @@ import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Room;
 import com.nicktoony.screeps.Spawn;
 import org.stjs.javascript.Global;
+import org.stjs.javascript.JSCollections;
+import org.stjs.javascript.Map;
 
 /**
  * Created by nick on 26/07/15.
@@ -28,10 +29,20 @@ public class RoomController {
     private EconomyAdvisor economyAdvisor;
     private MilitaryAdvisor militaryAdvisor;
     private int alertStatus;
+    private Map<String, Object> sourcesMemory;
 
     public RoomController(Room room) {
         this.room = room;
         this.alertStatus = Constants.ALERT_STATUS_LOW;
+
+        // Check if memory is defined
+        if (this.room.memory.$get("created") == null) {
+            this.room.memory.$put("sourcesMemory", JSCollections.$map());
+
+            // Finally we're created
+            this.room.memory.$put("created", true);
+        }
+        this.sourcesMemory = (Map<String, Object>) this.room.memory.$get("sourcesMemory");
 
         // Managers
         this.populationManager = new PopulationManager(this);
@@ -41,12 +52,6 @@ public class RoomController {
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
         this.militaryAdvisor = new MilitaryAdvisor(this);
-
-        // Check if memory is defined
-        if (this.room.memory.$get("created") == null) {
-            // Finally we're created
-            this.room.memory.$put("created", true);
-        }
     }
 
     public void step() {
@@ -94,9 +99,12 @@ public class RoomController {
             @Override
             public boolean invoke(CreepWrapper creepWrapper) {
                 creepWrapper.step();
-                return false;
+                return true;
             }
         }, this);
+
+        // Save source memory
+        this.room.memory.$put("sourcesMemory", sourcesMemory);
     }
 
     public Room getRoom() {
@@ -117,5 +125,12 @@ public class RoomController {
 
     public void setAlertStatus(int alertStatus) {
         this.alertStatus = alertStatus;
+    }
+
+    public Map<String, Object> getSourcesMemory(String id) {
+        if (sourcesMemory.$get(id) == null) {
+            sourcesMemory.$put(id, JSCollections.$map());
+        }
+        return (Map<String, Object>) sourcesMemory.$get(id);
     }
 }

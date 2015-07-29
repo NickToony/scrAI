@@ -1,6 +1,5 @@
-package com.nicktoony.scrAI.Creeps;
+package com.nicktoony.scrAI.World.Creeps;
 
-import com.nicktoony.helpers.module;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import org.stjs.javascript.Array;
 

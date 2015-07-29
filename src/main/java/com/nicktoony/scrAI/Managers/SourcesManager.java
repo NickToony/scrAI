@@ -1,13 +1,17 @@
 package com.nicktoony.scrAI.Managers;
 
 import com.nicktoony.helpers.*;
+import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
+import com.nicktoony.scrAI.World.SourceWrapper;
 import com.nicktoony.screeps.Creep;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.ScreepsArray;
 import com.nicktoony.screeps.Source;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
+import org.stjs.javascript.Map;
 
 /**
  * Created by nick on 26/07/15.
@@ -17,52 +21,63 @@ import org.stjs.javascript.JSCollections;
  */
 public class SourcesManager {
     private RoomController roomController;
-    private Array<Source> sources;
-    private Array<Source> safeSources;
+    private Array<SourceWrapper> sources;
+    private Array<SourceWrapper> safeSources;
+    private int maxMiners;
 
-    public SourcesManager(RoomController roomController) {
+    public SourcesManager(final RoomController roomController) {
         this.roomController = roomController;
 
+        this.sources = new Array<SourceWrapper>();
+        this.safeSources = new Array<SourceWrapper>();
         // Fetch ALL sources
-        this.sources = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_SOURCES,
+        Array<Source> foundSources = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_SOURCES,
                 null);
 
-        // And fetch SAFE sources
-        FilterCallback<Source> callback = new FilterCallback<Source>() {
+        Lodash.forIn(foundSources, new LodashCallback1<Source>() {
             @Override
             public boolean invoke(Source source) {
-                // Check for enemies near the source
+                // Check for enemies near the source;
                 Array<Creep> targets = (Array<Creep>) source.pos.findInRange(GlobalVariables.FIND_HOSTILE_CREEPS, 3);
 
+                SourceWrapper sourceWrapper = new SourceWrapper(roomController, source, roomController.getSourcesMemory(source.id));
+                sources.push(sourceWrapper);
                 if (targets.$length() == 0) {
-                    return true;
+                    safeSources.push(sourceWrapper);
+                    maxMiners += sourceWrapper.getAvailableSpots();
                 }
 
-                return false;
+                return true;
             }
-        };
-        this.safeSources = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_SOURCES,
-                JSCollections.$map("filter", callback));
+        }, this);
     }
 
-    public Array<Source> getSources() {
+    public Array<SourceWrapper> getSources() {
         return sources;
     }
 
-    public Array<Source> getSafeSources() {
+    public Array<SourceWrapper> getSafeSources() {
         return safeSources;
     }
 
-    public Source getFreeSource() {
+    public SourceWrapper getFreeSource() {
         TemporaryVariables.tempSource = null;
-        Lodash.forIn(sources, new LodashCallback1<Source>() {
+        Lodash.forIn(safeSources, new LodashCallback1<SourceWrapper>() {
             @Override
-            public boolean invoke(Source source) {
-                TemporaryVariables.tempSource = source;
-                return true;
+            public boolean invoke(SourceWrapper sourceWrapper) {
+                if (sourceWrapper.getTakenSpots() < sourceWrapper.getAvailableSpots()) {
+                    TemporaryVariables.tempSource = sourceWrapper;
+                    return false;
+                } else {
+                    return true;
+                }
             }
         }, this);
 
         return TemporaryVariables.tempSource;
+    }
+
+    public int getMaxMiners() {
+        return maxMiners;
     }
 }

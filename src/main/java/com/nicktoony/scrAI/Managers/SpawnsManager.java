@@ -36,9 +36,9 @@ public class SpawnsManager {
             public boolean invoke(Spawn spawn) {
                 if (spawn.spawning == null) {
                     TemporaryVariables.tempSpawn = spawn;
-                    return true;
-                } else {
                     return false;
+                } else {
+                    return true;
                 }
             }
         }, this);

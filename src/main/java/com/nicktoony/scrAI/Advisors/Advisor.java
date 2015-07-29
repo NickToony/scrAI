@@ -1,9 +1,7 @@
 package com.nicktoony.scrAI.Advisors;
 
-import com.nicktoony.helpers.module;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.Creeps.CreepDefinition;
-import com.nicktoony.scrAI.Creeps.CreepWrapper;
+import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 
 /**
  * Created by nick on 26/07/15.

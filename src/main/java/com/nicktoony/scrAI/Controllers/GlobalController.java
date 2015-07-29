@@ -32,7 +32,7 @@ public class GlobalController {
             public boolean invoke(Room room, String name) {
                 // Create a room controller
                 roomControllers.push(new RoomController(room));
-                return false;
+                return true;
             }
         }, this);
 

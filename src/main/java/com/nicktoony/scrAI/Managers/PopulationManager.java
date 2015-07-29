@@ -2,11 +2,10 @@ package com.nicktoony.scrAI.Managers;
 
 import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
-import com.nicktoony.helpers.module;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.Creeps.CreepMiner;
-import com.nicktoony.scrAI.Creeps.CreepWrapper;
+import com.nicktoony.scrAI.World.Creeps.CreepMiner;
+import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.screeps.Creep;
 import com.nicktoony.screeps.GlobalVariables;
 import org.stjs.javascript.Array;
@@ -41,7 +40,7 @@ public class PopulationManager {
                     getSortedCreeps(type).push(creepWrapper);
                     allCreeps.push(creepWrapper);
                 }
-                return false;
+                return true;
             }
         }, this);
     }
