@@ -20,6 +20,11 @@ public class CreepMiner extends CreepWrapper {
         super(roomController, creep);
     }
 
+    @Override
+    public void save() {
+
+    }
+
     private Source target;
     private boolean atSource;
     private int workParts;
@@ -66,7 +71,7 @@ public class CreepMiner extends CreepWrapper {
         Array<String> abilities;
 
         abilities = JSCollections.$array(MOVE);
-        int totalWorkParts = Math.min((int) Math.floor((roomController.getRoomTotalStorage()-Constants.MOVE_COST)/Constants.WORK_COST), workParts);
+        int totalWorkParts = Math.min((int) Math.floor((roomController.getRoomTotalStorage() - Constants.MOVE_COST) / Constants.WORK_COST), workParts);
         for (int i = 0; i < totalWorkParts; i++) {
             abilities.push(WORK);
         }

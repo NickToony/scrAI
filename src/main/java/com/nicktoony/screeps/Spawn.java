@@ -6,7 +6,10 @@ import org.stjs.javascript.Map;
 /**
  * Created by nick on 26/07/15.
  */
-public class Spawn {
+public class Spawn implements Depositable {
+    public RoomPosition pos;
+    public String id;
+
     public int canCreateCreep(Array<String> abilities, String name) {
         return 0;
     }
@@ -16,4 +19,7 @@ public class Spawn {
     }
 
     public Creep spawning;
+
+    public int energy;
+    public int energyCapacity;
 }

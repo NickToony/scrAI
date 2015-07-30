@@ -11,5 +11,7 @@ import org.stjs.javascript.annotation.STJSBridge;
 public abstract class Room {
     public String name;
     public Map<String, Object> memory;
+    public Controller controller;
+
     public abstract Array<?> find(String type, Map parameters);
 }

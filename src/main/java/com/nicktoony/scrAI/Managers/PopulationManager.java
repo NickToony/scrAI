@@ -4,6 +4,7 @@ import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
+import com.nicktoony.scrAI.World.Creeps.CreepCollector;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.screeps.Creep;
@@ -55,6 +56,8 @@ public class PopulationManager {
     private CreepWrapper getCreepWrapper(String id, Creep creep) {
         if (id == Constants.CREEP_MINER_ID) {
             return new CreepMiner(roomController, creep);
+        } else if (id == Constants.CREEP_COLLECTOR_ID) {
+            return new CreepCollector(roomController, creep);
         }
 
         return null;

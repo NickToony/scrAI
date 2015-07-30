@@ -3,6 +3,7 @@ package com.nicktoony.scrAI.Advisors;
 import com.nicktoony.helpers.Lodash;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
+import com.nicktoony.scrAI.World.Creeps.CreepCollector;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
 import com.nicktoony.scrAI.World.SourceWrapper;
@@ -25,12 +26,18 @@ public class EconomyAdvisor extends Advisor {
 
     @Override
     public CreepDefinition step() {
+        if (this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length() >
+                this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_COLLECTOR_ID).$length()) {
+
+            return CreepCollector.define(this.roomController);
+        }
+
         // If there isn't enough creep miners
         if (this.roomController.getSourcesManager().getMaxMiners() >
                 this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length()) {
 
             SourceWrapper sourceWrapper = this.roomController.getSourcesManager().getFreeSource();
-            int workParts = (int) Math.ceil((sourceWrapper.getOptimalWork() - sourceWrapper.getMiningRate())/sourceWrapper.getAvailableSpots());
+            int workParts = (int) Math.ceil((sourceWrapper.getOptimalWork() - sourceWrapper.getMiningRate()) / sourceWrapper.getAvailableSpots());
 
             // create a new miner
             return CreepMiner.define(this.roomController, workParts, sourceWrapper.getSource());

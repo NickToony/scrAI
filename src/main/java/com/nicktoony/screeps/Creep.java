@@ -11,10 +11,15 @@ public abstract class Creep {
     public RoomPosition pos;
     public Map<String, Object> memory;
     public Array<String> body;
+    public Carry carry;
 
     public void harvest(Source target) {
 
     }
 
-    public abstract int moveTo(Source target);
+    public abstract int moveTo(Object target);
+
+    public abstract int transferEnergy(Depositable target);
+
+    public abstract void pickup(Energy energy);
 }

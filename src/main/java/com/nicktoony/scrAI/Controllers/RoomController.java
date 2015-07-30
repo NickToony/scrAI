@@ -100,6 +100,7 @@ public class RoomController {
             @Override
             public boolean invoke(CreepWrapper creepWrapper) {
                 creepWrapper.step();
+                creepWrapper.save();
                 return true;
             }
         }, this);

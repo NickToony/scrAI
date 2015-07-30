@@ -7,6 +7,7 @@ import org.stjs.javascript.annotation.GlobalScope;
  */
 @GlobalScope
 public class GlobalVariables {
+    public static String FIND_DROPPED_ENERGY;
     public static String FIND_HOSTILE_CREEPS;
     public static String FIND_MY_CREEPS;
     public static String FIND_SOURCES;

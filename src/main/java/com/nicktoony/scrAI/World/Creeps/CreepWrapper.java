@@ -17,4 +17,6 @@ public abstract class CreepWrapper extends MemoryWrapper {
         this.creep = creep;
         super.prepare();
     }
+
+    public abstract void save();
 }

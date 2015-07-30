@@ -20,6 +20,8 @@ public class Constants {
     // Creep ids
     public static String CREEP_MINER_ID = "1";
     public static String CREEP_MINER_NAME = "CreepMiner";
+    public static String CREEP_COLLECTOR_ID = "2";
+    public static String CREEP_COLLECTOR_NAME = "CreepCollector";
 
     // Creep settings (miner)
     public static int SETTING_MINER_PER_SPAWN = 2;

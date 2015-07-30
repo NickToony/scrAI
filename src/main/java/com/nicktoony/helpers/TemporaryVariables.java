@@ -1,6 +1,7 @@
 package com.nicktoony.helpers;
 
 import com.nicktoony.scrAI.World.SourceWrapper;
+import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.Source;
 import com.nicktoony.screeps.Spawn;
 import org.stjs.javascript.annotation.GlobalScope;
@@ -11,4 +12,5 @@ import org.stjs.javascript.annotation.GlobalScope;
 public class TemporaryVariables {
     public static SourceWrapper tempSource;
     public static Spawn tempSpawn;
+    public static Energy tempEnergy;
 }
