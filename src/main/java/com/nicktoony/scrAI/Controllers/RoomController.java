@@ -5,6 +5,7 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Advisors.EconomyAdvisor;
 import com.nicktoony.scrAI.Advisors.MilitaryAdvisor;
 import com.nicktoony.scrAI.Constants;
+import com.nicktoony.scrAI.Managers.EnergyManager;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.scrAI.Managers.PopulationManager;
@@ -26,10 +27,12 @@ public class RoomController {
     private PopulationManager populationManager;
     private SourcesManager sourcesManager;
     private SpawnsManager spawnsManager;
+    private EnergyManager energyManager;
     private EconomyAdvisor economyAdvisor;
     private MilitaryAdvisor militaryAdvisor;
     private int alertStatus;
     private Map<String, Object> sourcesMemory;
+    private Map<String, Object> energyMemory;
     private int roomTotalStorage = 300;
 
     public RoomController(Room room) {
@@ -39,16 +42,19 @@ public class RoomController {
         // Check if memory is defined
         if (this.room.memory.$get("created") == null) {
             this.room.memory.$put("sourcesMemory", JSCollections.$map());
+            this.room.memory.$put("energyMemory", JSCollections.$map());
 
             // Finally we're created
             this.room.memory.$put("created", true);
         }
         this.sourcesMemory = (Map<String, Object>) this.room.memory.$get("sourcesMemory");
+        this.energyMemory = (Map<String, Object>) this.room.memory.$get("energyMemory");
 
         // Managers
         this.populationManager = new PopulationManager(this);
         this.sourcesManager = new SourcesManager(this);
         this.spawnsManager = new SpawnsManager(this);
+        this.energyManager = new EnergyManager(this);
 
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
@@ -107,6 +113,7 @@ public class RoomController {
 
         // Save source memory
         this.room.memory.$put("sourcesMemory", sourcesMemory);
+        this.room.memory.$put("energyMemory", energyMemory);
     }
 
     public Room getRoom() {
@@ -125,6 +132,10 @@ public class RoomController {
         return spawnsManager;
     }
 
+    public EnergyManager getEnergyManager() {
+        return energyManager;
+    }
+
     public void setAlertStatus(int alertStatus) {
         this.alertStatus = alertStatus;
     }
@@ -138,5 +149,12 @@ public class RoomController {
 
     public int getRoomTotalStorage() {
         return roomTotalStorage;
+    }
+
+    public Map<String, Object> getEnergyMemory(String id) {
+        if (energyMemory.$get(id) == null) {
+            energyMemory.$put(id, JSCollections.$map());
+        }
+        return (Map<String, Object>) energyMemory.$get(id);
     }
 }

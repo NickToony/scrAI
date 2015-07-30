@@ -5,6 +5,7 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.helpers.TemporaryVariables;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
+import com.nicktoony.scrAI.World.EnergyWrapper;
 import com.nicktoony.screeps.*;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
@@ -44,24 +45,10 @@ public class CreepCollector extends CreepWrapper {
     public void step() {
         if (state == STATE_FETCHING) {
             if (target == null) {
-                Array<Energy> energyArray = (Array<Energy>) roomController.getRoom().find(GlobalVariables.FIND_DROPPED_ENERGY, null);
-                TemporaryVariables.tempEnergy = null;
-                Lodash.forIn(energyArray, new LodashCallback1<Energy>() {
-                    @Override
-                    public boolean invoke(Energy energy) {
-
-                        if (TemporaryVariables.tempEnergy == null) {
-                            TemporaryVariables.tempEnergy = energy;
-                        } else {
-                            if (energy.energy > TemporaryVariables.tempEnergy.energy) {
-                                TemporaryVariables.tempEnergy = energy;
-                            }
-                        }
-
-                        return true;
-                    }
-                }, this);
-                target = TemporaryVariables.tempEnergy.id;
+                Energy energy = roomController.getEnergyManager().claimEnergy(this);
+                if (energy != null) {
+                    target = energy.id;
+                }
             } else {
                 // We have a target
                 Energy energy = (Energy) Game.getObjectById(target);
@@ -138,5 +125,13 @@ public class CreepCollector extends CreepWrapper {
 
         return new CreepDefinition(Constants.CREEP_COLLECTOR_ID, Constants.CREEP_COLLECTOR_NAME,
                 abilities, roomController, null);
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public int getCarryCapacity() {
+        return this.creep.carryCapacity;
     }
 }

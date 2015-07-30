@@ -12,6 +12,7 @@ public abstract class Creep {
     public Map<String, Object> memory;
     public Array<String> body;
     public Carry carry;
+    public int carryCapacity;
 
     public void harvest(Source target) {
 
