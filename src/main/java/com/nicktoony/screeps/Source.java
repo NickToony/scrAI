@@ -6,4 +6,5 @@ package com.nicktoony.screeps;
 public class Source {
     public RoomPosition pos;
     public String id;
+    public int energyCapacity;
 }

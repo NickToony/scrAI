@@ -79,4 +79,8 @@ public class SourceWrapper extends MemoryWrapper {
     public int getMiningRate() {
         return miningRate;
     }
+
+    public int getOptimalWork() {
+        return this.source.energyCapacity / Constants.SOURCE_REGEN;
+    }
 }

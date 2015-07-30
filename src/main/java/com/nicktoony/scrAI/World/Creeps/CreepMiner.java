@@ -62,18 +62,12 @@ public class CreepMiner extends CreepWrapper {
         }
     }
 
-    public static CreepDefinition define(RoomController roomController, int tier, int workParts, Source source) {
+    public static CreepDefinition define(RoomController roomController, int workParts, Source source) {
         Array<String> abilities;
 
-//        if (tier == Constants.TIER_HIGH) {
-//            abilities = JSCollections.$array(WORK, CARRY, MOVE);
-//        } else if (tier == Constants.TIER_MEDIUM) {
-//            abilities = JSCollections.$array(WORK, CARRY, MOVE);
-//        } else {
-//            abilities = JSCollections.$array(WORK, CARRY, MOVE);
-//        }
         abilities = JSCollections.$array(MOVE);
-        for (int i =0; i < workParts; i++) {
+        int totalWorkParts = Math.min((int) Math.floor((roomController.getRoomTotalStorage()-Constants.MOVE_COST)/Constants.WORK_COST), workParts);
+        for (int i = 0; i < totalWorkParts; i++) {
             abilities.push(WORK);
         }
 

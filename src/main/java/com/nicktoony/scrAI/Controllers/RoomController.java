@@ -30,6 +30,7 @@ public class RoomController {
     private MilitaryAdvisor militaryAdvisor;
     private int alertStatus;
     private Map<String, Object> sourcesMemory;
+    private int roomTotalStorage = 300;
 
     public RoomController(Room room) {
         this.room = room;
@@ -132,5 +133,9 @@ public class RoomController {
             sourcesMemory.$put(id, JSCollections.$map());
         }
         return (Map<String, Object>) sourcesMemory.$get(id);
+    }
+
+    public int getRoomTotalStorage() {
+        return roomTotalStorage;
     }
 }

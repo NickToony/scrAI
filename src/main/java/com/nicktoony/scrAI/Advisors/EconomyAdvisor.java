@@ -30,10 +30,10 @@ public class EconomyAdvisor extends Advisor {
                 this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length()) {
 
             SourceWrapper sourceWrapper = this.roomController.getSourcesManager().getFreeSource();
-            int workParts = (int) Math.ceil((Constants.OPTIMAL_WORK - sourceWrapper.getMiningRate())/sourceWrapper.getAvailableSpots());
+            int workParts = (int) Math.ceil((sourceWrapper.getOptimalWork() - sourceWrapper.getMiningRate())/sourceWrapper.getAvailableSpots());
 
             // create a new miner
-            return CreepMiner.define(this.roomController, tier, workParts, sourceWrapper.getSource());
+            return CreepMiner.define(this.roomController, workParts, sourceWrapper.getSource());
         }
 
 
