@@ -22,5 +22,8 @@ public class Constants {
     public static String CREEP_MINER_NAME = "CreepMiner";
 
     // Creep settings (miner)
-    public static int SETTING_MINER_PER_SPAWN = 2;
+    public static int SETTING_MINER_PER_SPAWN = 5;
+
+    // Source constants
+    public static int OPTIMAL_WORK = 5; // 3000 energy, 300 regen. 10 per tick is optimal. WORK = 2 per tick
 }

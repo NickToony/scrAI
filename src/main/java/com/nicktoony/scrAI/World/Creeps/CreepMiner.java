@@ -1,5 +1,6 @@
 package com.nicktoony.scrAI.World.Creeps;
 
+import com.nicktoony.helpers.Lodash;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.SourceWrapper;
@@ -21,17 +22,26 @@ public class CreepMiner extends CreepWrapper {
 
     private Source target;
     private boolean atSource;
+    private int workParts;
 
     @Override
     public void init() {
         memory.$put("atSource", false);
         memory.$put("target", null);
+        int workParts = 0;
+        for (String part : this.creep.body) {
+            if (part == "WORK") {
+                workParts ++;
+            }
+        }
+        memory.$put("workParts", workParts);
     }
 
     @Override
     public void create() {
         atSource = (Boolean) memory.$get("atSource");
         target = (Source) Game.getObjectById(memory.$get("target"));
+        workParts = (Integer) memory.$get("workParts");
     }
 
     @Override
@@ -52,22 +62,30 @@ public class CreepMiner extends CreepWrapper {
         }
     }
 
-    public static CreepDefinition define(RoomController roomController, int tier) {
+    public static CreepDefinition define(RoomController roomController, int tier, int workParts, Source source) {
         Array<String> abilities;
 
-        if (tier == Constants.TIER_HIGH) {
-            abilities = JSCollections.$array(WORK, CARRY, MOVE);
-        } else if (tier == Constants.TIER_MEDIUM) {
-            abilities = JSCollections.$array(WORK, CARRY, MOVE);
-        } else {
-            abilities = JSCollections.$array(WORK, CARRY, MOVE);
+//        if (tier == Constants.TIER_HIGH) {
+//            abilities = JSCollections.$array(WORK, CARRY, MOVE);
+//        } else if (tier == Constants.TIER_MEDIUM) {
+//            abilities = JSCollections.$array(WORK, CARRY, MOVE);
+//        } else {
+//            abilities = JSCollections.$array(WORK, CARRY, MOVE);
+//        }
+        abilities = JSCollections.$array(MOVE);
+        for (int i =0; i < workParts; i++) {
+            abilities.push(WORK);
         }
 
         return new CreepDefinition(Constants.CREEP_MINER_ID, Constants.CREEP_MINER_NAME,
-                abilities, roomController);
+                abilities, roomController, JSCollections.$map("target", (Object) source.id));
     }
 
     public Source getTarget() {
         return target;
+    }
+
+    public int getWorkParts() {
+        return workParts;
     }
 }

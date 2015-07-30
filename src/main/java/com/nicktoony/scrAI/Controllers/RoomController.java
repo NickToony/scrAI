@@ -90,7 +90,7 @@ public class RoomController {
             if (request != null) {
                 if (spawn.canCreateCreep(request.getAbilities(), request.getName()) == GlobalVariables.OK) {
                     Global.console.log("BUILD: " + request.getName());
-                    spawn.createCreep(request.getAbilities(), request.getName());
+                    spawn.createCreep(request.getAbilities(), request.getName(), request.getMemory());
                 }
             }
         }
