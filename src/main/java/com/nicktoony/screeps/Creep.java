@@ -1,5 +1,6 @@
 package com.nicktoony.screeps;
 
+import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 
 /**
@@ -9,6 +10,7 @@ public abstract class Creep {
     public String name;
     public RoomPosition pos;
     public Map<String, Object> memory;
+    public Array<String> body;
 
     public void harvest(Source target) {
 

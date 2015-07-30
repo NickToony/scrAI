@@ -19,6 +19,7 @@ public class SourceWrapper extends MemoryWrapper {
     private Source source;
     private int availableSpots;
     private int takenSpots;
+    private int miningRate;
 
     public SourceWrapper(RoomController roomController, Source source, Map<String, Object> sourceMemory) {
         super(roomController, sourceMemory);
@@ -45,11 +46,13 @@ public class SourceWrapper extends MemoryWrapper {
     @Override
     public void create() {
         availableSpots = (Integer) memory.$get("availableSpots");
+        miningRate = 0;
         Lodash.forIn(roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID), new LodashCallback1<CreepMiner>() {
             @Override
             public boolean invoke(CreepMiner creepMiner) {
                 if (creepMiner.getTarget() == source) {
-                    takenSpots ++;
+                    takenSpots++;
+                    miningRate += creepMiner.getWorkParts();
                 }
                 return true;
             }
@@ -73,7 +76,11 @@ public class SourceWrapper extends MemoryWrapper {
         return takenSpots;
     }
 
-    public void setTakenSpots(int takenSpots) {
-        this.takenSpots = takenSpots;
+    public int getMiningRate() {
+        return miningRate;
+    }
+
+    public int getOptimalWork() {
+        return this.source.energyCapacity / Constants.SOURCE_REGEN;
     }
 }

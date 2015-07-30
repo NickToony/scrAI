@@ -23,4 +23,17 @@ public class Constants {
 
     // Creep settings (miner)
     public static int SETTING_MINER_PER_SPAWN = 2;
+
+    // Source constants
+    public static final int SOURCE_REGEN = 300;
+
+    // Creep part costs
+    public static final int MOVE_COST = 50;
+    public static final int WORK_COST = 100;
+    public static final int CARRY_COST = 50;
+    public static final int ATTACK_COST = 80;
+    public static final int RANGED_ATTACK_COST = 150;
+    public static final int HEAL_COST = 250;
+    public static final int TOUGH_COST = 10;
+
 }
