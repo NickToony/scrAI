@@ -154,7 +154,7 @@ public class RoomController {
     }
 
     public int getRoomTotalStorage() {
-        return roomTotalStorage;
+        return roomTotalStorage - Constants.OFFSET_ROOM_STORAGE;
     }
 
     public Map<String, Object> getEnergyMemory(String id) {

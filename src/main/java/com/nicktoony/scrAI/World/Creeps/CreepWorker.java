@@ -77,9 +77,14 @@ public class CreepWorker extends CreepWrapper {
     }
 
     public static CreepDefinition define(RoomController roomController) {
-        Array<String> abilities;
 
-        abilities = JSCollections.$array(WORK, MOVE, MOVE, CARRY, CARRY);
+        Array<String> abilities = new Array<String>();
+
+        int comboCost = Constants.WORK_COST + Constants.CARRY_COST + Constants.MOVE_COST;
+        int totalWorkParts = Math.max(1, (int) Math.floor(roomController.getRoomTotalStorage() / comboCost));
+        for (int i = 0; i < totalWorkParts; i++) {
+            abilities.push(WORK, MOVE, CARRY);
+        }
 
         return new CreepDefinition(Constants.CREEP_WORKER_ID, Constants.CREEP_WORKER_NAME,
                 abilities, roomController, null);

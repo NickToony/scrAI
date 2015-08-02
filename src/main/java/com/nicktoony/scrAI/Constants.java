@@ -17,6 +17,8 @@ public class Constants {
     public static int ALERT_STATUS_LOW = 4; //
     public static int ALERT_STATUS_NONE = 5; // 0% military, 100% economy
 
+    public static int OFFSET_ROOM_STORAGE = 100; // useful to stop the AI spending too much early on
+
     // Creep ids
     public static String CREEP_MINER_ID = "1";
     public static String CREEP_MINER_NAME = "CreepMiner";

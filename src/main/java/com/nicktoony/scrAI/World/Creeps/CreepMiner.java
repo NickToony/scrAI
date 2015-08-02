@@ -68,9 +68,7 @@ public class CreepMiner extends CreepWrapper {
     }
 
     public static CreepDefinition define(RoomController roomController, int workParts, Source source) {
-        Array<String> abilities;
-
-        abilities = JSCollections.$array(MOVE);
+        Array<String> abilities = JSCollections.$array(MOVE);
         int totalWorkParts = Math.min((int) Math.floor((roomController.getRoomTotalStorage() - Constants.MOVE_COST) / Constants.WORK_COST), workParts);
         for (int i = 0; i < totalWorkParts; i++) {
             abilities.push(WORK);
