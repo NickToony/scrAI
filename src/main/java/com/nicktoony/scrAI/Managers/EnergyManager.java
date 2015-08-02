@@ -5,14 +5,13 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.helpers.TemporaryVariables;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepCollector;
-import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.scrAI.World.EnergyWrapper;
-import com.nicktoony.scrAI.World.SourceWrapper;
-import com.nicktoony.screeps.Creep;
+import com.nicktoony.scrAI.World.Tasks.TaskPickupEnergy;
 import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Source;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 26/07/15.
@@ -39,6 +38,10 @@ public class EnergyManager {
                 EnergyWrapper energyWrapper = new EnergyWrapper(roomController, energy, roomController.getEnergyMemory(energy.id));
                 if (energyWrapper.availableToClaim() > 0) {
                     availableEnergy.push(energyWrapper);
+                }
+
+                if (roomController.getTasksManager().getMemory().$get(energy.id) == null) {
+                    roomController.getTasksManager().addTask(new TaskPickupEnergy(roomController, energy.id, energy));
                 }
 
                 return true;

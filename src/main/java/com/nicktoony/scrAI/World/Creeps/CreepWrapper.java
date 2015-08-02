@@ -7,7 +7,6 @@ import org.stjs.javascript.Map;
 
 /**
  * Created by nick on 26/07/15.
- * var stjs = require("stjs");
  */
 public abstract class CreepWrapper extends MemoryWrapper {
     protected Creep creep;
@@ -19,4 +18,8 @@ public abstract class CreepWrapper extends MemoryWrapper {
     }
 
     public abstract void save();
+
+    public Creep getCreep() {
+        return creep;
+    }
 }

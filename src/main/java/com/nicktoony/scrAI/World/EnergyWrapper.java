@@ -30,7 +30,7 @@ public class EnergyWrapper extends MemoryWrapper {
 
     @Override
     public void init() {
-
+        ;
     }
 
     @Override

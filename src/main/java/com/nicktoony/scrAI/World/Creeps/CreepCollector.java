@@ -129,7 +129,7 @@ public class CreepCollector extends CreepWrapper {
         }
     }
 
-    private boolean moveTo(RoomPosition position) {
+    public boolean moveTo(RoomPosition position) {
         // if reached target
         if (this.creep.pos.inRangeTo(position, 1)) {
             return true;

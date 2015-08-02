@@ -5,12 +5,9 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Advisors.EconomyAdvisor;
 import com.nicktoony.scrAI.Advisors.MilitaryAdvisor;
 import com.nicktoony.scrAI.Constants;
-import com.nicktoony.scrAI.Managers.EnergyManager;
+import com.nicktoony.scrAI.Managers.*;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
-import com.nicktoony.scrAI.Managers.PopulationManager;
-import com.nicktoony.scrAI.Managers.SourcesManager;
-import com.nicktoony.scrAI.Managers.SpawnsManager;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Room;
 import com.nicktoony.screeps.Spawn;
@@ -28,11 +25,13 @@ public class RoomController {
     private SourcesManager sourcesManager;
     private SpawnsManager spawnsManager;
     private EnergyManager energyManager;
+    private TaskManager tasksManager;
     private EconomyAdvisor economyAdvisor;
     private MilitaryAdvisor militaryAdvisor;
     private int alertStatus;
     private Map<String, Object> sourcesMemory;
     private Map<String, Object> energyMemory;
+    private Map<String, Object> tasksMemory;
     private int roomTotalStorage = 300;
 
     public RoomController(Room room) {
@@ -43,14 +42,17 @@ public class RoomController {
         if (this.room.memory.$get("created") == null) {
             this.room.memory.$put("sourcesMemory", JSCollections.$map());
             this.room.memory.$put("energyMemory", JSCollections.$map());
+            this.room.memory.$put("tasksMemory", JSCollections.$map());
 
             // Finally we're created
             this.room.memory.$put("created", true);
         }
         this.sourcesMemory = (Map<String, Object>) this.room.memory.$get("sourcesMemory");
         this.energyMemory = (Map<String, Object>) this.room.memory.$get("energyMemory");
+        this.tasksMemory = (Map<String, Object>) this.room.memory.$get("tasksMemory");
 
         // Managers
+        this.tasksManager = new TaskManager(this, tasksMemory);
         this.populationManager = new PopulationManager(this);
         this.sourcesManager = new SourcesManager(this);
         this.spawnsManager = new SpawnsManager(this);
@@ -114,6 +116,10 @@ public class RoomController {
         // Save source memory
         this.room.memory.$put("sourcesMemory", sourcesMemory);
         this.room.memory.$put("energyMemory", energyMemory);
+
+        // Tasks manager
+        tasksManager.save();
+        this.room.memory.$put("tasksMemory", tasksManager.getMemory());
     }
 
     public Room getRoom() {
@@ -156,5 +162,9 @@ public class RoomController {
             energyMemory.$put(id, JSCollections.$map());
         }
         return (Map<String, Object>) energyMemory.$get(id);
+    }
+
+    public TaskManager getTasksManager() {
+        return tasksManager;
     }
 }
