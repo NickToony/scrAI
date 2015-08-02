@@ -1,14 +1,10 @@
 package com.nicktoony.scrAI.World.Tasks;
 
-import com.nicktoony.helpers.Lodash;
-import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.Game;
-import org.stjs.javascript.Global;
-import org.stjs.javascript.Map;
 
 /**
  * Created by nick on 02/08/15.
@@ -23,16 +19,16 @@ public class TaskPickupEnergy extends Task {
     }
 
     @Override
-    public boolean canAct(CreepCollector creepCollector) {
+    public boolean canAct(CreepWorker creepWorker) {
         return energy != null
-                && (creepCollector.getCreep().carry.energy <= (creepCollector.getCarryCapacity()/2))
+                && (creepWorker.getCreep().carry.energy <= (creepWorker.getCarryCapacity()/2))
                 && energyAvailable > 0;
     }
 
     @Override
-    public boolean act(CreepCollector creepCollector) {
-        if (creepCollector.moveTo(energy.pos)) {
-            creepCollector.getCreep().pickup(energy);
+    public boolean act(CreepWorker creepWorker) {
+        if (creepWorker.moveTo(energy.pos)) {
+            creepWorker.getCreep().pickup(energy);
             return false;
         }
 

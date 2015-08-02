@@ -4,14 +4,8 @@ import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Creeps.CreepCollector;
-import com.nicktoony.scrAI.World.Creeps.CreepMiner;
-import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
+import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.screeps.Energy;
-import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.RoomPosition;
-import com.nicktoony.screeps.Source;
-import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 
 /**
@@ -35,9 +29,9 @@ public class EnergyWrapper extends MemoryWrapper {
 
     @Override
     public void create() {
-        Lodash.forIn(roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_COLLECTOR_ID), new LodashCallback1<CreepCollector>() {
+        Lodash.forIn(roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_WORKER_ID), new LodashCallback1<CreepWorker>() {
             @Override
-            public boolean invoke(CreepCollector creepCollector) {
+            public boolean invoke(CreepWorker creepWorker) {
 //                if (creepCollector.getTarget() == energy.id) {
 //                    claimed += creepCollector.getCarryCapacity();
 //                }
@@ -60,7 +54,7 @@ public class EnergyWrapper extends MemoryWrapper {
         return energy;
     }
 
-    public void claim(CreepCollector creepWrapper) {
+    public void claim(CreepWorker creepWrapper) {
         claimed += creepWrapper.getCarryCapacity();
     }
 }

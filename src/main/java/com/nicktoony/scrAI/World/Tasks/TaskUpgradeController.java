@@ -1,10 +1,9 @@
 package com.nicktoony.scrAI.World.Tasks;
 
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.screeps.Controller;
 import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.Spawn;
 
 /**
  * Created by nick on 02/08/15.
@@ -18,15 +17,15 @@ public class TaskUpgradeController extends Task {
     }
 
     @Override
-    public boolean canAct(CreepCollector creepCollector) {
+    public boolean canAct(CreepWorker creepWorker) {
         return controller != null
-                && (creepCollector.getCreep().carry.energy > 0);
+                && (creepWorker.getCreep().carry.energy > 0);
     }
 
     @Override
-    public boolean act(CreepCollector creepCollector) {
-        if (creepCollector.moveTo(controller.pos)) {
-            creepCollector.getCreep().upgradeController(controller);
+    public boolean act(CreepWorker creepWorker) {
+        if (creepWorker.moveTo(controller.pos)) {
+            creepWorker.getCreep().upgradeController(controller);
             return false;
         }
         return true;

@@ -4,14 +4,13 @@ import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.helpers.TemporaryVariables;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.EnergyWrapper;
 import com.nicktoony.scrAI.World.Tasks.TaskPickupEnergy;
 import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Source;
 import org.stjs.javascript.Array;
-import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 26/07/15.
@@ -49,7 +48,7 @@ public class EnergyManager {
         }, this);
     }
 
-    public Energy claimEnergy(CreepCollector creepCollector) {
+    public Energy claimEnergy(CreepWorker creepWorker) {
         if (availableEnergy.$length() <= 0) {
             return null;
         }
@@ -76,7 +75,7 @@ public class EnergyManager {
         }, this);
 
         if (TemporaryVariables.tempEnergyWrapper != null) {
-            TemporaryVariables.tempEnergyWrapper.claim(creepCollector);
+            TemporaryVariables.tempEnergyWrapper.claim(creepWorker);
 
             return TemporaryVariables.tempEnergyWrapper.getEnergy();
         } else {

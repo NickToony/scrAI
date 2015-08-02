@@ -1,12 +1,10 @@
 package com.nicktoony.scrAI.World.Tasks;
 
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
-import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.Spawn;
-import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 02/08/15.
@@ -21,16 +19,16 @@ public class TaskDepositSpawn extends Task {
     }
 
     @Override
-    public boolean canAct(CreepCollector creepCollector) {
+    public boolean canAct(CreepWorker creepWorker) {
         return spawn != null
                 && (storageAvailable > 0)
-                && (creepCollector.getCreep().carry.energy > 0);
+                && (creepWorker.getCreep().carry.energy > 0);
     }
 
     @Override
-    public boolean act(CreepCollector creepCollector) {
-        if (creepCollector.moveTo(spawn.pos)) {
-            creepCollector.getCreep().transferEnergy(spawn);
+    public boolean act(CreepWorker creepWorker) {
+        if (creepWorker.moveTo(spawn.pos)) {
+            creepWorker.getCreep().transferEnergy(spawn);
             return false;
         }
         return true;

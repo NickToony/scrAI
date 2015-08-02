@@ -1,11 +1,8 @@
 package com.nicktoony.scrAI.World.Tasks;
 
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
-import com.nicktoony.scrAI.World.MemoryWrapper;
-import com.nicktoony.screeps.Energy;
-import com.nicktoony.screeps.Game;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 
@@ -35,16 +32,16 @@ public abstract class Task {
 
     /**
      * Can this task be carried out with the creep selected
-     * @param creepCollector
+     * @param creepWorker
      * @return
      */
-    public abstract boolean canAct(CreepCollector creepCollector);
+    public abstract boolean canAct(CreepWorker creepWorker);
 
     /**
      * Act out this task with the current creep
-     * @param creepCollector
+     * @param creepWorker
      */
-    public abstract boolean act(CreepCollector creepCollector);
+    public abstract boolean act(CreepWorker creepWorker);
 
     /**
      * Save the task. If return false, this task should be removed from memory.

@@ -4,14 +4,13 @@ import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.scrAI.World.Tasks.Task;
 import com.nicktoony.screeps.Creep;
 import com.nicktoony.screeps.GlobalVariables;
 import org.stjs.javascript.Array;
-import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
 
@@ -57,17 +56,17 @@ public class PopulationManager {
     private CreepWrapper getCreepWrapper(String id, Creep creep) {
         if (id == Constants.CREEP_MINER_ID) {
             return new CreepMiner(roomController, creep);
-        } else if (id == Constants.CREEP_COLLECTOR_ID) {
-            CreepCollector creepCollector = new CreepCollector(roomController, creep);
+        } else if (id == Constants.CREEP_WORKER_ID) {
+            CreepWorker creepWorker = new CreepWorker(roomController, creep);
 
-            if (creepCollector.getTaskId() != null) {
-                Task task = roomController.getTasksManager().getTask(creepCollector.getTaskId());
+            if (creepWorker.getTaskId() != null) {
+                Task task = roomController.getTasksManager().getTask(creepWorker.getTaskId());
                 if (task != null) {
-                    task.assignCreep(creepCollector);
+                    task.assignCreep(creepWorker);
                 }
             }
 
-            return creepCollector;
+            return creepWorker;
         }
 
         return null;
