@@ -1,13 +1,11 @@
 package com.nicktoony.scrAI.Advisors;
 
-import com.nicktoony.helpers.Lodash;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
 import com.nicktoony.scrAI.World.SourceWrapper;
-import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 26/07/15.
@@ -27,9 +25,9 @@ public class EconomyAdvisor extends Advisor {
     @Override
     public CreepDefinition step() {
         if (this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length() >
-                this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_COLLECTOR_ID).$length()) {
+                this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_WORKER_ID).$length()) {
 
-            return CreepCollector.define(this.roomController);
+            return CreepWorker.define(this.roomController);
         }
 
         // If there isn't enough creep miners
