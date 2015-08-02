@@ -23,4 +23,6 @@ public abstract class Creep {
     public abstract int transferEnergy(Depositable target);
 
     public abstract void pickup(Energy energy);
+
+    public abstract void upgradeController(Controller controller);
 }

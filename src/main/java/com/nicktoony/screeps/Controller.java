@@ -5,4 +5,5 @@ package com.nicktoony.screeps;
  */
 public class Controller {
     public String id;
+    public RoomPosition pos;
 }
