@@ -27,4 +27,6 @@ public abstract class Creep {
     public abstract void upgradeController(Controller controller);
 
     public abstract void build(Buildable buildable);
+
+    public abstract void repair(Structure buildable);
 }

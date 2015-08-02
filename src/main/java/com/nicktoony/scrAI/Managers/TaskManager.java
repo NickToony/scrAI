@@ -40,6 +40,8 @@ public class TaskManager {
                     task = new TaskUpgradeController(roomController, associatedId, null);
                 } else if (taskType == "4") {
                     task = new TaskBuild(roomController, associatedId, null);
+                } else if (taskType == "5") {
+                    task = new TaskRepair(roomController, associatedId, null);
                 }
 
                 if (task != null) {
