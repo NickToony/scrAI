@@ -34,16 +34,8 @@ public class TaskBuild extends Task {
 
     @Override
     public boolean act(CreepWorker creepWorker) {
-        if (buildable == null) {
-            return false;
-        }
-
         if (creepWorker.moveTo(buildable.pos)) {
             creepWorker.getCreep().build(buildable);
-
-            if (creepWorker.getCreep().carry.energy == 0) {
-                return false;
-            }
         }
         return true;
     }

@@ -32,7 +32,6 @@ public class TaskUpgradeController extends Task {
     public boolean act(CreepWorker creepWorker) {
         if (creepWorker.moveTo(controller.pos)) {
             creepWorker.getCreep().upgradeController(controller);
-            return false;
         }
         return true;
     }
