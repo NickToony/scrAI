@@ -3,11 +3,18 @@ scrAI by NickToony
 
 About
 -------------
-**scrAI** is a Screeps AI written in Java. Through the use of ST-JS (http://st-js.github.io/) and some Maven magic, I can write my AI implementation in pure **Java**, compile it to **Javascript**, and push it to Screeps using **Grunt**.
+**scrAI** is a Screeps AI written in Java. Through the use of ST-JS (http://st-js.github.io/) and some Maven magic, I can write my AI implementation in pure **Java**, compile it to **Javascript**, concatenate into one large file, and push it to Screeps using **Grunt**.
+
+By using a strongly typed and class based language, this project sets out to develop a more complex and maintainable AI.
 
 Status
 ---------
-It can spawn miners. It cannot move the miners.
+ - TaskManager manages a rooms current tasks, prioritising them
+	- Intelligently assigns tasks to workers by predicting the future state of the task, preventing units swarming tasks. e.g. don't assign a deposit energy task if it's expected to be filled anyway
+ - EconomyAdvisor suggests units to create
+	 - Attempts to produce an idea balance of Workers to Miners
+ - Optimum Miner Logic
+	 - Will determine the optimum amount of miners per source, and create specialised creeps for the task
 
 This project is a work in progress. However, the Java->Javascript works if you're interested in that.
 
@@ -33,6 +40,8 @@ The following are provided by the Maven pom.xml file.
  - ST-JS Javascript Bridge
  - Google's maven-replacer-plugin
 	 - https://code.google.com/p/maven-replacer-plugin/
+ - YUI Compressor Maven plugin
+	- http://davidb.github.io/yuicompressor-maven-plugin/
 
 
 Setup
@@ -53,54 +62,24 @@ The compiled code is automatically uploaded to your Screeps account. I recommend
 
 **Tip**: You can add a new Build Configuration in Intellij for example, that runs the command line *prepare-package*. Add a "Before launch" parameter that runs "Make".
 
-The 3 steps performed by the Maven task are as follows:
+The 4 steps performed by the Maven task are as follows:
 
 1. Execute ST-JS with the Javascript bridge, compiling all Java classes to Javascript.
-2. Run the maven-replacer-plugin to modify the generated Javascript to be Screeps friendly. In particular, it will uncomment all requires.
-3. Run the grunt task to upload the correct files, without directories/packages. **Note:** this step also uploads the custom *stjs.js* found under */src/main/javascript*. This is a Screeps-friendly version of the script.
+2. Run the maven-replacer-plugin to modify the generated Javascript to be Screeps friendly. 
+3. Run the YUI-compressor to combine all the generated javascript files into one file. **Note:** this step also includes the custom *stjs.js* found under */src/main/javascript*. This is a Screeps-friendly version of the script.
+4. Run the grunt task to upload the correct files, without directories/packages.
 
 Modifiying
 -------
-**Module Importing**
+**Module Importing, Exporting and STJS**
 
-Screeps modules need to be imported before used. This is easy in Javascript, but the syntax in Java does not exist (and ST-JS cannot be told to add the required lines easily). Hence, I've added an ugly workaround: you can add the raw Javascript *requires* in the Class's defining comment.
+Since I changed the setup to instead combine all scripts into one single javascript file, you no longer need to import/export modules. This means the previous dirty hacks to implement the unsupported Javascript syntax in Java is not necessary.
 
-```java
-/**
- * Created by nick on 26/07/15.
- * var stjs = require("stjs");
- * var Constants = require('Constants');
- * var Advisor = require("Advisor");
- */
-public class MilitaryAdvisor extends Advisor {
-```
-The Maven configuration is setup to crawl through and uncomment these in the final build for you. It's a very specific format, so add it exactly as shown above.
+STJS still requires its methods though, so a custom STJS implementation is provided that will work when included inside the final script.
 
-**Module Exporting**
-
-In Screeps, when a module is imported, it needs to export whatever it's defining. In terms of this project, each module is a Java class. Hence, each class needs to export itself when imported, so that it can be used in other modules.
-
-In simple terms: **every class requires the following line**:
-```java
-static { module.exports = MilitaryAdvisor.class; }
-```
-where you replace *MilitaryAdvisor* with the name of the class.
-
-**ST-JS Module**
-
-ST-JS relies on a helper file to deal with a lot of the Java features missing in Javascript. This is vital for implementing the OO style, and includes features such as inheritance. I've modified the stjs.js file generated to be a more Screeps-friendly module, which should be deployed along with the project.
-
-Every class needs to import the STJS module, otherwise it will not be correctly defined. Refer to the Module Importing section, but the key point is that every class needs the following in its class documentation comment:
-
-```java
-/**
- * var stjs = require("stjs");
- * var Advisor = require("Advisor");
- */
-public class MilitaryAdvisor extends Advisor {
-```
-
-Also note that if a class extends another, it needs to import the class it's extending.
+The advantages of using a single script are:
+- Importing/Exporting not necessary, don't need to create dirty hacks in Java to implement them
+- Requiring a module in screeps could take an unpredictable amount of time. Performance is a lot better if you just have one script.
 
 **Lodash**
 
@@ -132,6 +111,10 @@ Stores all Sources in the room, and determines which are safe to gather from.
 **SpawnsManager**
 
 Stores all Spawns in the room, and determines which are available to spawn from.
+
+**TasksManager**
+
+The task manager tracks the memory of each Task currently in the room. Tasks are distributed to Worker creeps in an intelligent manner, which ensures the most important tasks are prioritised and carried out efficiently.
 
 **PopulationManager**
 
