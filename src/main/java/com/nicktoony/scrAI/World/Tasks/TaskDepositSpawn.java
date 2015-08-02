@@ -2,6 +2,7 @@ package com.nicktoony.scrAI.World.Tasks;
 
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.Spawn;
@@ -12,6 +13,7 @@ import org.stjs.javascript.Global;
  */
 public class TaskDepositSpawn extends Task {
     protected Spawn spawn;
+    private int storageAvailable = 0;
 
     public TaskDepositSpawn(RoomController roomController, String associatedId, Spawn spawn) {
         super(roomController, associatedId);
@@ -21,7 +23,7 @@ public class TaskDepositSpawn extends Task {
     @Override
     public boolean canAct(CreepCollector creepCollector) {
         return spawn != null
-                && (spawn.energy < spawn.energyCapacity)
+                && (storageAvailable > 0)
                 && (creepCollector.getCreep().carry.energy > 0);
     }
 
@@ -50,8 +52,17 @@ public class TaskDepositSpawn extends Task {
     @Override
     public void create() {
         spawn = (Spawn) Game.getObjectById(associatedId);
+        if (spawn != null) {
+            storageAvailable = spawn.energyCapacity - spawn.energy;
+        }
     }
 
+    @Override
+    public void assignCreep(CreepWrapper creepWrapper) {
+        super.assignCreep(creepWrapper);
+
+        storageAvailable -= creepWrapper.getCreep().carry.energy;
+    }
 
     @Override
     public String getType() {

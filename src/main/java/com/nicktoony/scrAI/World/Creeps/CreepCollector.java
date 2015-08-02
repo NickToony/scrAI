@@ -49,7 +49,6 @@ public class CreepCollector extends CreepWrapper {
                     if (possibleTask.canAct(myself)) {
                         task = possibleTask;
                         taskId = possibleTask.getAssociatedId();
-                        Global.console.log("DOING " + task.getType());
                         return false;
                     }
                     return true;

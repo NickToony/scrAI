@@ -1,7 +1,10 @@
 package com.nicktoony.scrAI.World.Tasks;
 
+import com.nicktoony.helpers.Lodash;
+import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.Game;
 import org.stjs.javascript.Global;
@@ -12,6 +15,7 @@ import org.stjs.javascript.Map;
  */
 public class TaskPickupEnergy extends Task {
     protected Energy energy;
+    private int energyAvailable = 0;
 
     public TaskPickupEnergy(RoomController roomController, String associatedId, Energy energy) {
         super(roomController, associatedId);
@@ -21,7 +25,8 @@ public class TaskPickupEnergy extends Task {
     @Override
     public boolean canAct(CreepCollector creepCollector) {
         return energy != null
-                && (creepCollector.getCreep().carry.energy <= (creepCollector.getCarryCapacity()/2));
+                && (creepCollector.getCreep().carry.energy <= (creepCollector.getCarryCapacity()/2))
+                && energyAvailable > 0;
     }
 
     @Override
@@ -50,8 +55,17 @@ public class TaskPickupEnergy extends Task {
     @Override
     public void create() {
         energy = (Energy) Game.getObjectById(associatedId);
+        if (energy != null) {
+            energyAvailable = energy.energy;
+        }
     }
 
+    @Override
+    public void assignCreep(CreepWrapper creepWrapper) {
+        super.assignCreep(creepWrapper);
+
+        energyAvailable -= (creepWrapper.getCreep().carryCapacity - creepWrapper.getCreep().carry.energy);
+    }
 
     @Override
     public String getType() {
@@ -60,6 +74,6 @@ public class TaskPickupEnergy extends Task {
 
     @Override
     public int getPriority() {
-        return energy.energy;
+        return energyAvailable;
     }
 }
