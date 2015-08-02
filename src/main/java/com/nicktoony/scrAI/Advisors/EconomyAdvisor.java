@@ -25,6 +25,8 @@ public class EconomyAdvisor extends Advisor {
     @Override
     public CreepDefinition step() {
 
+        roomController.getPathsManager().update();
+
         if (this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length() >
                 this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_WORKER_ID).$length()) {
 
@@ -41,9 +43,6 @@ public class EconomyAdvisor extends Advisor {
             // create a new miner
             return CreepMiner.define(this.roomController, workParts, sourceWrapper.getSource());
         }
-
-        roomController.getPathsManager().update();
-
 
         // Nothing we want..
         return null;

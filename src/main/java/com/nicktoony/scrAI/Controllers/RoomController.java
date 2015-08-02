@@ -8,6 +8,7 @@ import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Managers.*;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
+import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Room;
 import com.nicktoony.screeps.Spawn;
@@ -33,8 +34,7 @@ public class RoomController {
     private MilitaryAdvisor militaryAdvisor;
     private int alertStatus;
     private Map<String, Object> sourcesMemory;
-    private Map<String, Object> tasksMemory;
-    private Map<String, Object> pathsMemory;
+    private Map<String, Object> timersMemory;
     private int roomTotalStorage = 300;
 
     public RoomController(Room room) {
@@ -46,21 +46,21 @@ public class RoomController {
             this.room.memory.$put("sourcesMemory", JSCollections.$map());
             this.room.memory.$put("tasksMemory", JSCollections.$map());
             this.room.memory.$put("pathsMemory", JSCollections.$map());
+            this.room.memory.$put("timersMemory", JSCollections.$map());
 
             // Finally we're created
             this.room.memory.$put("created", true);
         }
         this.sourcesMemory = (Map<String, Object>) this.room.memory.$get("sourcesMemory");
-        this.tasksMemory = (Map<String, Object>) this.room.memory.$get("tasksMemory");
-        this.pathsMemory = (Map<String, Object>) this.room.memory.$get("pathsMemory");
+        this.timersMemory = (Map<String, Object>) this.room.memory.$get("timersMemory");
 
         // Managers
-        this.tasksManager = new TaskManager(this, tasksMemory);
+        this.tasksManager = new TaskManager(this, (Map<String, Object>) this.room.memory.$get("tasksMemory"));
         this.populationManager = new PopulationManager(this);
         this.sourcesManager = new SourcesManager(this);
         this.spawnsManager = new SpawnsManager(this);
         this.energyManager = new EnergyManager(this);
-        this.pathsManager = new PathsManager(this, pathsMemory);
+        this.pathsManager = new PathsManager(this, (Map<String, Object>) this.room.memory.$get("pathsMemory"));
 
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
@@ -119,6 +119,7 @@ public class RoomController {
 
         // Save source memory
         this.room.memory.$put("sourcesMemory", sourcesMemory);
+        this.room.memory.$put("timersMemory", timersMemory);
 
         // Tasks manager
         tasksManager.save();
@@ -167,5 +168,18 @@ public class RoomController {
 
     public PathsManager getPathsManager() {
         return pathsManager;
+    }
+
+    public int getTimer(String manager) {
+        Integer time = (Integer) timersMemory.$get(manager);
+        if (time == null) {
+            timersMemory.$put(manager, 0);
+            time = 0;
+        }
+        return time;
+    }
+
+    public void updateTimer(String manager) {
+        timersMemory.$put(manager, Game.time);
     }
 }

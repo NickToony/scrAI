@@ -15,18 +15,19 @@ import org.stjs.javascript.Map;
 /**
  * Created by nick on 02/08/15.
  */
-public class PathsManager {
+public class PathsManager extends ManagerTimer {
     private RoomController roomController;
     private Map<String, Object> memory;
     private Array<Array<Map<String, Object>>> paths;
-    private int lastUpdate = 0;
 
     public PathsManager(final RoomController roomController, Map<String, Object> memory) {
+        super(roomController, "PathsManager", Constants.PATH_CHECK_DELAY);
+
         this.roomController = roomController;
         this.memory = memory;
 
         // Initial delay.. let everything else figure stuff out first
-        if (lastUpdate + Constants.PATH_CHECK_DELAY > Game.time) {
+        if (!super.canRun()) {
             return;
         }
 
@@ -38,7 +39,6 @@ public class PathsManager {
 
         // Load from memory
         paths = (Array<Array<Map<String, Object>>>) memory.$get("paths");
-        lastUpdate = (Integer) memory.$get("lastUpdate");
     }
 
     private void init() {
@@ -59,15 +59,15 @@ public class PathsManager {
             }
         }, this);
         memory.$put("paths", paths);
-        memory.$put("lastUpdate", Game.time);
+        super.hasRun();
     }
 
     public void update() {
-        if (lastUpdate + Constants.PATH_CHECK_DELAY > Game.time) {
+        if (!super.canRun()) {
             return;
         }
 
-        memory.$put("lastUpdate", Game.time);
+        super.hasRun();
 
         Lodash.forIn(this.paths, new LodashCallback1<Array<Map<String, Object>>>() {
             @Override
