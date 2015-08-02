@@ -30,7 +30,7 @@ public class StructureManager extends ManagerTimer {
         Lodash.forIn(foundSites, new LodashCallback1<Structure>() {
             @Override
             public boolean invoke(Structure structure) {
-                if (roomController.getTasksManager().getMemory().$get(structure.id) == null) {
+                if (roomController.getTasksManager().getMemory().$get(structure.id) == null && structure.hits < structure.hitsMax) {
                     roomController.getTasksManager().addTask(new TaskRepair(roomController, structure.id, structure));
                 }
                 return true;

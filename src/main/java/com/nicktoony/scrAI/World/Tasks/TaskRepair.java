@@ -42,7 +42,7 @@ public class TaskRepair extends Task {
 
     @Override
     public boolean save() {
-        if (buildable == null) {
+        if (buildable == null || buildable.hits == buildable.hitsMax) {
             return false;
         }
         return super.save();
