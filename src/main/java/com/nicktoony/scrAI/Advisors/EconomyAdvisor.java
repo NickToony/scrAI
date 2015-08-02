@@ -2,6 +2,7 @@ package com.nicktoony.scrAI.Advisors;
 
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
+import com.nicktoony.scrAI.Managers.ManagerTimer;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
@@ -14,18 +15,18 @@ import com.nicktoony.scrAI.World.SourceWrapper;
  * var Advisor = require("Advisor");
  * var CreepMiner = require("CreepMiner");
  */
-public class EconomyAdvisor extends Advisor {
-    private int tier;
+public class EconomyAdvisor extends ManagerTimer {
 
     public EconomyAdvisor(RoomController roomController) {
-        super(roomController);
-        this.tier = Math.max(this.roomController.getSpawnsManager().getSpawns().$length(),1);
+        super(roomController, "EconomyAdvisor", Constants.DELAY_ECONOMY_DECISION);
     }
 
-    @Override
     public CreepDefinition step() {
 
-        roomController.getPathsManager().update();
+        if (!super.canRun()) {
+            return null;
+        }
+        super.hasRun();
 
         if (this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length() >
                 this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_WORKER_ID).$length()) {
@@ -43,6 +44,8 @@ public class EconomyAdvisor extends Advisor {
             // create a new miner
             return CreepMiner.define(this.roomController, workParts, sourceWrapper.getSource());
         }
+
+        roomController.getPathsManager().update();
 
         // Nothing we want..
         return null;

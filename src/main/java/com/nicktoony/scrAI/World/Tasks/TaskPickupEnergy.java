@@ -1,5 +1,6 @@
 package com.nicktoony.scrAI.World.Tasks;
 
+import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
@@ -20,9 +21,14 @@ public class TaskPickupEnergy extends Task {
 
     @Override
     public boolean canAct(CreepWorker creepWorker) {
-        return energy != null
-                && (creepWorker.getCreep().carry.energy <= (creepWorker.getCarryCapacity()/2))
-                && energyAvailable > 0;
+        return energy != null;
+    }
+
+    @Override
+    public boolean canAssign(CreepWorker creepWorker) {
+        return canAct(creepWorker)
+                && energyAvailable > 0
+                && (creepWorker.getCreep().carry.energy <= (creepWorker.getCarryCapacity()/2));
     }
 
     @Override
@@ -70,6 +76,6 @@ public class TaskPickupEnergy extends Task {
 
     @Override
     public int getPriority() {
-        return energyAvailable;
+        return Constants.PRIORITY_PICKUP + energyAvailable;
     }
 }

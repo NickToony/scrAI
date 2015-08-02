@@ -1,5 +1,6 @@
 package com.nicktoony.scrAI.World.Tasks;
 
+import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.screeps.Controller;
@@ -20,6 +21,11 @@ public class TaskUpgradeController extends Task {
     public boolean canAct(CreepWorker creepWorker) {
         return controller != null
                 && (creepWorker.getCreep().carry.energy > 0);
+    }
+
+    @Override
+    public boolean canAssign(CreepWorker creepWorker) {
+        return canAct(creepWorker);
     }
 
     @Override
@@ -57,6 +63,6 @@ public class TaskUpgradeController extends Task {
 
     @Override
     public int getPriority() {
-        return 0;
+        return Constants.PRIORITY_UPGRADE;
     }
 }

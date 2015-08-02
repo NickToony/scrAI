@@ -1,5 +1,6 @@
 package com.nicktoony.scrAI.World.Tasks;
 
+import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
@@ -21,8 +22,13 @@ public class TaskDepositSpawn extends Task {
     @Override
     public boolean canAct(CreepWorker creepWorker) {
         return spawn != null
-                && (storageAvailable > 0)
                 && (creepWorker.getCreep().carry.energy > 0);
+    }
+
+    @Override
+    public boolean canAssign(CreepWorker creepWorker) {
+        return canAct(creepWorker)
+                && (storageAvailable > 0);
     }
 
     @Override
@@ -69,6 +75,6 @@ public class TaskDepositSpawn extends Task {
 
     @Override
     public int getPriority() {
-        return 1;
+        return Constants.PRIORITY_DEPOSIT;
     }
 }

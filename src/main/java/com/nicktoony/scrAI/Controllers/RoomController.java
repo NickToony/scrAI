@@ -30,6 +30,7 @@ public class RoomController {
     private EnergyManager energyManager;
     private TaskManager tasksManager;
     private PathsManager pathsManager;
+    private ConstructionManager constructionManager;
     private EconomyAdvisor economyAdvisor;
     private MilitaryAdvisor militaryAdvisor;
     private int alertStatus;
@@ -61,6 +62,7 @@ public class RoomController {
         this.spawnsManager = new SpawnsManager(this);
         this.energyManager = new EnergyManager(this);
         this.pathsManager = new PathsManager(this, (Map<String, Object>) this.room.memory.$get("pathsMemory"));
+        this.constructionManager = new ConstructionManager(this);
 
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);

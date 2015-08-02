@@ -25,4 +25,6 @@ public abstract class Creep {
     public abstract void pickup(Energy energy);
 
     public abstract void upgradeController(Controller controller);
+
+    public abstract void build(Buildable buildable);
 }

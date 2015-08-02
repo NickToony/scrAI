@@ -44,7 +44,7 @@ public class CreepWorker extends CreepWrapper {
             Lodash.forIn(roomController.getTasksManager().getSortedTasks(), new LodashCallback1<Task>() {
                 @Override
                 public boolean invoke(Task possibleTask) {
-                    if (possibleTask.canAct(myself)) {
+                    if (possibleTask.canAssign(myself)) {
                         task = possibleTask;
                         taskId = possibleTask.getAssociatedId();
                         return false;
@@ -53,7 +53,7 @@ public class CreepWorker extends CreepWrapper {
                 }
             }, this);
         } else {
-            if (!task.act(this)) {
+            if (!task.canAct(this) || !task.act(this)) {
                 taskId = null;
                 task = null;
             }

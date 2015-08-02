@@ -5,7 +5,6 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.SourceWrapper;
-import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Spawn;
 import org.stjs.javascript.Array;
@@ -16,12 +15,11 @@ import org.stjs.javascript.Map;
  * Created by nick on 02/08/15.
  */
 public class PathsManager extends ManagerTimer {
-    private RoomController roomController;
     private Map<String, Object> memory;
     private Array<Array<Map<String, Object>>> paths;
 
     public PathsManager(final RoomController roomController, Map<String, Object> memory) {
-        super(roomController, "PathsManager", Constants.PATH_CHECK_DELAY);
+        super(roomController, "PathsManager", Constants.DELAY_PATH_SCAN);
 
         this.roomController = roomController;
         this.memory = memory;

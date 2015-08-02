@@ -37,6 +37,8 @@ public abstract class Task {
      */
     public abstract boolean canAct(CreepWorker creepWorker);
 
+    public abstract boolean canAssign(CreepWorker creepWorker);
+
     /**
      * Act out this task with the current creep
      * @param creepWorker

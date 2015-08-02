@@ -5,7 +5,8 @@ module.exports = function(grunt) {
         screeps: {
             options: {
                 email: '<your e-mail>',
-                password: '<your password>'
+                password: '<your password>',
+                branch: 'default'
             },
             dist: {
                 src: ['target/scrAI-deploy/main.js']

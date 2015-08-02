@@ -5,10 +5,7 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.helpers.LodashCallback2;
 import com.nicktoony.helpers.LodashSortCallback2;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Tasks.Task;
-import com.nicktoony.scrAI.World.Tasks.TaskDepositSpawn;
-import com.nicktoony.scrAI.World.Tasks.TaskPickupEnergy;
-import com.nicktoony.scrAI.World.Tasks.TaskUpgradeController;
+import com.nicktoony.scrAI.World.Tasks.*;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
@@ -41,6 +38,8 @@ public class TaskManager {
                     task = new TaskDepositSpawn(roomController, associatedId, null);
                 } else if (taskType == "3") {
                     task = new TaskUpgradeController(roomController, associatedId, null);
+                } else if (taskType == "4") {
+                    task = new TaskBuild(roomController, associatedId, null);
                 }
 
                 if (task != null) {
