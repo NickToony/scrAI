@@ -7,6 +7,7 @@ import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepCollector;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
+import com.nicktoony.scrAI.World.Tasks.Task;
 import com.nicktoony.screeps.Creep;
 import com.nicktoony.screeps.GlobalVariables;
 import org.stjs.javascript.Array;
@@ -57,7 +58,16 @@ public class PopulationManager {
         if (id == Constants.CREEP_MINER_ID) {
             return new CreepMiner(roomController, creep);
         } else if (id == Constants.CREEP_COLLECTOR_ID) {
-            return new CreepCollector(roomController, creep);
+            CreepCollector creepCollector = new CreepCollector(roomController, creep);
+
+            if (creepCollector.getTaskId() != null) {
+                Task task = roomController.getTasksManager().getTask(creepCollector.getTaskId());
+                if (task != null) {
+                    task.assignCreep(creepCollector);
+                }
+            }
+
+            return creepCollector;
         }
 
         return null;

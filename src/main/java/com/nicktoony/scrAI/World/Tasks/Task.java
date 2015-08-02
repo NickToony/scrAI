@@ -2,9 +2,11 @@ package com.nicktoony.scrAI.World.Tasks;
 
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepCollector;
+import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.scrAI.World.MemoryWrapper;
 import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.Game;
+import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 
 /**
@@ -15,10 +17,16 @@ public abstract class Task {
     protected String associatedId;
     protected RoomController roomController;
     protected Map<String, Object> memory;
+    protected Array<CreepWrapper> creeps;
 
     public Task(RoomController roomController, String associatedId) {
         this.roomController = roomController;
         this.associatedId = associatedId;
+        this.creeps = new Array<CreepWrapper>();
+    }
+
+    public void assignCreep(CreepWrapper creepWrapper) {
+        this.creeps.push(creepWrapper);
     }
 
     public void setMemory(Map<String, Object> memory) {
@@ -36,7 +44,7 @@ public abstract class Task {
      * Act out this task with the current creep
      * @param creepCollector
      */
-    public abstract void act(CreepCollector creepCollector);
+    public abstract boolean act(CreepCollector creepCollector);
 
     /**
      * Save the task. If return false, this task should be removed from memory.
@@ -72,5 +80,7 @@ public abstract class Task {
     }
 
     public abstract String getType();
+
+    public abstract int getPriority();
 }
 

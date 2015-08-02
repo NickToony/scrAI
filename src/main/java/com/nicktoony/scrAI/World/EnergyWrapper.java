@@ -38,9 +38,9 @@ public class EnergyWrapper extends MemoryWrapper {
         Lodash.forIn(roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_COLLECTOR_ID), new LodashCallback1<CreepCollector>() {
             @Override
             public boolean invoke(CreepCollector creepCollector) {
-                if (creepCollector.getTarget() == energy.id) {
-                    claimed += creepCollector.getCarryCapacity();
-                }
+//                if (creepCollector.getTarget() == energy.id) {
+//                    claimed += creepCollector.getCarryCapacity();
+//                }
                 return true;
             }
         }, this);

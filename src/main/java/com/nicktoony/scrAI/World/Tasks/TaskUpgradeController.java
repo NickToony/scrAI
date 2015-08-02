@@ -2,33 +2,31 @@ package com.nicktoony.scrAI.World.Tasks;
 
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepCollector;
-import com.nicktoony.screeps.Energy;
+import com.nicktoony.screeps.Controller;
 import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.Spawn;
-import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 02/08/15.
  */
-public class TaskDepositSpawn extends Task {
-    protected Spawn spawn;
+public class TaskUpgradeController extends Task {
+    protected Controller controller;
 
-    public TaskDepositSpawn(RoomController roomController, String associatedId, Spawn spawn) {
+    public TaskUpgradeController(RoomController roomController, String associatedId, Controller controller) {
         super(roomController, associatedId);
-        this.spawn = spawn;
+        this.controller = controller;
     }
 
     @Override
     public boolean canAct(CreepCollector creepCollector) {
-        return spawn != null
-                && (spawn.energy < spawn.energyCapacity)
+        return controller != null
                 && (creepCollector.getCreep().carry.energy > 0);
     }
 
     @Override
     public boolean act(CreepCollector creepCollector) {
-        if (creepCollector.moveTo(spawn.pos)) {
-            creepCollector.getCreep().transferEnergy(spawn);
+        if (creepCollector.moveTo(controller.pos)) {
+            creepCollector.getCreep().upgradeController(controller);
             return false;
         }
         return true;
@@ -36,7 +34,7 @@ public class TaskDepositSpawn extends Task {
 
     @Override
     public boolean save() {
-        if (spawn == null) {
+        if (controller == null) {
             return false;
         }
         return super.save();
@@ -49,17 +47,17 @@ public class TaskDepositSpawn extends Task {
 
     @Override
     public void create() {
-        spawn = (Spawn) Game.getObjectById(associatedId);
+        controller = (Controller) Game.getObjectById(associatedId);
     }
 
 
     @Override
     public String getType() {
-        return "2";
+        return "3";
     }
 
     @Override
     public int getPriority() {
-        return 1;
+        return 0;
     }
 }

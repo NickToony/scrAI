@@ -25,10 +25,13 @@ public class TaskPickupEnergy extends Task {
     }
 
     @Override
-    public void act(CreepCollector creepCollector) {
+    public boolean act(CreepCollector creepCollector) {
         if (creepCollector.moveTo(energy.pos)) {
             creepCollector.getCreep().pickup(energy);
+            return false;
         }
+
+        return true;
     }
 
     @Override
@@ -53,5 +56,10 @@ public class TaskPickupEnergy extends Task {
     @Override
     public String getType() {
         return "1";
+    }
+
+    @Override
+    public int getPriority() {
+        return energy.energy;
     }
 }
