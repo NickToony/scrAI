@@ -15,6 +15,8 @@ import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
 
+import java.nio.file.PathMatcher;
+
 /**
  * Created by nick on 26/07/15.
  */
@@ -26,12 +28,13 @@ public class RoomController {
     private SpawnsManager spawnsManager;
     private EnergyManager energyManager;
     private TaskManager tasksManager;
+    private PathsManager pathsManager;
     private EconomyAdvisor economyAdvisor;
     private MilitaryAdvisor militaryAdvisor;
     private int alertStatus;
     private Map<String, Object> sourcesMemory;
-    private Map<String, Object> energyMemory;
     private Map<String, Object> tasksMemory;
+    private Map<String, Object> pathsMemory;
     private int roomTotalStorage = 300;
 
     public RoomController(Room room) {
@@ -41,15 +44,15 @@ public class RoomController {
         // Check if memory is defined
         if (this.room.memory.$get("created") == null) {
             this.room.memory.$put("sourcesMemory", JSCollections.$map());
-            this.room.memory.$put("energyMemory", JSCollections.$map());
             this.room.memory.$put("tasksMemory", JSCollections.$map());
+            this.room.memory.$put("pathsMemory", JSCollections.$map());
 
             // Finally we're created
             this.room.memory.$put("created", true);
         }
         this.sourcesMemory = (Map<String, Object>) this.room.memory.$get("sourcesMemory");
-        this.energyMemory = (Map<String, Object>) this.room.memory.$get("energyMemory");
         this.tasksMemory = (Map<String, Object>) this.room.memory.$get("tasksMemory");
+        this.pathsMemory = (Map<String, Object>) this.room.memory.$get("pathsMemory");
 
         // Managers
         this.tasksManager = new TaskManager(this, tasksMemory);
@@ -57,6 +60,7 @@ public class RoomController {
         this.sourcesManager = new SourcesManager(this);
         this.spawnsManager = new SpawnsManager(this);
         this.energyManager = new EnergyManager(this);
+        this.pathsManager = new PathsManager(this, pathsMemory);
 
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
@@ -115,11 +119,11 @@ public class RoomController {
 
         // Save source memory
         this.room.memory.$put("sourcesMemory", sourcesMemory);
-        this.room.memory.$put("energyMemory", energyMemory);
 
         // Tasks manager
         tasksManager.save();
         this.room.memory.$put("tasksMemory", tasksManager.getMemory());
+        this.room.memory.$put("pathsMemory", pathsManager.getMemory());
     }
 
     public Room getRoom() {
@@ -157,14 +161,11 @@ public class RoomController {
         return roomTotalStorage - Constants.OFFSET_ROOM_STORAGE;
     }
 
-    public Map<String, Object> getEnergyMemory(String id) {
-        if (energyMemory.$get(id) == null) {
-            energyMemory.$put(id, JSCollections.$map());
-        }
-        return (Map<String, Object>) energyMemory.$get(id);
-    }
-
     public TaskManager getTasksManager() {
         return tasksManager;
+    }
+
+    public PathsManager getPathsManager() {
+        return pathsManager;
     }
 }

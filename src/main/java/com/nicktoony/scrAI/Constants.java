@@ -18,6 +18,7 @@ public class Constants {
     public static int ALERT_STATUS_NONE = 5; // 0% military, 100% economy
 
     public static int OFFSET_ROOM_STORAGE = 100; // useful to stop the AI spending too much early on
+    public static int PATH_CHECK_DELAY = 100; // how many ticks between checking paths are okay
 
     // Creep ids
     public static String CREEP_MINER_ID = "1";

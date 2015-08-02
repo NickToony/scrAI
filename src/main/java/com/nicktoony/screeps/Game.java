@@ -7,6 +7,7 @@ import org.stjs.javascript.Array;
  */
 public class Game {
     public static Array<Room> rooms;
+    public static int time;
 
     public static int getUsedCpu() {
         return 0;

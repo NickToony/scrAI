@@ -18,4 +18,11 @@ public class GlobalVariables {
     public static String MOVE;
 
     public static int OK;
+
+    public static String STRUCTURE_EXTENSION;
+    public static String STRUCTURE_RAMPART;
+    public static String STRUCTURE_ROAD;
+    public static String STRUCTURE_SPAWN;
+    public static String STRUCTURE_WALL;
+    public static String STRUCTURE_LINK;
 }
