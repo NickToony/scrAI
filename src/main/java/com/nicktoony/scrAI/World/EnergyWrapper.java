@@ -10,6 +10,8 @@ import org.stjs.javascript.Map;
 
 /**
  * Created by nick on 29/07/15.
+ *
+ * @deprecated
  */
 public class EnergyWrapper extends MemoryWrapper {
     private RoomController roomController;
@@ -24,20 +26,12 @@ public class EnergyWrapper extends MemoryWrapper {
 
     @Override
     public void init() {
-        ;
+
     }
 
     @Override
     public void create() {
-        Lodash.forIn(roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_WORKER_ID), new LodashCallback1<CreepWorker>() {
-            @Override
-            public boolean invoke(CreepWorker creepWorker) {
-//                if (creepCollector.getTarget() == energy.id) {
-//                    claimed += creepCollector.getCarryCapacity();
-//                }
-                return true;
-            }
-        }, this);
+
     }
 
     @Override
