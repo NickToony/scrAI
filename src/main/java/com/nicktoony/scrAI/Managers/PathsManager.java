@@ -8,6 +8,7 @@ import com.nicktoony.scrAI.World.SourceWrapper;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Spawn;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
 
@@ -34,9 +35,6 @@ public class PathsManager extends ManagerTimer {
             init();
             memory.$put("init", true);
         }
-
-        // Load from memory
-        paths = (Array<Array<Map<String, Object>>>) memory.$get("paths");
     }
 
     private void init() {
@@ -66,6 +64,9 @@ public class PathsManager extends ManagerTimer {
         }
 
         super.hasRun();
+
+        // Load from memory
+        this.paths = (Array<Array<Map<String, Object>>>) this.memory.$get("paths");
 
         Lodash.forIn(this.paths, new LodashCallback1<Array<Map<String, Object>>>() {
             @Override
