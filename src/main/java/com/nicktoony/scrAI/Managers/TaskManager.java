@@ -35,7 +35,7 @@ public class TaskManager {
                 if (taskType == "1") {
                     task =  new TaskPickupEnergy(roomController, associatedId, null);
                 } else if (taskType == "2") {
-                    task = new TaskDepositSpawn(roomController, associatedId, null);
+                    task = new TaskDeposit(roomController, associatedId, null);
                 } else if (taskType == "3") {
                     task = new TaskUpgradeController(roomController, associatedId, null);
                 } else if (taskType == "4") {

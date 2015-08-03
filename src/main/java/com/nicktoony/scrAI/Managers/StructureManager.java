@@ -5,8 +5,10 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.TaskBuild;
+import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
 import com.nicktoony.scrAI.World.Tasks.TaskRepair;
 import com.nicktoony.screeps.ConstructionSite;
+import com.nicktoony.screeps.Depositable;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Structure;
 import org.stjs.javascript.Array;
@@ -32,6 +34,19 @@ public class StructureManager extends ManagerTimer {
             public boolean invoke(Structure structure) {
                 if (roomController.getTasksManager().getMemory().$get(structure.id) == null && structure.hits < structure.hitsMax) {
                     roomController.getTasksManager().addTask(new TaskRepair(roomController, structure.id, structure));
+                }
+                return true;
+            }
+        }, this);
+
+        Array<Structure> depositables = (Array<Structure>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_STRUCTURES, null);
+        Lodash.forIn(depositables, new LodashCallback1<Structure>() {
+            @Override
+            public boolean invoke(Structure depositable) {
+                if (depositable.structureType == GlobalVariables.STRUCTURE_EXTENSION) {
+                    if (roomController.getTasksManager().getMemory().$get(depositable.id) == null) {
+                        roomController.getTasksManager().addTask(new TaskDeposit(roomController, depositable.id, depositable));
+                    }
                 }
                 return true;
             }

@@ -24,6 +24,7 @@ public class Constants {
     public static int DELAY_CONSTRUCTION_MANAGER = 50;
     public static int DELAY_STRUCTURE_MANAGER = 100;
     public static int DELAY_POPULATION_MANAGER = 150;
+    public static int DELAY_SPAWN_MANAGER = 100;
 
     public static int PRIORITY_BUILD = 10;
     public static int PRIORITY_UPGRADE = 0;

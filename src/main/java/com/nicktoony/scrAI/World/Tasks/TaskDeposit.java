@@ -4,17 +4,18 @@ import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
+import com.nicktoony.screeps.Depositable;
 import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.Spawn;
 
 /**
  * Created by nick on 02/08/15.
  */
-public class TaskDepositSpawn extends Task {
-    protected Spawn spawn;
+public class TaskDeposit extends Task {
+    protected Depositable spawn;
     private int storageAvailable = 0;
 
-    public TaskDepositSpawn(RoomController roomController, String associatedId, Spawn spawn) {
+    public TaskDeposit(RoomController roomController, String associatedId, Depositable spawn) {
         super(roomController, associatedId);
         this.spawn = spawn;
     }
@@ -55,7 +56,7 @@ public class TaskDepositSpawn extends Task {
 
     @Override
     public void create() {
-        spawn = (Spawn) Game.getObjectById(associatedId);
+        spawn = (Depositable) Game.getObjectById(associatedId);
         if (spawn != null) {
             storageAvailable = spawn.energyCapacity - spawn.energy;
         }
