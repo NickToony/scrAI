@@ -7,6 +7,7 @@ import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
 import com.nicktoony.scrAI.World.SourceWrapper;
+import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 26/07/15.
@@ -28,7 +29,9 @@ public class EconomyAdvisor extends ManagerTimer {
         }
         super.hasRun();
 
-        if (this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length() >
+        int totalWorkers = Math.max((int) Math.ceil(this.roomController.getTasksManager().getTaskCount() / 2f),
+                this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length());
+        if (totalWorkers >
                 this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_WORKER_ID).$length()) {
 
             return CreepWorker.define(this.roomController);

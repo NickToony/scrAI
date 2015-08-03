@@ -19,6 +19,7 @@ public class TaskManager {
     private RoomController roomController;
     private Map<String, Object> memory;
     private Array<Task> sortedTasks;
+    private int taskCount = 0;
 
     public TaskManager(final RoomController roomController, Map<String, Object> memory) {
         this.roomController = roomController;
@@ -49,6 +50,8 @@ public class TaskManager {
                     tasks.$put(associatedId, task);
 
                     task.prepare();
+
+                    taskCount ++;
                 } else {
                     Global.console.log("TaskManager -> Constructor -> You forgot to setup the task creation");
                 }
@@ -106,5 +109,9 @@ public class TaskManager {
         }
 
         return sortedTasks;
+    }
+
+    public int getTaskCount() {
+        return taskCount;
     }
 }
