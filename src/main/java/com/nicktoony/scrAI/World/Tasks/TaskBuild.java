@@ -58,7 +58,7 @@ public class TaskBuild extends Task {
     public void create() {
         buildable = (ConstructionSite) Game.getObjectById(associatedId);
         if (buildable != null) {
-            progress = (float) buildable.progress / buildable.progressTotal;
+            progress = Math.max(0.25f, (float) buildable.progress / buildable.progressTotal);
         }
     }
 
