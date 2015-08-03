@@ -6,13 +6,14 @@ import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.screeps.ConstructionSite;
 import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.Structure;
+import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 02/08/15.
  */
 public class TaskRepair extends Task {
     protected Structure buildable;
-    private int progress = 0;
+    private float progress = 0;
 
     public TaskRepair(RoomController roomController, String associatedId, Structure buildable) {
         super(roomController, associatedId);
@@ -57,7 +58,7 @@ public class TaskRepair extends Task {
     public void create() {
         buildable = (Structure) Game.getObjectById(associatedId);
         if (buildable!=null) {
-            progress = buildable.hits / buildable.hitsMax;
+            progress = (float) 1 - (buildable.hits / buildable.hitsMax);
         }
     }
 
@@ -69,6 +70,6 @@ public class TaskRepair extends Task {
 
     @Override
     public int getPriority() {
-        return Constants.PRIORITY_REPAIR * progress;
+        return Math.round(Constants.PRIORITY_REPAIR * progress);
     }
 }

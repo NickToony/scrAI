@@ -7,13 +7,14 @@ import com.nicktoony.screeps.Buildable;
 import com.nicktoony.screeps.ConstructionSite;
 import com.nicktoony.screeps.Controller;
 import com.nicktoony.screeps.Game;
+import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 02/08/15.
  */
 public class TaskBuild extends Task {
     protected ConstructionSite buildable;
-    private int progress = 0;
+    private float progress = 0;
 
     public TaskBuild(RoomController roomController, String associatedId, ConstructionSite buildable) {
         super(roomController, associatedId);
@@ -56,8 +57,8 @@ public class TaskBuild extends Task {
     @Override
     public void create() {
         buildable = (ConstructionSite) Game.getObjectById(associatedId);
-        if (buildable!=null) {
-            progress = buildable.progress / buildable.progressTotal;
+        if (buildable != null) {
+            progress = (float) buildable.progress / buildable.progressTotal;
         }
     }
 
@@ -69,6 +70,6 @@ public class TaskBuild extends Task {
 
     @Override
     public int getPriority() {
-        return Constants.PRIORITY_BUILD * progress;
+        return Math.round(Constants.PRIORITY_BUILD * progress);
     }
 }
