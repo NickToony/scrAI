@@ -203,6 +203,6 @@ public class RoomController {
     }
 
     public void updateTimer(String manager) {
-        timersMemory.$put(manager, Game.time);
+        timersMemory.$put(manager, Game.time + (Math.random() * Constants.DELAY_RANDOM));
     }
 }

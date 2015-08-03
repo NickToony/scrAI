@@ -18,6 +18,7 @@ public class Constants {
     public static int ALERT_STATUS_NONE = 5; // 0% military, 100% economy
 
     public static int OFFSET_ROOM_STORAGE = 100; // useful to stop the AI spending too much early on
+    public static int DELAY_RANDOM = 20;
     public static int DELAY_PATH_SCAN = 100; // how many ticks between checking paths are okay
     public static int DELAY_ENERGY_SCAN = 20;
     public static int DELAY_ECONOMY_DECISION = 10;
