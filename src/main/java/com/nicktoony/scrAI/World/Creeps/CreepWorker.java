@@ -97,4 +97,9 @@ public class CreepWorker extends CreepWrapper {
     public String getTaskId() {
         return taskId;
     }
+
+    @Override
+    public Creep getCreep() {
+        return super.getCreep();
+    }
 }

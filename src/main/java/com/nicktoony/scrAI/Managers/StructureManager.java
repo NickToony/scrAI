@@ -35,19 +35,13 @@ public class StructureManager extends ManagerTimer {
                 if (roomController.getTasksManager().getMemory().$get(structure.id) == null && structure.hits < structure.hitsMax) {
                     roomController.getTasksManager().addTask(new TaskRepair(roomController, structure.id, structure));
                 }
-                return true;
-            }
-        }, this);
 
-        Array<Structure> depositables = (Array<Structure>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_STRUCTURES, null);
-        Lodash.forIn(depositables, new LodashCallback1<Structure>() {
-            @Override
-            public boolean invoke(Structure depositable) {
-                if (depositable.structureType == GlobalVariables.STRUCTURE_EXTENSION) {
-                    if (roomController.getTasksManager().getMemory().$get(depositable.id) == null) {
-                        roomController.getTasksManager().addTask(new TaskDeposit(roomController, depositable.id, depositable));
+                if (structure.structureType == GlobalVariables.STRUCTURE_EXTENSION) {
+                    if (roomController.getTasksManager().getMemory().$get(structure.id) == null) {
+                        roomController.getTasksManager().addTask(new TaskDeposit(roomController, structure.id, structure));
                     }
                 }
+
                 return true;
             }
         }, this);
