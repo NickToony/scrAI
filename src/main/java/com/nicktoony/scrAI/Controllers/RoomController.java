@@ -37,7 +37,7 @@ public class RoomController {
     private int alertStatus;
     private Map<String, Object> sourcesMemory;
     private Map<String, Object> timersMemory;
-    private int roomTotalStorage = 300;
+    private int roomTotalStorage = 0;
 
     public RoomController(Room room) {
         this.room = room;
@@ -56,6 +56,8 @@ public class RoomController {
         this.sourcesMemory = (Map<String, Object>) this.room.memory.$get("sourcesMemory");
         this.timersMemory = (Map<String, Object>) this.room.memory.$get("timersMemory");
 
+        this.roomTotalStorage = (Integer) getMemoryOrDefault("roomTotalStorage", 300);
+
         // Managers
         this.tasksManager = new TaskManager(this, (Map<String, Object>) this.room.memory.$get("tasksMemory"));
         this.populationManager = new PopulationManager(this);
@@ -69,6 +71,23 @@ public class RoomController {
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
         this.militaryAdvisor = new MilitaryAdvisor(this);
+    }
+
+    private Object getMemoryOrDefault(String key, Object value) {
+        Object check = this.room.memory.$get(key);
+        if (check == null) {
+            check = value;
+        }
+        return check;
+    }
+
+    private void putMemory(String key, Object value) {
+        this.room.memory.$put(key, value);
+    }
+
+    public void setRoomTotalStorage(int value) {
+        this.roomTotalStorage = value;
+        putMemory("roomTotalStorage", value);
     }
 
     public void step() {

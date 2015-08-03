@@ -17,6 +17,8 @@ import org.stjs.javascript.Array;
  * Created by nick on 26/07/15.
  */
 public class StructureManager extends ManagerTimer {
+    private int totalStorageCalculation = 0;
+
     public StructureManager(final RoomController roomController) {
         super(roomController, "StructureManager", Constants.DELAY_STRUCTURE_MANAGER);
 
@@ -40,10 +42,16 @@ public class StructureManager extends ManagerTimer {
                     if (roomController.getTasksManager().getMemory().$get(structure.id) == null) {
                         roomController.getTasksManager().addTask(new TaskDeposit(roomController, structure.id, structure));
                     }
+
+                    totalStorageCalculation += structure.energyCapacity;
+                } else if (structure.structureType == GlobalVariables.STRUCTURE_SPAWN) {
+                    totalStorageCalculation += structure.energyCapacity;
                 }
 
                 return true;
             }
         }, this);
+
+        roomController.setRoomTotalStorage(totalStorageCalculation);
     }
 }
