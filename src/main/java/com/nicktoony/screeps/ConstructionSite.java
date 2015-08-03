@@ -6,5 +6,6 @@ package com.nicktoony.screeps;
 public class ConstructionSite implements Buildable {
     public String id;
     public int progress;
+    public int progressTotal;
     public RoomPosition pos;
 }

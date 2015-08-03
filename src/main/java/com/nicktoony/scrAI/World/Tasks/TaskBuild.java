@@ -57,7 +57,7 @@ public class TaskBuild extends Task {
     public void create() {
         buildable = (ConstructionSite) Game.getObjectById(associatedId);
         if (buildable!=null) {
-            progress = buildable.progress;
+            progress = buildable.progress / buildable.progressTotal;
         }
     }
 
@@ -69,6 +69,6 @@ public class TaskBuild extends Task {
 
     @Override
     public int getPriority() {
-        return Constants.PRIORITY_BUILD + progress;
+        return Constants.PRIORITY_BUILD * progress;
     }
 }

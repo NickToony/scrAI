@@ -27,10 +27,10 @@ public class Constants {
     public static int DELAY_POPULATION_MANAGER = 150;
     public static int DELAY_SPAWN_MANAGER = 100;
 
-    public static int PRIORITY_BUILD = 10;
+    public static int PRIORITY_BUILD = 25;
     public static int PRIORITY_UPGRADE = 0;
     public static int PRIORITY_PICKUP = 100;
-    public static int PRIORITY_DEPOSIT = 15;
+    public static int PRIORITY_DEPOSIT = 25;
     public static int PRIORITY_REPAIR = 50;
 
     // Creep ids
