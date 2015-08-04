@@ -9,7 +9,7 @@ module.exports = function(grunt) {
                 branch: 'default'
             },
             dist: {
-                src: ['target/scrAI-deploy/main.js']
+                src: ['target/scrAI-deploy/scrAI-deploy/main.js']
             }
         }
     });

@@ -25,6 +25,7 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.st-js</groupId>
                 <artifactId>maven-plugin</artifactId>
@@ -38,6 +39,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>com.google.code.maven-replacer-plugin</groupId>
                 <artifactId>maven-replacer-plugin</artifactId>
@@ -70,6 +72,7 @@
                     </replacements>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
@@ -99,6 +102,31 @@
                     <failOnWarning>true</failOnWarning>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>com.samaxes.maven</groupId>
+                <artifactId>minify-maven-plugin</artifactId>
+                <version>1.7.4</version>
+                <executions>
+                    <execution>
+                        <id>default-minify</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <jsSourceFiles>
+                                <jsSourceFile>main.js</jsSourceFile>
+                            </jsSourceFiles>
+                            <jsSourceDir>${project.build.finalName}</jsSourceDir>
+                            <webappSourceDir>${project.build.directory}</webappSourceDir>
+                            <jsFinalFile>main.js</jsFinalFile>
+                            <nosuffix>true</nosuffix>
+                        </configuration>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
