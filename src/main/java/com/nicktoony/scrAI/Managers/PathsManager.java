@@ -53,8 +53,6 @@ public class PathsManager extends ManagerTimer {
 
         super.hasRun();
 
-        Global.console.log("RUNNING PATH MANAGER");
-
         // Load from memory
         this.paths = (Map<String, Array<Map<String, Object>>>) this.memory.$get("paths");
         this.baseStructure = null;
@@ -70,12 +68,9 @@ public class PathsManager extends ManagerTimer {
                 // If it exists
                 if (structure != null) {
 
-                    Global.console.log("RUNNING PATH MANAGER: STRUCTURE");
-
                     // Do we have a base structure?
                     if (baseStructure == null) {
                         // Use as base structure, don't calculate path
-                        Global.console.log("RUNNING PATH MANAGER: BASESTRUCTRE");
                         baseStructure = structure;
                         return true;
                     }
@@ -86,13 +81,12 @@ public class PathsManager extends ManagerTimer {
                     // No path? Generate one
                     if (path == null) {
 
-                        Global.console.log("RUNNING PATH MANAGER: MADEPATH");
-
                         // Find the path
-                        paths.$put(structureId, roomController.getRoom().findPath(baseStructure.pos, structure.pos, JSCollections.$map(
-                        "ignoreCreeps", true,
-                        "ignoreDestructibleStructures", true
-                        )));
+                        Map<String, Object> parameters = JSCollections.$map();
+                        parameters.$put("ignoreCreeps", true);
+                        parameters.$put("ignoreDestructibleStructures", true);
+                        parameters.$put("heuristicWeight", 100);
+                        paths.$put(structureId, roomController.getRoom().findPath(baseStructure.pos, structure.pos, parameters));
 
                         // Don't do anymore paths, it's a lot of CPU
                         return false;

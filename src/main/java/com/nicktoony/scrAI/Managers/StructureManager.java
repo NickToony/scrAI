@@ -33,47 +33,63 @@ public class StructureManager extends ManagerTimer {
         }
         super.hasRun();
 
-        // Fetch ALL energy
+        // Fetch ALL structures
         Array<Structure> foundSites = (Array<Structure>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_STRUCTURES,
                 null);
+        // An array of structures to road to
         roadableStructureIds = new Array<String>();
 
-        Lodash.forIn(foundSites, new LodashCallback1<Structure>() {
-            @Override
-            public boolean invoke(Structure structure) {
-                if (roomController.getTasksManager().getMemory().$get(structure.id) == null && structure.hits < structure.hitsMax) {
-                    roomController.getTasksManager().addTask(new TaskRepair(roomController, structure.id, structure));
-                }
-
-                if (structure.structureType == GlobalVariables.STRUCTURE_EXTENSION) {
-                    if (roomController.getTasksManager().getMemory().$get(structure.id) == null) {
-                        roomController.getTasksManager().addTask(new TaskDeposit(roomController, structure.id, structure));
-                    }
-
-                    totalStorageCalculation += structure.energyCapacity;
-                    roadableStructureIds.push(structure.id);
-                } else if (structure.structureType == GlobalVariables.STRUCTURE_SPAWN) {
-                    totalStorageCalculation += structure.energyCapacity;
-                    roadableStructureIds.push(structure.id);
-                }
-
-                return true;
-            }
-        }, this);
-
-
-        roomController.setRoomTotalStorage(totalStorageCalculation);
+        // If controller exists
         if (roomController.getRoom().controller != null) {
+            // Road to the controller
             roadableStructureIds.push(roomController.getRoom().controller.id);
         }
+        // For all sources
         Lodash.forIn(roomController.getSourcesManager().getSafeSources(), new LodashCallback1<SourceWrapper>() {
             @Override
             public boolean invoke(SourceWrapper variable) {
+                // Road to the sources
                 roadableStructureIds.push(variable.getSource().id);
                 return true;
             }
         }, this);
 
+        // For all structures
+        Lodash.forIn(foundSites, new LodashCallback1<Structure>() {
+            @Override
+            public boolean invoke(Structure structure) {
+                // If structure is damaged, and no task exists for it
+                if (roomController.getTasksManager().getMemory().$get(structure.id) == null && structure.hits < structure.hitsMax) {
+                    roomController.getTasksManager().addTask(new TaskRepair(roomController, structure.id, structure));
+                }
+
+                // If it's an extension
+                if (structure.structureType == GlobalVariables.STRUCTURE_EXTENSION) {
+                    // If it has no task, and energy requirements
+                    if (roomController.getTasksManager().getMemory().$get(structure.id) == null && structure.energy < structure.energyCapacity) {
+                        // Give it a deposit task
+                        roomController.getTasksManager().addTask(new TaskDeposit(roomController, structure.id, structure));
+                    }
+
+                    // Add to total storage
+                    totalStorageCalculation += structure.energyCapacity;
+                    // Road to it
+                    roadableStructureIds.push(structure.id);
+                } else if (structure.structureType == GlobalVariables.STRUCTURE_SPAWN) {
+                    // Spawn? add its storage capacity
+                    totalStorageCalculation += structure.energyCapacity;
+                    // Force to start of road!
+                    roadableStructureIds.unshift(structure.id);
+                }
+
+                return true;
+            }
+        }, this);
+
+        // Update room controllers total storage
+        roomController.setRoomTotalStorage(totalStorageCalculation);
+
+        // Save the roadable structures to memory
         memory.$put("roadableStructureIds", roadableStructureIds);
     }
 
