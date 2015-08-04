@@ -41,7 +41,7 @@ public class Constants {
 
     // Creep settings (miner)
     public static int SETTING_MINER_PER_SPAWN = 2;
-    public static int SETTING_MAX_ROAD_CREATE = 3;
+    public static int SETTING_MAX_ROAD_CREATE = 1;
 
     // Source constants
     public static final int SOURCE_REGEN = 300;
