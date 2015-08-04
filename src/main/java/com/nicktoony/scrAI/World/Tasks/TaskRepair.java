@@ -58,7 +58,7 @@ public class TaskRepair extends Task {
     public void create() {
         buildable = (Structure) Game.getObjectById(associatedId);
         if (buildable!=null) {
-            progress = (float) 1 - (buildable.hits / buildable.hitsMax);
+            progress = 1 - ((float) buildable.hits / buildable.hitsMax);
         }
     }
 
