@@ -4,23 +4,29 @@ import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Tasks.TaskBuild;
+import com.nicktoony.scrAI.World.SourceWrapper;
 import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
 import com.nicktoony.scrAI.World.Tasks.TaskRepair;
-import com.nicktoony.screeps.ConstructionSite;
-import com.nicktoony.screeps.Depositable;
-import com.nicktoony.screeps.GlobalVariables;
-import com.nicktoony.screeps.Structure;
+import com.nicktoony.screeps.*;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Map;
 
 /**
  * Created by nick on 26/07/15.
  */
 public class StructureManager extends ManagerTimer {
+    private Map<String, Object> memory;
     private int totalStorageCalculation = 0;
+    private Array<String> roadableStructureIds;
 
-    public StructureManager(final RoomController roomController) {
+    public StructureManager(final RoomController roomController, Map<String, Object> memory) {
         super(roomController, "StructureManager", Constants.DELAY_STRUCTURE_MANAGER);
+        this.memory = memory;
+
+        if (memory.$get("init") == null) {
+            memory.$put("roadableStructureIds", new Array<String>());
+            memory.$put("init", true);
+        }
 
         if (!super.canRun()) {
             return;
@@ -28,8 +34,9 @@ public class StructureManager extends ManagerTimer {
         super.hasRun();
 
         // Fetch ALL energy
-        Array<ConstructionSite> foundSites = (Array<ConstructionSite>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_STRUCTURES,
+        Array<Structure> foundSites = (Array<Structure>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_STRUCTURES,
                 null);
+        roadableStructureIds = new Array<String>();
 
         Lodash.forIn(foundSites, new LodashCallback1<Structure>() {
             @Override
@@ -44,14 +51,37 @@ public class StructureManager extends ManagerTimer {
                     }
 
                     totalStorageCalculation += structure.energyCapacity;
+                    roadableStructureIds.push(structure.id);
                 } else if (structure.structureType == GlobalVariables.STRUCTURE_SPAWN) {
                     totalStorageCalculation += structure.energyCapacity;
+                    roadableStructureIds.push(structure.id);
                 }
 
                 return true;
             }
         }, this);
 
+
         roomController.setRoomTotalStorage(totalStorageCalculation);
+        if (roomController.getRoom().controller != null) {
+            roadableStructureIds.push(roomController.getRoom().controller.id);
+        }
+        Lodash.forIn(roomController.getSourcesManager().getSafeSources(), new LodashCallback1<SourceWrapper>() {
+            @Override
+            public boolean invoke(SourceWrapper variable) {
+                roadableStructureIds.push(variable.getSource().id);
+                return true;
+            }
+        }, this);
+
+        memory.$put("roadableStructureIds", roadableStructureIds);
+    }
+
+    public Array<String> getRoadableStructureIds() {
+        return (Array<String>) memory.$get("roadableStructureIds");
+    }
+
+    public Map<String, Object> getMemory() {
+        return memory;
     }
 }

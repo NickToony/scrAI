@@ -46,8 +46,9 @@ public class RoomController {
         // Check if memory is defined
         if (this.room.memory.$get("created") == null) {
             this.room.memory.$put("sourcesMemory", JSCollections.$map());
-            this.room.memory.$put("tasksMemory", JSCollections.$map());
             this.room.memory.$put("pathsMemory", JSCollections.$map());
+            this.room.memory.$put("tasksMemory", JSCollections.$map());
+            this.room.memory.$put("structuresMemory", JSCollections.$map());
             this.room.memory.$put("timersMemory", JSCollections.$map());
 
             // Finally we're created
@@ -66,7 +67,7 @@ public class RoomController {
         this.energyManager = new EnergyManager(this);
         this.pathsManager = new PathsManager(this, (Map<String, Object>) this.room.memory.$get("pathsMemory"));
         this.constructionManager = new ConstructionManager(this);
-        this.structureManager = new StructureManager(this);
+        this.structureManager = new StructureManager(this, (Map<String, Object>) this.room.memory.$get("structuresMemory"));
 
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
@@ -148,6 +149,7 @@ public class RoomController {
         tasksManager.save();
         this.room.memory.$put("tasksMemory", tasksManager.getMemory());
         this.room.memory.$put("pathsMemory", pathsManager.getMemory());
+        this.room.memory.$put("structuresMemory", structureManager.getMemory());
     }
 
     public Room getRoom() {
@@ -204,5 +206,9 @@ public class RoomController {
 
     public void updateTimer(String manager) {
         timersMemory.$put(manager, Game.time + (Math.random() * Constants.DELAY_RANDOM));
+    }
+
+    public StructureManager getStructureManager() {
+        return structureManager;
     }
 }

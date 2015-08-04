@@ -17,5 +17,5 @@ public abstract class Room {
 
     public abstract Array<Map<String, Object>>  findPath(RoomPosition pos, RoomPosition pos1, Map<String, Boolean> strings);
 
-    public abstract void createConstructionSite(int x, int y, String structureRoad);
+    public abstract int createConstructionSite(int x, int y, String structureRoad);
 }
