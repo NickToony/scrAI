@@ -4,12 +4,11 @@ import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.Managers.ManagerTimer;
+import com.nicktoony.scrAI.Managers.Manager;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
 import com.nicktoony.scrAI.World.SourceWrapper;
-import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 26/07/15.
@@ -18,20 +17,17 @@ import org.stjs.javascript.Global;
  * var Advisor = require("Advisor");
  * var CreepMiner = require("CreepMiner");
  */
-public class EconomyAdvisor extends ManagerTimer {
+public class EconomyAdvisor {
 
     private int currentWorkers = 0;
+    private RoomController roomController;
 
     public EconomyAdvisor(RoomController roomController) {
-        super(roomController, "EconomyAdvisor", Constants.DELAY_ECONOMY_DECISION);
+        this.roomController = roomController;
     }
 
     public CreepDefinition step() {
 
-        if (!super.canRun()) {
-            return null;
-        }
-        super.hasRun();
 
         // Calculate how many workers we need
         int totalWorkers = Math.max((int) Math.ceil(this.roomController.getTasksManager().getTaskCount() / 2f),

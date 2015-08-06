@@ -6,10 +6,10 @@ import com.nicktoony.helpers.TemporaryVariables;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
-import com.nicktoony.screeps.Depositable;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Spawn;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Map;
 
 /**
  * Created by nick on 26/07/15.
@@ -17,11 +17,11 @@ import org.stjs.javascript.Array;
  * var Constants = require('Constants');
  * var Lodash = require('lodash');
  */
-public class SpawnsManager extends ManagerTimer {
+public class SpawnsManager extends Manager {
     private Array<Spawn> spawns;
 
-    public SpawnsManager(final RoomController roomController) {
-        super(roomController, "SpawnsManager", Constants.DELAY_SPAWN_MANAGER);
+    public SpawnsManager(RoomController roomControllerParam, Map<String, Object> memory) {
+        super(roomControllerParam, memory);
 
         this.spawns = (Array<Spawn>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_SPAWNS, null);
         Lodash.forIn(spawns, new LodashCallback1<Spawn>() {
@@ -33,6 +33,11 @@ public class SpawnsManager extends ManagerTimer {
                 return true;
             }
         }, this);
+    }
+
+    @Override
+    protected void init() {
+
     }
 
     public Array<Spawn> getSpawns() {
@@ -54,5 +59,10 @@ public class SpawnsManager extends ManagerTimer {
         }, this);
 
         return TemporaryVariables.tempSpawn;
+    }
+
+    @Override
+    public void update() {
+
     }
 }

@@ -14,25 +14,21 @@ import org.stjs.javascript.Map;
 /**
  * Created by nick on 26/07/15.
  */
-public class StructureManager extends ManagerTimer {
-    private Map<String, Object> memory;
+public class StructureManager extends Manager {
     private int totalStorageCalculation = 0;
     private Array<String> roadableStructureIds;
 
-    public StructureManager(final RoomController roomController, Map<String, Object> memory) {
-        super(roomController, "StructureManager", Constants.DELAY_STRUCTURE_MANAGER);
-        this.memory = memory;
+    public StructureManager(RoomController roomController, Map<String, Object> memory) {
+        super(roomController, memory);
+    }
 
-        if (memory.$get("init") == null) {
-            memory.$put("roadableStructureIds", new Array<String>());
-            memory.$put("init", true);
-        }
+    @Override
+    protected void init() {
+        memory.$put("roadableStructureIds", new Array<String>());
+    }
 
-        if (!super.canRun()) {
-            return;
-        }
-        super.hasRun();
-
+    @Override
+    public void update() {
         // Fetch ALL structures
         Array<Structure> foundSites = (Array<Structure>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_STRUCTURES,
                 null);

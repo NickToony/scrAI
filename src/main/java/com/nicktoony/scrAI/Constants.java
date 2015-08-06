@@ -19,13 +19,15 @@ public class Constants {
 
     public static int OFFSET_ROOM_STORAGE = 100; // useful to stop the AI spending too much early on
     public static int DELAY_RANDOM = 20;
-    public static int DELAY_PATH_SCAN = 100; // how many ticks between checking paths are okay
-    public static int DELAY_ENERGY_SCAN = 20;
+    public static int DELAY_PATH_MANAGER = 100; // how many ticks between checking paths are okay
+    public static int DELAY_ENERGY_MANAGER = 20;
     public static int DELAY_ECONOMY_DECISION = 10;
     public static int DELAY_CONSTRUCTION_MANAGER = 50;
     public static int DELAY_STRUCTURE_MANAGER = 100;
     public static int DELAY_POPULATION_MANAGER = 150;
     public static int DELAY_SPAWN_MANAGER = 100;
+    public static int DELAY_TASK_MANAGER = 100;
+    public static int DELAY_SOURCES_MANAGER = 100;
 
     public static int PRIORITY_BUILD = 25;
     public static int PRIORITY_UPGRADE = 0;

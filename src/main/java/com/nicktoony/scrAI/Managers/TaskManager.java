@@ -14,16 +14,13 @@ import org.stjs.javascript.Map;
 /**
  * Created by nick on 02/08/15.
  */
-public class TaskManager {
+public class TaskManager extends Manager{
     private Map<String, Task> tasks;
-    private RoomController roomController;
-    private Map<String, Object> memory;
     private Array<Task> sortedTasks;
     private int taskCount = 0;
 
-    public TaskManager(final RoomController roomController, Map<String, Object> memory) {
-        this.roomController = roomController;
-        this.memory = memory;
+    public TaskManager(RoomController roomControllerParam, Map<String, Object> memory) {
+        super(roomControllerParam, memory);
         this.sortedTasks = null;
 
         tasks = new JSCollections().$map();
@@ -63,6 +60,16 @@ public class TaskManager {
         if (tasks.$get(roomController.getRoom().controller.id) == null) {
             addTask(new TaskUpgradeController(roomController, roomController.getRoom().controller.id, roomController.getRoom().controller));
         }
+    }
+
+    @Override
+    protected void init() {
+
+    }
+
+    @Override
+    public void update() {
+
     }
 
     public void addTask(Task task) {

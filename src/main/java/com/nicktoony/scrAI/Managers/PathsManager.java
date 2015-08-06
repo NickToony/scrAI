@@ -15,44 +15,24 @@ import org.stjs.javascript.Map;
 /**
  * Created by nick on 02/08/15.
  */
-public class PathsManager extends ManagerTimer {
-    private Map<String, Object> memory;
+public class PathsManager extends Manager {
     private Map<String, Array<Map<String, Object>>> paths;
     private Structure baseStructure;
     private int roadsCreated = 0;
 
-    public PathsManager(final RoomController roomController, Map<String, Object> memory) {
-        super(roomController, "PathsManager", Constants.DELAY_PATH_SCAN);
+    public PathsManager(RoomController roomController, Map<String, Object> memory) {
+        super(roomController, memory);
 
         this.roomController = roomController;
         this.memory = memory;
-
-        // Initial delay.. let everything else figure stuff out first
-        if (!super.canRun()) {
-            return;
-        }
-
-        // Init (sets up paths)
-        if (memory.$get("init") == null) {
-            init();
-            memory.$put("init", true);
-        }
     }
 
-    private void init() {
-        this.paths = JSCollections.$map();
-
+    @Override
+    protected void init() {
         memory.$put("paths", paths);
-        super.hasRun();
     }
 
     public void update() {
-        if (!super.canRun()) {
-            return;
-        }
-
-        super.hasRun();
-
         // Load from memory
         this.paths = (Map<String, Array<Map<String, Object>>>) this.memory.$get("paths");
         this.baseStructure = null;

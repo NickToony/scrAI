@@ -14,7 +14,6 @@ import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Memory;
 import org.stjs.javascript.Array;
-import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
 
@@ -25,12 +24,12 @@ import org.stjs.javascript.Map;
  * var Lodash = require('lodash');
  * var CreepMiner = require('CreepMiner');
  */
-public class PopulationManager extends ManagerTimer {
+public class PopulationManager extends Manager {
     private Array<CreepWrapper> allCreeps;
     private Map<String, Array<CreepWrapper>> sortedCreeps;
 
-    public PopulationManager(final RoomController roomController) {
-        super(roomController, "PopulationManager", Constants.DELAY_POPULATION_MANAGER);
+    public PopulationManager(RoomController roomController, Map<String, Object> memory) {
+        super(roomController, memory);
         this.allCreeps = new Array<CreepWrapper>();
 
         Array<Creep> foundCreeps = (Array<Creep>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_CREEPS, JSCollections.$map());
@@ -47,22 +46,26 @@ public class PopulationManager extends ManagerTimer {
                 return true;
             }
         }, this);
+    }
 
-        if (super.canRun()) {
-            super.hasRun();
+    @Override
+    protected void init() {
 
-            Lodash.forIn(Memory.creeps, new LodashCallback2<Creep, String>() {
-                @Override
-                public boolean invoke(Creep variable1, String variable2) {
+    }
 
-                    if (Game.creeps.$get(variable2) == null) {
-                        Memory.creeps.$delete(variable2);
-                    }
+    @Override
+    public void update() {
+        Lodash.forIn(Memory.creeps, new LodashCallback2<Creep, String>() {
+            @Override
+            public boolean invoke(Creep variable1, String variable2) {
 
-                    return true;
+                if (Game.creeps.$get(variable2) == null) {
+                    Memory.creeps.$delete(variable2);
                 }
-            }, this);
-        }
+
+                return true;
+            }
+        }, this);
     }
 
     public Array<CreepWrapper> getSortedCreeps(String id) {

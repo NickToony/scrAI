@@ -16,8 +16,6 @@ import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
 
-import java.nio.file.PathMatcher;
-
 /**
  * Created by nick on 26/07/15.
  */
@@ -45,29 +43,14 @@ public class RoomController {
 
         // Check if memory is defined
         if (this.room.memory.$get("created") == null) {
-            this.room.memory.$put("sourcesMemory", JSCollections.$map());
-            this.room.memory.$put("pathsMemory", JSCollections.$map());
-            this.room.memory.$put("tasksMemory", JSCollections.$map());
-            this.room.memory.$put("structuresMemory", JSCollections.$map());
             this.room.memory.$put("timersMemory", JSCollections.$map());
 
             // Finally we're created
             this.room.memory.$put("created", true);
         }
-        this.sourcesMemory = (Map<String, Object>) this.room.memory.$get("sourcesMemory");
         this.timersMemory = (Map<String, Object>) this.room.memory.$get("timersMemory");
 
         this.roomTotalStorage = (Integer) getMemoryOrDefault("roomTotalStorage", 300);
-
-        // Managers
-        this.tasksManager = new TaskManager(this, (Map<String, Object>) this.room.memory.$get("tasksMemory"));
-        this.populationManager = new PopulationManager(this);
-        this.sourcesManager = new SourcesManager(this);
-        this.spawnsManager = new SpawnsManager(this);
-        this.energyManager = new EnergyManager(this);
-        this.pathsManager = new PathsManager(this, (Map<String, Object>) this.room.memory.$get("pathsMemory"));
-        this.constructionManager = new ConstructionManager(this);
-        this.structureManager = new StructureManager(this, (Map<String, Object>) this.room.memory.$get("structuresMemory"));
 
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
@@ -92,6 +75,12 @@ public class RoomController {
     }
 
     public void step() {
+        Global.console.log("HELLO");
+
+        if (handleManagerUpdates()) {
+            return;
+        }
+
         Spawn spawn = this.spawnsManager.getAvailableSpawn();
         if (spawn != null) {
             // Ask "advisors" what they want
@@ -141,58 +130,88 @@ public class RoomController {
             }
         }, this);
 
-        // Save source memory
-        this.room.memory.$put("sourcesMemory", sourcesMemory);
-        this.room.memory.$put("timersMemory", timersMemory);
-
         // Tasks manager
         tasksManager.save();
-        this.room.memory.$put("tasksMemory", tasksManager.getMemory());
-        this.room.memory.$put("pathsMemory", pathsManager.getMemory());
-        this.room.memory.$put("structuresMemory", structureManager.getMemory());
+    }
+
+    private boolean handleManagerUpdates() {
+        if (updateManager("ConstructionManager", Constants.DELAY_CONSTRUCTION_MANAGER)) {
+            getConstructionManager().update();
+            updateTimer("ConstructionManager");
+            return true;
+        }
+
+        if (updateManager("EnergyManager", Constants.DELAY_ENERGY_MANAGER)) {
+            getEnergyManager().update();
+            updateTimer("EnergyManager");
+            return true;
+        }
+
+        if (updateManager("PathsManager", Constants.DELAY_PATH_MANAGER)) {
+            getPathsManager().update();
+            updateTimer("PathsManager");
+            return true;
+        }
+
+        if (updateManager("PopulationManager", Constants.DELAY_POPULATION_MANAGER)) {
+            getPopulationManager().update();
+            updateTimer("PopulationManager");
+            return true;
+        }
+
+        if (updateManager("SourcesManager", Constants.DELAY_SOURCES_MANAGER)) {
+            getSourcesManager().update();
+            updateTimer("SourcesManager");
+            return true;
+        }
+
+        if (updateManager("SpawnsManager", Constants.DELAY_SPAWN_MANAGER)) {
+            getSpawnsManager().update();
+            updateTimer("SpawnsManager");
+            return true;
+        }
+
+        if (updateManager("StructureManager", Constants.DELAY_STRUCTURE_MANAGER)) {
+            getStructureManager().update();
+            updateTimer("StructureManager");
+            return true;
+        }
+
+        if (updateManager("TaskManager", Constants.DELAY_TASK_MANAGER)) {
+            getTasksManager().update();
+            updateTimer("TaskManager");
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean updateManager( String name, int delay) {
+        if (getTimer(name) + delay < Game.time) {
+            return true;
+        }
+        return false;
+    }
+
+    private Map<String, Object> getMemory(String name) {
+        Map<String, Object> memory = (Map<String, Object>) this.room.memory.$get(name);
+        if (memory == null) {
+            this.room.memory.$put(name, JSCollections.$map());
+            return getMemory(name);
+        }
+        return memory;
     }
 
     public Room getRoom() {
         return room;
     }
 
-    public PopulationManager getPopulationManager() {
-        return populationManager;
-    }
-
-    public SourcesManager getSourcesManager() {
-        return sourcesManager;
-    }
-
-    public SpawnsManager getSpawnsManager() {
-        return spawnsManager;
-    }
-
-    public EnergyManager getEnergyManager() {
-        return energyManager;
-    }
-
     public void setAlertStatus(int alertStatus) {
         this.alertStatus = alertStatus;
     }
 
-    public Map<String, Object> getSourcesMemory(String id) {
-        if (sourcesMemory.$get(id) == null) {
-            sourcesMemory.$put(id, JSCollections.$map());
-        }
-        return (Map<String, Object>) sourcesMemory.$get(id);
-    }
-
     public int getRoomTotalStorage() {
         return roomTotalStorage - Constants.OFFSET_ROOM_STORAGE;
-    }
-
-    public TaskManager getTasksManager() {
-        return tasksManager;
-    }
-
-    public PathsManager getPathsManager() {
-        return pathsManager;
     }
 
     public int getTimer(String manager) {
@@ -208,7 +227,59 @@ public class RoomController {
         timersMemory.$put(manager, Game.time + (Math.random() * Constants.DELAY_RANDOM));
     }
 
+    public PopulationManager getPopulationManager() {
+        if (populationManager == null) {
+            populationManager = new PopulationManager(this, getMemory("populationMemory"));
+        }
+        return populationManager;
+    }
+
+    public SourcesManager getSourcesManager() {
+        if (sourcesManager == null) {
+            sourcesManager = new SourcesManager(this, getMemory("sourcesMemory"));
+        }
+        return sourcesManager;
+    }
+
+    public SpawnsManager getSpawnsManager() {
+        if (spawnsManager == null) {
+            spawnsManager = new SpawnsManager(this, getMemory("populationMemory"));
+        }
+        return spawnsManager;
+    }
+
+    public EnergyManager getEnergyManager() {
+        if (energyManager == null) {
+            energyManager = new EnergyManager(this, getMemory("energyMemory"));
+        }
+        return energyManager;
+    }
+
+    public TaskManager getTasksManager() {
+        if (tasksManager == null) {
+            tasksManager = new TaskManager(this, getMemory("taskMemory"));
+        }
+        return tasksManager;
+    }
+
+    public PathsManager getPathsManager() {
+        if (pathsManager == null) {
+            pathsManager = new PathsManager(this, getMemory("pathMemory"));
+        }
+        return pathsManager;
+    }
+
+    public ConstructionManager getConstructionManager() {
+        if (constructionManager == null) {
+            constructionManager = new ConstructionManager(this, getMemory("constructionMemory"));
+        }
+        return constructionManager;
+    }
+
     public StructureManager getStructureManager() {
+        if (structureManager == null) {
+            structureManager = new StructureManager(this, getMemory("structureMemory"));
+        }
         return structureManager;
     }
 }

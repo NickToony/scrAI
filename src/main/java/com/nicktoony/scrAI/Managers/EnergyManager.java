@@ -2,28 +2,29 @@ package com.nicktoony.scrAI.Managers;
 
 import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
-import com.nicktoony.helpers.TemporaryVariables;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Tasks.TaskPickupEnergy;
 import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Source;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Map;
 
 /**
  * Created by nick on 26/07/15.
  */
-public class EnergyManager extends ManagerTimer {
-    public EnergyManager(final RoomController roomController) {
-        super(roomController, "EnergyManager", Constants.DELAY_ENERGY_SCAN);
+public class EnergyManager extends Manager {
+    public EnergyManager(RoomController roomController, Map<String, Object> memory) {
+        super(roomController, memory);
+    }
 
-        if (!super.canRun()) {
-            return;
-        }
-        super.hasRun();
+    @Override
+    protected void init() {
 
+    }
+
+    public void update() {
         // Fetch ALL energy
         Array<Source> foundEnergy = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_DROPPED_ENERGY,
                 null);

@@ -15,18 +15,14 @@ import org.stjs.javascript.Map;
 
 /**
  * Created by nick on 26/07/15.
- * var stjs = require("stjs");
- * var Constants = require('Constants');
- * var Lodash = require('lodash');
  */
-public class SourcesManager {
-    private RoomController roomController;
+public class SourcesManager extends Manager {
     private Array<SourceWrapper> sources;
     private Array<SourceWrapper> safeSources;
     private int maxMiners;
 
-    public SourcesManager(final RoomController roomController) {
-        this.roomController = roomController;
+    public SourcesManager(RoomController roomControllerParam, Map<String, Object> memory) {
+        super(roomControllerParam, memory);
 
         this.sources = new Array<SourceWrapper>();
         this.safeSources = new Array<SourceWrapper>();
@@ -40,7 +36,7 @@ public class SourcesManager {
                 // Check for enemies near the source;
                 Array<Creep> targets = (Array<Creep>) source.pos.findInRange(GlobalVariables.FIND_HOSTILE_CREEPS, 3);
 
-                SourceWrapper sourceWrapper = new SourceWrapper(roomController, source, roomController.getSourcesMemory(source.id));
+                SourceWrapper sourceWrapper = new SourceWrapper(roomController, source, getSourcesMemory(source.id));
                 sources.push(sourceWrapper);
                 if (targets.$length() == 0) {
                     safeSources.push(sourceWrapper);
@@ -50,6 +46,24 @@ public class SourcesManager {
                 return true;
             }
         }, this);
+    }
+
+    @Override
+    protected void init() {
+
+    }
+
+    @Override
+    public void update() {
+
+    }
+
+
+    public Map<String, Object> getSourcesMemory(String id) {
+        if (memory.$get(id) == null) {
+            memory.$put(id, JSCollections.$map());
+        }
+        return (Map<String, Object>) memory.$get(id);
     }
 
     public Array<SourceWrapper> getSources() {
