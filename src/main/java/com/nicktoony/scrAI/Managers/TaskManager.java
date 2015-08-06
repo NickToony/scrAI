@@ -18,17 +18,19 @@ public class TaskManager extends Manager{
     private Map<String, Task> tasks;
     private Array<Task> sortedTasks;
     private int taskCount = 0;
+    private Map<String, Object> taskMemory;
 
     public TaskManager(RoomController roomControllerParam, Map<String, Object> memory) {
         super(roomControllerParam, memory);
         this.sortedTasks = null;
+        this.taskMemory = (Map<String, Object>) memory.$get("taskMemory");
 
         tasks = new JSCollections().$map();
-        Lodash.forIn(this.memory, new LodashCallback2<Object, String>() {
+        Lodash.forIn(taskMemory, new LodashCallback2<Map<String, Object>, String>() {
 
             @Override
-            public boolean invoke(Object memory, String associatedId) {
-                String taskType = (String) ((Map<String, Object>) memory).$get("taskType");
+            public boolean invoke(Map<String, Object> innerMemory, String associatedId) {
+                String taskType = (String) ( innerMemory).$get("taskType");
                 Task task = null;
                 if (taskType == "1") {
                     task =  new TaskPickupEnergy(roomController, associatedId, null);
@@ -43,14 +45,14 @@ public class TaskManager extends Manager{
                 }
 
                 if (task != null) {
-                    task.setMemory((Map<String, Object>) memory);
+                    task.setMemory(innerMemory);
                     tasks.$put(associatedId, task);
 
                     task.prepare();
 
                     taskCount ++;
                 } else {
-                    Global.console.log("TaskManager -> Constructor -> You forgot to setup the task creation");
+                    Global.console.log("TaskManager -> Constructor -> You forgot to setup the task creation -> " + taskType);
                 }
 
                 return true;
@@ -64,7 +66,7 @@ public class TaskManager extends Manager{
 
     @Override
     protected void init() {
-
+        memory.$put("taskMemory", JSCollections.$map());
     }
 
     @Override
@@ -84,17 +86,17 @@ public class TaskManager extends Manager{
             public boolean invoke(Task task) {
                 boolean success = task.save();
                 if (success) {
-                    memory.$put(task.getAssociatedId(), task.getMemory());
+                    taskMemory.$put(task.getAssociatedId(), task.getMemory());
                 } else {
-                    memory.$delete(task.getAssociatedId());
+                    taskMemory.$delete(task.getAssociatedId());
                 }
                 return true;
             }
         }, this);
     }
 
-    public Map<String, Object> getMemory() {
-        return memory;
+    public Map<String, Object> getTaskMemory() {
+        return taskMemory;
     }
 
     public Task getTask(String taskId) {

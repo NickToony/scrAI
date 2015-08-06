@@ -75,7 +75,6 @@ public class RoomController {
     }
 
     public void step() {
-        Global.console.log("HELLO");
 
         if (handleManagerUpdates()) {
             return;

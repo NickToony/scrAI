@@ -2,7 +2,6 @@ package com.nicktoony.scrAI.Managers;
 
 import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
-import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.TaskBuild;
 import com.nicktoony.screeps.ConstructionSite;
@@ -31,7 +30,7 @@ public class ConstructionManager extends Manager {
         Lodash.forIn(foundSites, new LodashCallback1<ConstructionSite>() {
             @Override
             public boolean invoke(ConstructionSite constructionSite) {
-                if (roomController.getTasksManager().getMemory().$get(constructionSite.id) == null) {
+                if (roomController.getTasksManager().getTaskMemory().$get(constructionSite.id) == null) {
                     roomController.getTasksManager().addTask(new TaskBuild(roomController, constructionSite.id, constructionSite));
                 }
                 return true;

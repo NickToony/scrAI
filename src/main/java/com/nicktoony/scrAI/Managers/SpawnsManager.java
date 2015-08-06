@@ -3,7 +3,6 @@ package com.nicktoony.scrAI.Managers;
 import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.helpers.TemporaryVariables;
-import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
 import com.nicktoony.screeps.GlobalVariables;
@@ -27,7 +26,7 @@ public class SpawnsManager extends Manager {
         Lodash.forIn(spawns, new LodashCallback1<Spawn>() {
             @Override
             public boolean invoke(Spawn spawn) {
-                if (roomController.getTasksManager().getMemory().$get(spawn.id) == null) {
+                if (roomController.getTasksManager().getTaskMemory().$get(spawn.id) == null) {
                     roomController.getTasksManager().addTask(new TaskDeposit(roomController, spawn.id, spawn));
                 }
                 return true;

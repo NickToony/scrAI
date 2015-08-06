@@ -2,7 +2,6 @@ package com.nicktoony.scrAI.Managers;
 
 import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
-import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.TaskPickupEnergy;
 import com.nicktoony.screeps.Energy;
@@ -32,7 +31,7 @@ public class EnergyManager extends Manager {
         Lodash.forIn(foundEnergy, new LodashCallback1<Energy>() {
             @Override
             public boolean invoke(Energy energy) {
-                if (roomController.getTasksManager().getMemory().$get(energy.id) == null) {
+                if (roomController.getTasksManager().getTaskMemory().$get(energy.id) == null) {
                     roomController.getTasksManager().addTask(new TaskPickupEnergy(roomController, energy.id, energy));
                 }
                 return true;

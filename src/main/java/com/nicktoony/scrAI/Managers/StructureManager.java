@@ -2,7 +2,6 @@ package com.nicktoony.scrAI.Managers;
 
 import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
-import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.SourceWrapper;
 import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
@@ -55,14 +54,14 @@ public class StructureManager extends Manager {
             @Override
             public boolean invoke(Structure structure) {
                 // If structure is damaged, and no task exists for it
-                if (roomController.getTasksManager().getMemory().$get(structure.id) == null && structure.hits < structure.hitsMax) {
+                if (roomController.getTasksManager().getTaskMemory().$get(structure.id) == null && structure.hits < structure.hitsMax) {
                     roomController.getTasksManager().addTask(new TaskRepair(roomController, structure.id, structure));
                 }
 
                 // If it's an extension
                 if (structure.structureType == GlobalVariables.STRUCTURE_EXTENSION) {
                     // If it has no task, and energy requirements
-                    if (roomController.getTasksManager().getMemory().$get(structure.id) == null && structure.energy < structure.energyCapacity) {
+                    if (roomController.getTasksManager().getTaskMemory().$get(structure.id) == null && structure.energy < structure.energyCapacity) {
                         // Give it a deposit task
                         roomController.getTasksManager().addTask(new TaskDeposit(roomController, structure.id, structure));
                     }
