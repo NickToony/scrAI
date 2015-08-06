@@ -30,6 +30,10 @@ public class PathsManager extends Manager {
     }
 
     public void update() {
+        if (roomController.getRoom().controller.level < 3) {
+            return;
+        }
+
         // Load from memory
         this.paths = (Map<String, Array<Map<String, Object>>>) this.memory.$get("paths");
         this.baseStructure = null;
