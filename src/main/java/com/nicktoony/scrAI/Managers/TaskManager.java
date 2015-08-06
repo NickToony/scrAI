@@ -19,65 +19,31 @@ public class TaskManager extends Manager{
     private Array<Task> sortedTasks;
     private int taskCount = 0;
     private Map<String, Object> taskMemory;
+    private boolean processedTasks = false;
 
     public TaskManager(RoomController roomControllerParam, Map<String, Object> memory) {
         super(roomControllerParam, memory);
         this.sortedTasks = null;
         this.taskMemory = (Map<String, Object>) memory.$get("taskMemory");
-
-        tasks = new JSCollections().$map();
-        Lodash.forIn(taskMemory, new LodashCallback2<Map<String, Object>, String>() {
-
-            @Override
-            public boolean invoke(Map<String, Object> innerMemory, String associatedId) {
-                String taskType = (String) ( innerMemory).$get("taskType");
-                Task task = null;
-                if (taskType == "1") {
-                    task =  new TaskPickupEnergy(roomController, associatedId, null);
-                } else if (taskType == "2") {
-                    task = new TaskDeposit(roomController, associatedId, null);
-                } else if (taskType == "3") {
-                    task = new TaskUpgradeController(roomController, associatedId, null);
-                } else if (taskType == "4") {
-                    task = new TaskBuild(roomController, associatedId, null);
-                } else if (taskType == "5") {
-                    task = new TaskRepair(roomController, associatedId, null);
-                }
-
-                if (task != null) {
-                    task.setMemory(innerMemory);
-                    tasks.$put(associatedId, task);
-
-                    task.prepare();
-
-                    taskCount ++;
-                } else {
-                    Global.console.log("TaskManager -> Constructor -> You forgot to setup the task creation -> " + taskType);
-                }
-
-                return true;
-            }
-        }, this);
-
-        if (tasks.$get(roomController.getRoom().controller.id) == null) {
-            addTask(new TaskUpgradeController(roomController, roomController.getRoom().controller.id, roomController.getRoom().controller));
-        }
+        this.taskCount = (Integer) memory.$get("taskCount");
+        this.tasks = JSCollections.$map();
     }
 
     @Override
     protected void init() {
         memory.$put("taskMemory", JSCollections.$map());
+        memory.$put("taskCount", 0);
     }
 
     @Override
     public void update() {
-
+        getTasks();
     }
 
     public void addTask(Task task) {
         task.setMemory(JSCollections.$map());
         task.getMemory().$put("taskType", task.getType());
-        this.tasks.$put(task.getAssociatedId(), task);
+        tasks.$put(task.getAssociatedId(), task);
     }
 
     public void save() {
@@ -100,16 +66,77 @@ public class TaskManager extends Manager{
     }
 
     public Task getTask(String taskId) {
-        return tasks.$get(taskId);
+        Task task = tasks.$get(taskId);
+        if (task == null) {
+            Map<String, Object> theTaskMemory = (Map<String, Object>) taskMemory.$get(taskId);
+            if (theTaskMemory != null) {
+                processTask(taskId, theTaskMemory);
+                return getTask(taskId);
+            } else {
+                return null;
+            }
+        }
+        return task;
     }
 
     public Map<String, Task> getTasks() {
+
+        if (!processedTasks) {
+            tasks = new JSCollections().$map();
+            Lodash.forIn(taskMemory, new LodashCallback2<Map<String, Object>, String>() {
+
+                @Override
+                public boolean invoke(Map<String, Object> innerMemory, String associatedId) {
+                    processTask(associatedId, innerMemory);
+
+                    return true;
+                }
+            }, this);
+
+            if (tasks.$get(roomController.getRoom().controller.id) == null) {
+                addTask(new TaskUpgradeController(roomController, roomController.getRoom().controller.id, roomController.getRoom().controller));
+            }
+
+            memory.$put("taskCount", taskCount);
+
+            processedTasks = true;
+
+            Global.console.log("PROCESSED TASKS!!!");
+        }
+
         return tasks;
+    }
+
+    private void processTask(String associatedId, Map<String, Object> innerMemory) {
+        String taskType = (String) (innerMemory).$get("taskType");
+        Task task = null;
+        if (taskType == "1") {
+            task = new TaskPickupEnergy(roomController, associatedId, null);
+        } else if (taskType == "2") {
+            task = new TaskDeposit(roomController, associatedId, null);
+        } else if (taskType == "3") {
+            task = new TaskUpgradeController(roomController, associatedId, null);
+        } else if (taskType == "4") {
+            task = new TaskBuild(roomController, associatedId, null);
+        } else if (taskType == "5") {
+            task = new TaskRepair(roomController, associatedId, null);
+        }
+
+        if (task != null) {
+            task.setMemory(innerMemory);
+            tasks.$put(associatedId, task);
+
+            task.prepare();
+
+            taskCount++;
+        } else {
+            Global.console.log("TaskManager -> Constructor -> You forgot to setup the task creation -> " + taskType);
+        }
     }
 
     public Array<Task> getSortedTasks() {
         if (sortedTasks == null) {
-            sortedTasks = (Array<Task>) Lodash.sortBy(tasks, new LodashSortCallback2<Task, String>() {
+            sortedTasks = (Array<Task>) Lodash.sortBy(getTasks(), new LodashSortCallback2<Task, String>() {
                 @Override
                 public int invoke(Task variable1, String variable2) {
                     return -variable1.getPriority();
