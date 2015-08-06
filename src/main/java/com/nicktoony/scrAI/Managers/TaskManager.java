@@ -82,6 +82,8 @@ public class TaskManager extends Manager{
     public Map<String, Task> getTasks() {
 
         if (!processedTasks) {
+
+            taskCount = 0;
             tasks = new JSCollections().$map();
             Lodash.forIn(taskMemory, new LodashCallback2<Map<String, Object>, String>() {
 
