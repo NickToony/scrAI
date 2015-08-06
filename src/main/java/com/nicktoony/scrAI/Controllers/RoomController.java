@@ -33,9 +33,10 @@ public class RoomController {
     private EconomyAdvisor economyAdvisor;
     private MilitaryAdvisor militaryAdvisor;
     private int alertStatus;
-    private Map<String, Object> sourcesMemory;
     private Map<String, Object> timersMemory;
+    private Map<String, Object> cpuMemory;
     private int roomTotalStorage = 0;
+    private float cpu = 0;
 
     public RoomController(Room room) {
         this.room = room;
@@ -43,12 +44,11 @@ public class RoomController {
 
         // Check if memory is defined
         if (this.room.memory.$get("created") == null) {
-            this.room.memory.$put("timersMemory", JSCollections.$map());
-
             // Finally we're created
             this.room.memory.$put("created", true);
         }
-        this.timersMemory = (Map<String, Object>) this.room.memory.$get("timersMemory");
+        this.timersMemory = getMemory("timersMemory");
+        this.cpuMemory = getMemory("cpuMemory");
 
         this.roomTotalStorage = (Integer) getMemoryOrDefault("roomTotalStorage", 300);
 
@@ -77,7 +77,6 @@ public class RoomController {
     public void step() {
 
         if (handleManagerUpdates()) {
-
             return;
         }
 
@@ -129,12 +128,16 @@ public class RoomController {
                 return true;
             }
         }, this);
+    }
 
+    public void save() {
         // Tasks manager
-        tasksManager.save();
+        getTasksManager().save();
     }
 
     private boolean handleManagerUpdates() {
+
+
         if (updateManager("ConstructionManager", Constants.DELAY_CONSTRUCTION_MANAGER)) {
             getConstructionManager().update();
             updateTimer("ConstructionManager");
@@ -229,57 +232,87 @@ public class RoomController {
 
     public PopulationManager getPopulationManager() {
         if (populationManager == null) {
+            resetCPU();
             populationManager = new PopulationManager(this, getMemory("populationMemory"));
+            saveCPU("PopulationManager");
         }
         return populationManager;
     }
 
     public SourcesManager getSourcesManager() {
         if (sourcesManager == null) {
+            resetCPU();
             sourcesManager = new SourcesManager(this, getMemory("sourcesMemory"));
+            saveCPU("SourcesManager");
         }
         return sourcesManager;
     }
 
     public SpawnsManager getSpawnsManager() {
         if (spawnsManager == null) {
-            spawnsManager = new SpawnsManager(this, getMemory("populationMemory"));
+            resetCPU();
+            spawnsManager = new SpawnsManager(this, getMemory("spawnsMemory"));
+            saveCPU("SpawnsManager");
         }
         return spawnsManager;
     }
 
     public EnergyManager getEnergyManager() {
         if (energyManager == null) {
+            resetCPU();
             energyManager = new EnergyManager(this, getMemory("energyMemory"));
+            saveCPU("EnergyManager");
         }
         return energyManager;
     }
 
     public TaskManager getTasksManager() {
         if (tasksManager == null) {
+            resetCPU();
             tasksManager = new TaskManager(this, getMemory("taskMemory"));
+            saveCPU("TaskManager");
         }
         return tasksManager;
     }
 
     public PathsManager getPathsManager() {
         if (pathsManager == null) {
+            resetCPU();
             pathsManager = new PathsManager(this, getMemory("pathMemory"));
+            saveCPU("PathsManager");
         }
         return pathsManager;
     }
 
     public ConstructionManager getConstructionManager() {
         if (constructionManager == null) {
+            resetCPU();
             constructionManager = new ConstructionManager(this, getMemory("constructionMemory"));
+            saveCPU("ConstructionManager");
         }
         return constructionManager;
     }
 
     public StructureManager getStructureManager() {
         if (structureManager == null) {
+            resetCPU();
             structureManager = new StructureManager(this, getMemory("structureMemory"));
+            saveCPU("StructureManager");
         }
         return structureManager;
+    }
+
+    private void resetCPU() {
+        cpu = Game.getUsedCpu();
+    }
+
+    private void saveCPU(String name) {
+        Object prevValue = cpuMemory.$get(name);
+        float value = Game.getUsedCpu() - cpu;
+        if (prevValue != null) {
+            value += (Float) prevValue;
+        }
+
+        cpuMemory.$put(name, value);
     }
 }

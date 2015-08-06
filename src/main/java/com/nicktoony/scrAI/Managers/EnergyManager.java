@@ -8,6 +8,7 @@ import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Source;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 import org.stjs.javascript.Map;
 
 /**
@@ -33,6 +34,7 @@ public class EnergyManager extends Manager {
             public boolean invoke(Energy energy) {
                 if (roomController.getTasksManager().getTaskMemory().$get(energy.id) == null) {
                     roomController.getTasksManager().addTask(new TaskPickupEnergy(roomController, energy.id, energy));
+
                 }
                 return true;
             }

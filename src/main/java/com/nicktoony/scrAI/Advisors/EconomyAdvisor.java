@@ -59,8 +59,6 @@ public class EconomyAdvisor {
             return CreepMiner.define(this.roomController, workParts, sourceWrapper.getSource());
         }
 
-        roomController.getPathsManager().update();
-
         // Nothing we want..
         return null;
     }

@@ -10,6 +10,7 @@ public class Game {
     public static Array<Room> rooms;
     public static int time;
     public static Array<Creep> creeps;
+    public static Map<String, Spawn> spawns;
 
     public static int getUsedCpu() {
         return 0;

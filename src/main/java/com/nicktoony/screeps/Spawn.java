@@ -7,6 +7,8 @@ import org.stjs.javascript.Map;
  * Created by nick on 26/07/15.
  */
 public class Spawn extends Depositable {
+    public String name;
+
     public int canCreateCreep(Array<String> abilities, String name) {
         return 0;
     }
