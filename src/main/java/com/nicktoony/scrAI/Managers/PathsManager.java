@@ -22,14 +22,11 @@ public class PathsManager extends Manager {
 
     public PathsManager(RoomController roomController, Map<String, Object> memory) {
         super(roomController, memory);
-
-        this.roomController = roomController;
-        this.memory = memory;
     }
 
     @Override
     protected void init() {
-        memory.$put("paths", paths);
+        memory.$put("paths", JSCollections.$map());
     }
 
     public void update() {
@@ -83,7 +80,7 @@ public class PathsManager extends Manager {
                                 int x = (Integer) pathStep.$get("x");
                                 int y = (Integer) pathStep.$get("y");
                                 if (roomController.getRoom().createConstructionSite(x, y, GlobalVariables.STRUCTURE_ROAD) == GlobalVariables.OK) {
-                                    roadsCreated ++;
+                                    roadsCreated++;
                                 }
 
                                 // Keep going as long as not created too many roads
@@ -98,9 +95,5 @@ public class PathsManager extends Manager {
                 }
             }
         }, this);
-    }
-
-    public Map<String, Object> getMemory() {
-        return memory;
     }
 }

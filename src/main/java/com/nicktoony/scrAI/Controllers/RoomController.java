@@ -77,6 +77,7 @@ public class RoomController {
     public void step() {
 
         if (handleManagerUpdates()) {
+
             return;
         }
 
