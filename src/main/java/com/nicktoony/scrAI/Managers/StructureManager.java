@@ -40,7 +40,7 @@ public class StructureManager extends Manager {
             roadableStructureIds.push(roomController.getRoom().controller.id);
         }
         // For all sources
-        Lodash.forIn(roomController.getSourcesManager().getSafeSources(), new LodashCallback1<SourceWrapper>() {
+        Lodash.forIn(roomController.getSourcesManager().getSafeSourceWrappers(), new LodashCallback1<SourceWrapper>() {
             @Override
             public boolean invoke(SourceWrapper variable) {
                 // Road to the sources
