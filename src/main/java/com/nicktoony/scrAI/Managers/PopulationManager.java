@@ -32,12 +32,12 @@ public class PopulationManager extends Manager {
         super(roomController, memory);
         this.allCreeps = new Array<CreepWrapper>();
 
-        Array<Creep> foundCreeps = (Array<Creep>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_CREEPS, JSCollections.$map());
+        Array<Creep> foundCreeps = (Array<Creep>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_CREEPS, null);
         this.sortedCreeps = JSCollections.$map();
         Lodash.forIn(foundCreeps, new LodashCallback1<Creep>() {
             @Override
             public boolean invoke(Creep creep) {
-                String type = creep.name.substring(0, 1);
+                String type = (String) creep.memory.$get("type");
                 CreepWrapper creepWrapper = getCreepWrapper(type, creep);
                 if (creepWrapper != null) {
                     getSortedCreeps(type).push(creepWrapper);
