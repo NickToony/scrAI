@@ -7,6 +7,7 @@ import com.nicktoony.scrAI.World.Tasks.TaskBuild;
 import com.nicktoony.screeps.ConstructionSite;
 import com.nicktoony.screeps.GlobalVariables;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 import org.stjs.javascript.Map;
 
 /**
@@ -23,6 +24,8 @@ public class ConstructionManager extends Manager {
     }
 
     public void update() {
+        Global.console.log("ConstructionManager -> Update");
+
         // Fetch ALL energy
         Array<ConstructionSite> foundSites = (Array<ConstructionSite>) this.roomController.getRoom().find(GlobalVariables.FIND_CONSTRUCTION_SITES,
                 null);

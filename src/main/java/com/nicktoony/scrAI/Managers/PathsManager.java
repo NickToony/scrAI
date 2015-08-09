@@ -30,6 +30,9 @@ public class PathsManager extends Manager {
     }
 
     public void update() {
+        Global.console.log("PathsManager -> Update");
+
+        // temporary
         if (roomController.getRoom().controller.level < 3) {
             return;
         }

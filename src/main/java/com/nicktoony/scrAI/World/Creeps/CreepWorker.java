@@ -7,7 +7,9 @@ import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.Task;
 import com.nicktoony.screeps.*;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
+import org.stjs.javascript.Map;
 
 import static com.nicktoony.screeps.GlobalVariables.MOVE;
 import static com.nicktoony.screeps.GlobalVariables.WORK;
@@ -66,7 +68,17 @@ public class CreepWorker extends CreepWrapper {
             return true;
         } else {
             // move to target
-            this.creep.moveTo(position);
+            this.creep.moveTo(position, JSCollections.$map(
+                    "reusePath", Constants.SETTINGS_PATH_REUSE, // reuse the path for a long time
+                    "noPathFinding", roomController.hasPathFound) // if have already done some pathfinding.. delay it.
+            );
+
+            Map<String, Object> moveMemory = (Map<String, Object>)this.creep.memory.$get("_move");
+            if (moveMemory != null) {
+                Integer time = (Integer) (moveMemory).$get("time");
+                roomController.hasPathFound = time != null && time == Game.time;
+            }
+
             return false;
         }
     }

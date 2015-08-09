@@ -9,13 +9,12 @@ import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
 import com.nicktoony.scrAI.World.SourceWrapper;
+import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 26/07/15.
- * var stjs = require("stjs");
- * var Constants = require('Constants');
- * var Advisor = require("Advisor");
- * var CreepMiner = require("CreepMiner");
+ *
+ * The economy manager is responsible for making decisions regarding the economy of the room.
  */
 public class EconomyAdvisor {
 
@@ -53,6 +52,7 @@ public class EconomyAdvisor {
                 this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length()) {
 
             SourceWrapper sourceWrapper = this.roomController.getSourcesManager().getFreeSource();
+
             int workParts = (int) Math.ceil((sourceWrapper.getOptimalWork() - sourceWrapper.getMiningRate()) / sourceWrapper.getAvailableSpots());
 
             // create a new miner

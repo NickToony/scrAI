@@ -55,7 +55,7 @@ public class CreepMiner extends CreepWrapper {
             if (atSource) {
                 this.creep.harvest(target);
             } else {
-                this.creep.moveTo(target);
+                this.creep.moveTo(target, null);
                 if (this.creep.pos.inRangeTo(target.pos, 1)) {
                     memory.$put("atSource", true);
                 }

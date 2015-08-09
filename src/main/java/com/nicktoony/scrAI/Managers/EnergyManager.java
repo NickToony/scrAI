@@ -25,6 +25,8 @@ public class EnergyManager extends Manager {
     }
 
     public void update() {
+        Global.console.log("EnergyManager -> Update");
+
         // Fetch ALL energy
         Array<Source> foundEnergy = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_DROPPED_ENERGY,
                 null);

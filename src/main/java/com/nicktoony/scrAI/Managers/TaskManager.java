@@ -37,6 +37,8 @@ public class TaskManager extends Manager{
 
     @Override
     public void update() {
+        Global.console.log("TaskManager -> Update");
+
         getTasks();
     }
 
@@ -84,12 +86,15 @@ public class TaskManager extends Manager{
         if (!processedTasks) {
 
             taskCount = 0;
-            tasks = new JSCollections().$map();
             Lodash.forIn(taskMemory, new LodashCallback2<Map<String, Object>, String>() {
 
                 @Override
                 public boolean invoke(Map<String, Object> innerMemory, String associatedId) {
-                    processTask(associatedId, innerMemory);
+                    if (tasks.$get(associatedId) != null) {
+                        taskCount ++;
+                    } else {
+                        processTask(associatedId, innerMemory);
+                    }
 
                     return true;
                 }

@@ -40,6 +40,8 @@ public class SourcesManager extends Manager {
 
     @Override
     public void update() {
+        Global.console.log("ConstructionManager -> Update");
+
         // Clear old array
         sourceIds = new Array<String>();
         safeSourceIds = new Array<String>();
@@ -62,9 +64,8 @@ public class SourcesManager extends Manager {
                 sourceIds.push(source.id);
                 if (safe) {
                     safeSourceIds.push(source.id);
+                    maxMiners += sourceWrapper.getAvailableSpots();
                 }
-
-                maxMiners += sourceWrapper.getAvailableSpots();
 
                 return true;
             }
@@ -120,7 +121,7 @@ public class SourcesManager extends Manager {
             @Override
             public boolean invoke(String source) {
                 // Check for enemies near the source;
-                addSourceWrapper((Source) Game.getObjectById(source), safeSourceIds.indexOf(source) > 0);
+                addSourceWrapper((Source) Game.getObjectById(source), safeSourceIds.indexOf(source) >= 0);
                 return true;
             }
         }, this);
@@ -131,6 +132,7 @@ public class SourcesManager extends Manager {
         Lodash.forIn(getSafeSourceWrappers(), new LodashCallback1<SourceWrapper>() {
             @Override
             public boolean invoke(SourceWrapper sourceWrapper) {
+
                 if (sourceWrapper.getTakenSpots() < sourceWrapper.getAvailableSpots()) {
                     TemporaryVariables.tempSource = sourceWrapper;
                     return false;

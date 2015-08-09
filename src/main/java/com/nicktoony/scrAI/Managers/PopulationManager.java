@@ -14,6 +14,7 @@ import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Memory;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
 
@@ -55,6 +56,8 @@ public class PopulationManager extends Manager {
 
     @Override
     public void update() {
+        Global.console.log("PopulationManager -> Update");
+
         Lodash.forIn(Memory.creeps, new LodashCallback2<Creep, String>() {
             @Override
             public boolean invoke(Creep variable1, String variable2) {

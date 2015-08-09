@@ -8,6 +8,7 @@ import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
 import com.nicktoony.scrAI.World.Tasks.TaskRepair;
 import com.nicktoony.screeps.*;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 import org.stjs.javascript.Map;
 
 /**
@@ -28,6 +29,8 @@ public class StructureManager extends Manager {
 
     @Override
     public void update() {
+        Global.console.log("StructureManager -> Update");
+
         // Fetch ALL structures
         Array<Structure> foundSites = (Array<Structure>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_STRUCTURES,
                 null);

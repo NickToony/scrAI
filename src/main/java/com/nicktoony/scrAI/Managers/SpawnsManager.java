@@ -32,9 +32,6 @@ public class SpawnsManager extends Manager {
             public boolean invoke(String variable) {
                 Spawn spawn = Game.spawns.$get(variable);
                 if (spawn != null) {
-                    if (roomController.getTasksManager().getTaskMemory().$get(spawn.id) == null) {
-                        roomController.getTasksManager().addTask(new TaskDeposit(roomController, spawn.id, spawn));
-                    }
                     spawns.push(spawn);
                 }
                 return true;
@@ -70,12 +67,18 @@ public class SpawnsManager extends Manager {
 
     @Override
     public void update() {
+        Global.console.log("SpawnsManager -> Update");
+
         spawnIds = new Array<String>();
 
         this.spawns = (Array<Spawn>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_SPAWNS, null);
         Lodash.forIn(spawns, new LodashCallback1<Spawn>() {
             @Override
             public boolean invoke(Spawn spawn) {
+                if (roomController.getTasksManager().getTaskMemory().$get(spawn.id) == null) {
+                    roomController.getTasksManager().addTask(new TaskDeposit(roomController, spawn.id, spawn));
+                }
+
                 spawnIds.push(spawn.name);
                 return true;
             }

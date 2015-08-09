@@ -18,7 +18,7 @@ public abstract class Creep {
 
     }
 
-    public abstract int moveTo(Object target);
+    public abstract int moveTo(Object target, Map<String, ?> opts);
 
     public abstract int transferEnergy(Depositable target);
 

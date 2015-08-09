@@ -5,9 +5,8 @@ import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 
 /**
  * Created by nick on 26/07/15.
- * var stjs = require("stjs");
- * var Constants = require('Constants');
- * var Advisor = require("Advisor");
+ *
+ * Military advisor makes decisions regarding military units
  */
 public class MilitaryAdvisor extends Advisor {
     private int tier;
