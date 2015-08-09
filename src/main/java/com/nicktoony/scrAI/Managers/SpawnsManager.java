@@ -30,7 +30,7 @@ public class SpawnsManager extends Manager {
         Lodash.forIn(spawnIds, new LodashCallback1<String>() {
             @Override
             public boolean invoke(String variable) {
-                Spawn spawn = Game.spawns.$get(variable);
+                Spawn spawn = (Spawn) Game.getObjectById(variable);
                 if (spawn != null) {
                     spawns.push(spawn);
                 }
@@ -79,7 +79,7 @@ public class SpawnsManager extends Manager {
                     roomController.getTasksManager().addTask(new TaskDeposit(roomController, spawn.id, spawn));
                 }
 
-                spawnIds.push(spawn.name);
+                spawnIds.push(spawn.id);
                 return true;
             }
         }, this);

@@ -54,12 +54,16 @@ public class CreepWorker extends CreepWrapper {
                     return true;
                 }
             }, this);
+
         } else {
+
             if (!task.canAct(this) || !task.act(this)) {
                 taskId = null;
                 task = null;
             }
+
         }
+
     }
 
     public boolean moveTo(RoomPosition position) {
@@ -68,10 +72,13 @@ public class CreepWorker extends CreepWrapper {
             return true;
         } else {
             // move to target
-            this.creep.moveTo(position, JSCollections.$map(
-                    "reusePath", Constants.SETTINGS_PATH_REUSE, // reuse the path for a long time
-                    "noPathFinding", roomController.hasPathFound) // if have already done some pathfinding.. delay it.
-            );
+            Map<String, Object> parameters = JSCollections.$map();
+            parameters.$put("ignoreCreeps", !(this.creep.pos.inRangeTo(position, 2)));
+            parameters.$put("ignoreDestructibleStructures", false);
+            parameters.$put("heuristicWeight", 100);
+            parameters.$put("reusePath", Constants.SETTINGS_PATH_REUSE); // reuse the path for a long time
+            parameters.$put("noPathFinding", roomController.hasPathFound); // if have already done some pathfinding.. delay it.
+            this.creep.moveTo(position, parameters);
 
             Map<String, Object> moveMemory = (Map<String, Object>)this.creep.memory.$get("_move");
             if (moveMemory != null) {

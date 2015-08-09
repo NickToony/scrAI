@@ -12,7 +12,7 @@ public class Game {
     public static Array<Creep> creeps;
     public static Map<String, Spawn> spawns;
 
-    public static int getUsedCpu() {
+    public static float getUsedCpu() {
         return 0;
     }
 
