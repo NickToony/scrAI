@@ -25,20 +25,20 @@ import org.stjs.javascript.Map;
  * var Lodash = require('lodash');
  * var CreepMiner = require('CreepMiner');
  */
-public class PopulationManager extends ManagerTimer {
+public class PopulationManager extends Manager {
     private Array<CreepWrapper> allCreeps;
     private Map<String, Array<CreepWrapper>> sortedCreeps;
 
-    public PopulationManager(final RoomController roomController) {
-        super(roomController, "PopulationManager", Constants.DELAY_POPULATION_MANAGER);
+    public PopulationManager(RoomController roomController, Map<String, Object> memory) {
+        super(roomController, memory);
         this.allCreeps = new Array<CreepWrapper>();
 
-        Array<Creep> foundCreeps = (Array<Creep>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_CREEPS, JSCollections.$map());
+        Array<Creep> foundCreeps = (Array<Creep>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_CREEPS, null);
         this.sortedCreeps = JSCollections.$map();
         Lodash.forIn(foundCreeps, new LodashCallback1<Creep>() {
             @Override
             public boolean invoke(Creep creep) {
-                String type = creep.name.substring(0, 1);
+                String type = (String) creep.memory.$get("type");
                 CreepWrapper creepWrapper = getCreepWrapper(type, creep);
                 if (creepWrapper != null) {
                     getSortedCreeps(type).push(creepWrapper);
@@ -47,22 +47,28 @@ public class PopulationManager extends ManagerTimer {
                 return true;
             }
         }, this);
+    }
 
-        if (super.canRun()) {
-            super.hasRun();
+    @Override
+    protected void init() {
 
-            Lodash.forIn(Memory.creeps, new LodashCallback2<Creep, String>() {
-                @Override
-                public boolean invoke(Creep variable1, String variable2) {
+    }
 
-                    if (Game.creeps.$get(variable2) == null) {
-                        Memory.creeps.$delete(variable2);
-                    }
+    @Override
+    public void update() {
+        Global.console.log("PopulationManager -> Update");
 
-                    return true;
+        Lodash.forIn(Memory.creeps, new LodashCallback2<Creep, String>() {
+            @Override
+            public boolean invoke(Creep variable1, String variable2) {
+
+                if (Game.creeps.$get(variable2) == null) {
+                    Memory.creeps.$delete(variable2);
                 }
-            }, this);
-        }
+
+                return true;
+            }
+        }, this);
     }
 
     public Array<CreepWrapper> getSortedCreeps(String id) {

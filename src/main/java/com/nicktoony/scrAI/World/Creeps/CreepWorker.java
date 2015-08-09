@@ -7,7 +7,9 @@ import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.Task;
 import com.nicktoony.screeps.*;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
+import org.stjs.javascript.Map;
 
 import static com.nicktoony.screeps.GlobalVariables.MOVE;
 import static com.nicktoony.screeps.GlobalVariables.WORK;
@@ -52,12 +54,16 @@ public class CreepWorker extends CreepWrapper {
                     return true;
                 }
             }, this);
+
         } else {
+
             if (!task.canAct(this) || !task.act(this)) {
                 taskId = null;
                 task = null;
             }
+
         }
+
     }
 
     public boolean moveTo(RoomPosition position) {
@@ -66,7 +72,20 @@ public class CreepWorker extends CreepWrapper {
             return true;
         } else {
             // move to target
-            this.creep.moveTo(position);
+            Map<String, Object> parameters = JSCollections.$map();
+            parameters.$put("ignoreCreeps", !(this.creep.pos.inRangeTo(position, 2)));
+            parameters.$put("ignoreDestructibleStructures", false);
+            parameters.$put("heuristicWeight", 100);
+            parameters.$put("reusePath", Constants.SETTINGS_PATH_REUSE); // reuse the path for a long time
+            parameters.$put("noPathFinding", roomController.hasPathFound); // if have already done some pathfinding.. delay it.
+            this.creep.moveTo(position, parameters);
+
+            Map<String, Object> moveMemory = (Map<String, Object>)this.creep.memory.$get("_move");
+            if (moveMemory != null) {
+                Integer time = (Integer) (moveMemory).$get("time");
+                roomController.hasPathFound = time != null && time == Game.time;
+            }
+
             return false;
         }
     }

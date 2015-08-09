@@ -1,11 +1,14 @@
 package com.nicktoony.scrAI;
 
-import com.nicktoony.helpers.module;
+import org.stjs.javascript.annotation.GlobalScope;
 
 /**
  * Created by nick on 26/07/15.
- * var stjs = require("stjs");
+ *
+ * Provides global configuration for all other modules. This doesn't generate a class because of the
+ * GlobaScope.
  */
+@GlobalScope
 public class Constants {
     public static int TIER_LOW = 1;
     public static int TIER_MEDIUM = 2;
@@ -19,13 +22,15 @@ public class Constants {
 
     public static int OFFSET_ROOM_STORAGE = 100; // useful to stop the AI spending too much early on
     public static int DELAY_RANDOM = 20;
-    public static int DELAY_PATH_SCAN = 100; // how many ticks between checking paths are okay
-    public static int DELAY_ENERGY_SCAN = 20;
-    public static int DELAY_ECONOMY_DECISION = 10;
+    public static int DELAY_PATH_MANAGER = 100; // how many ticks between checking paths are okay
+    public static int DELAY_ENERGY_MANAGER = 20;
+    public static int DELAY_ADVISORS = 15;
     public static int DELAY_CONSTRUCTION_MANAGER = 50;
     public static int DELAY_STRUCTURE_MANAGER = 100;
     public static int DELAY_POPULATION_MANAGER = 150;
     public static int DELAY_SPAWN_MANAGER = 100;
+    public static int DELAY_TASK_MANAGER = 100;
+    public static int DELAY_SOURCES_MANAGER = 100;
 
     public static int PRIORITY_BUILD = 25;
     public static int PRIORITY_UPGRADE = 0;
@@ -42,6 +47,7 @@ public class Constants {
     // Creep settings (miner)
     public static int SETTING_MINER_PER_SPAWN = 2;
     public static int SETTING_MAX_ROAD_CREATE = 1;
+    public static int SETTINGS_PATH_REUSE = 50;
 
     // Source constants
     public static final int SOURCE_REGEN = 300;

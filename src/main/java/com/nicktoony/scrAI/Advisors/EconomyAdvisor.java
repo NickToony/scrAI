@@ -4,7 +4,7 @@ import com.nicktoony.helpers.Lodash;
 import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
-import com.nicktoony.scrAI.Managers.ManagerTimer;
+import com.nicktoony.scrAI.Managers.Manager;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
@@ -13,25 +13,20 @@ import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 26/07/15.
- * var stjs = require("stjs");
- * var Constants = require('Constants');
- * var Advisor = require("Advisor");
- * var CreepMiner = require("CreepMiner");
+ *
+ * The economy manager is responsible for making decisions regarding the economy of the room.
  */
-public class EconomyAdvisor extends ManagerTimer {
+public class EconomyAdvisor {
 
     private int currentWorkers = 0;
+    private RoomController roomController;
 
     public EconomyAdvisor(RoomController roomController) {
-        super(roomController, "EconomyAdvisor", Constants.DELAY_ECONOMY_DECISION);
+        this.roomController = roomController;
     }
 
     public CreepDefinition step() {
 
-        if (!super.canRun()) {
-            return null;
-        }
-        super.hasRun();
 
         // Calculate how many workers we need
         int totalWorkers = Math.max((int) Math.ceil(this.roomController.getTasksManager().getTaskCount() / 2f),
@@ -57,13 +52,12 @@ public class EconomyAdvisor extends ManagerTimer {
                 this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length()) {
 
             SourceWrapper sourceWrapper = this.roomController.getSourcesManager().getFreeSource();
+
             int workParts = (int) Math.ceil((sourceWrapper.getOptimalWork() - sourceWrapper.getMiningRate()) / sourceWrapper.getAvailableSpots());
 
             // create a new miner
             return CreepMiner.define(this.roomController, workParts, sourceWrapper.getSource());
         }
-
-        roomController.getPathsManager().update();
 
         // Nothing we want..
         return null;

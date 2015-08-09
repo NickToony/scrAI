@@ -15,43 +15,27 @@ import org.stjs.javascript.Map;
 /**
  * Created by nick on 02/08/15.
  */
-public class PathsManager extends ManagerTimer {
-    private Map<String, Object> memory;
+public class PathsManager extends Manager {
     private Map<String, Array<Map<String, Object>>> paths;
     private Structure baseStructure;
     private int roadsCreated = 0;
 
-    public PathsManager(final RoomController roomController, Map<String, Object> memory) {
-        super(roomController, "PathsManager", Constants.DELAY_PATH_SCAN);
-
-        this.roomController = roomController;
-        this.memory = memory;
-
-        // Initial delay.. let everything else figure stuff out first
-        if (!super.canRun()) {
-            return;
-        }
-
-        // Init (sets up paths)
-        if (memory.$get("init") == null) {
-            init();
-            memory.$put("init", true);
-        }
+    public PathsManager(RoomController roomController, Map<String, Object> memory) {
+        super(roomController, memory);
     }
 
-    private void init() {
-        this.paths = JSCollections.$map();
-
-        memory.$put("paths", paths);
-        super.hasRun();
+    @Override
+    protected void init() {
+        memory.$put("paths", JSCollections.$map());
     }
 
     public void update() {
-        if (!super.canRun()) {
+        Global.console.log("PathsManager -> Update");
+
+        // temporary
+        if (roomController.getRoom().controller.level < 3) {
             return;
         }
-
-        super.hasRun();
 
         // Load from memory
         this.paths = (Map<String, Array<Map<String, Object>>>) this.memory.$get("paths");
@@ -103,7 +87,7 @@ public class PathsManager extends ManagerTimer {
                                 int x = (Integer) pathStep.$get("x");
                                 int y = (Integer) pathStep.$get("y");
                                 if (roomController.getRoom().createConstructionSite(x, y, GlobalVariables.STRUCTURE_ROAD) == GlobalVariables.OK) {
-                                    roadsCreated ++;
+                                    roadsCreated++;
                                 }
 
                                 // Keep going as long as not created too many roads
@@ -118,9 +102,5 @@ public class PathsManager extends ManagerTimer {
                 }
             }
         }, this);
-    }
-
-    public Map<String, Object> getMemory() {
-        return memory;
     }
 }

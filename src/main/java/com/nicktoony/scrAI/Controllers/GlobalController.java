@@ -51,6 +51,7 @@ public class GlobalController {
 
                 // Perform its step
                 roomController.step();
+                roomController.save();
             }
         });
     }

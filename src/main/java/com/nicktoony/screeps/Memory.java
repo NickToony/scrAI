@@ -9,4 +9,5 @@ import org.stjs.javascript.Map;
 public class Memory {
     public static Map<String, Object> sources;
     public static Map<String, Object> creeps;
+    public static Map<String, Spawn> spawns;
 }

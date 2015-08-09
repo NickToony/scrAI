@@ -6,6 +6,7 @@ import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.screeps.Energy;
 import com.nicktoony.screeps.Game;
+import org.stjs.javascript.Global;
 
 /**
  * Created by nick on 02/08/15.

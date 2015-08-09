@@ -16,12 +16,13 @@ import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
 
-import java.nio.file.PathMatcher;
-
 /**
  * Created by nick on 26/07/15.
  */
 public class RoomController {
+
+    // room globals
+    public boolean hasPathFound = false;
 
     private Room room;
     private PopulationManager populationManager;
@@ -35,9 +36,10 @@ public class RoomController {
     private EconomyAdvisor economyAdvisor;
     private MilitaryAdvisor militaryAdvisor;
     private int alertStatus;
-    private Map<String, Object> sourcesMemory;
     private Map<String, Object> timersMemory;
+    private Map<String, Object> cpuMemory;
     private int roomTotalStorage = 0;
+    private float cpu = 0;
 
     public RoomController(Room room) {
         this.room = room;
@@ -45,29 +47,13 @@ public class RoomController {
 
         // Check if memory is defined
         if (this.room.memory.$get("created") == null) {
-            this.room.memory.$put("sourcesMemory", JSCollections.$map());
-            this.room.memory.$put("pathsMemory", JSCollections.$map());
-            this.room.memory.$put("tasksMemory", JSCollections.$map());
-            this.room.memory.$put("structuresMemory", JSCollections.$map());
-            this.room.memory.$put("timersMemory", JSCollections.$map());
-
             // Finally we're created
             this.room.memory.$put("created", true);
         }
-        this.sourcesMemory = (Map<String, Object>) this.room.memory.$get("sourcesMemory");
-        this.timersMemory = (Map<String, Object>) this.room.memory.$get("timersMemory");
+        this.timersMemory = getMemory("timersMemory");
+        this.cpuMemory = getMemory("cpuMemory");
 
         this.roomTotalStorage = (Integer) getMemoryOrDefault("roomTotalStorage", 300);
-
-        // Managers
-        this.tasksManager = new TaskManager(this, (Map<String, Object>) this.room.memory.$get("tasksMemory"));
-        this.populationManager = new PopulationManager(this);
-        this.sourcesManager = new SourcesManager(this);
-        this.spawnsManager = new SpawnsManager(this);
-        this.energyManager = new EnergyManager(this);
-        this.pathsManager = new PathsManager(this, (Map<String, Object>) this.room.memory.$get("pathsMemory"));
-        this.constructionManager = new ConstructionManager(this);
-        this.structureManager = new StructureManager(this, (Map<String, Object>) this.room.memory.$get("structuresMemory"));
 
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
@@ -92,44 +78,54 @@ public class RoomController {
     }
 
     public void step() {
-        Spawn spawn = this.spawnsManager.getAvailableSpawn();
-        if (spawn != null) {
-            // Ask "advisors" what they want
-            CreepDefinition economyRequest = this.economyAdvisor.step();
-            CreepDefinition militaryRequest = this.militaryAdvisor.step();
 
-            // Perform depending on ratio
-            boolean doMilitary = false;
-            if (this.alertStatus == Constants.ALERT_STATUS_CRITICAL) {
-                doMilitary = true;
-            } else if (this.alertStatus == Constants.ALERT_STATUS_NONE) {
-                doMilitary = false;
-            }
+        if (handleManagerUpdates()) {
+            return;
+        }
 
-            CreepDefinition request = null;
-            if (doMilitary && militaryRequest != null) {
-                // request the military thing
-                Global.console.log("MILITARY WANTS SOMETHING: " + militaryRequest);
-                request = militaryRequest;
-            } else if (economyRequest != null) {
-                // request the economy thing
-                Global.console.log("ECONOMY WANTS SOMETHING: " + economyRequest);
-                request = economyRequest;
-            } else if (militaryRequest != null) {
-                // military is not priority, but economy didn't want anything
-                Global.console.log("ECONOMY DOESNT WANT, BUT MILITARY DOES: " + militaryRequest);
-                request = militaryRequest;
-            } else {
-                // no one wants anything
-                Global.console.log("NOONE WANTS ANYTHING?!");
-            }
+        if (updateManager("Advisors", Constants.DELAY_ADVISORS)) {
+            Spawn spawn = this.spawnsManager.getAvailableSpawn();
+            if (spawn != null) {
+                // Ask "advisors" what they want
+                CreepDefinition economyRequest = this.economyAdvisor.step();
+                CreepDefinition militaryRequest = this.militaryAdvisor.step();
 
-            if (request != null) {
-                if (spawn.canCreateCreep(request.getAbilities(), request.getName()) == GlobalVariables.OK) {
-                    Global.console.log("BUILD: " + request.getName());
-                    spawn.createCreep(request.getAbilities(), request.getName(), request.getMemory());
+                // Perform depending on ratio
+                boolean doMilitary = false;
+                if (this.alertStatus == Constants.ALERT_STATUS_CRITICAL) {
+                    doMilitary = true;
+                } else if (this.alertStatus == Constants.ALERT_STATUS_NONE) {
+                    doMilitary = false;
+                }
+
+                CreepDefinition request = null;
+                if (doMilitary && militaryRequest != null) {
+                    // request the military thing
+                    Global.console.log("MILITARY WANTS SOMETHING: " + militaryRequest);
+                    request = militaryRequest;
+                } else if (economyRequest != null) {
+                    // request the economy thing
+                    Global.console.log("ECONOMY WANTS SOMETHING: " + economyRequest);
+                    request = economyRequest;
+                } else if (militaryRequest != null) {
+                    // military is not priority, but economy didn't want anything
+                    Global.console.log("ECONOMY DOESNT WANT, BUT MILITARY DOES: " + militaryRequest);
+                    request = militaryRequest;
+                } else {
+                    // no one wants anything
+                    Global.console.log("NOONE WANTS ANYTHING?!");
+                }
+
+                if (request != null) {
+                    if (spawn.canCreateCreep(request.getAbilities(), request.getName()) == GlobalVariables.OK) {
+                        Global.console.log("BUILD: " + request.getName());
+                        spawn.createCreep(request.getAbilities(), request.getName(), request.getMemory());
+                    }
                 }
             }
+
+            updateTimer("Advisors");
+            return;
         }
 
         Lodash.forIn(getPopulationManager().getAllCreeps(), new LodashCallback1<CreepWrapper>() {
@@ -140,59 +136,93 @@ public class RoomController {
                 return true;
             }
         }, this);
+    }
 
-        // Save source memory
-        this.room.memory.$put("sourcesMemory", sourcesMemory);
-        this.room.memory.$put("timersMemory", timersMemory);
-
+    public void save() {
         // Tasks manager
-        tasksManager.save();
-        this.room.memory.$put("tasksMemory", tasksManager.getMemory());
-        this.room.memory.$put("pathsMemory", pathsManager.getMemory());
-        this.room.memory.$put("structuresMemory", structureManager.getMemory());
+        getTasksManager().save();
+    }
+
+    private boolean handleManagerUpdates() {
+
+
+        if (updateManager("ConstructionManager", Constants.DELAY_CONSTRUCTION_MANAGER)) {
+            getConstructionManager().update();
+            updateTimer("ConstructionManager");
+            return true;
+        }
+
+        if (updateManager("EnergyManager", Constants.DELAY_ENERGY_MANAGER)) {
+            getEnergyManager().update();
+            updateTimer("EnergyManager");
+            return true;
+        }
+
+        if (updateManager("PathsManager", Constants.DELAY_PATH_MANAGER)) {
+            getPathsManager().update();
+            updateTimer("PathsManager");
+            return true;
+        }
+
+        if (updateManager("PopulationManager", Constants.DELAY_POPULATION_MANAGER)) {
+            getPopulationManager().update();
+            updateTimer("PopulationManager");
+            return true;
+        }
+
+        if (updateManager("SourcesManager", Constants.DELAY_SOURCES_MANAGER)) {
+            getSourcesManager().update();
+            updateTimer("SourcesManager");
+            return true;
+        }
+
+        if (updateManager("SpawnsManager", Constants.DELAY_SPAWN_MANAGER)) {
+            getSpawnsManager().update();
+            updateTimer("SpawnsManager");
+            return true;
+        }
+
+        if (updateManager("StructureManager", Constants.DELAY_STRUCTURE_MANAGER)) {
+            getStructureManager().update();
+            updateTimer("StructureManager");
+            return true;
+        }
+
+        if (updateManager("TaskManager", Constants.DELAY_TASK_MANAGER)) {
+            getTasksManager().update();
+            updateTimer("TaskManager");
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean updateManager( String name, int delay) {
+        if (getTimer(name) + delay < Game.time) {
+            return true;
+        }
+        return false;
+    }
+
+    private Map<String, Object> getMemory(String name) {
+        Map<String, Object> memory = (Map<String, Object>) this.room.memory.$get(name);
+        if (memory == null) {
+            this.room.memory.$put(name, JSCollections.$map());
+            return getMemory(name);
+        }
+        return memory;
     }
 
     public Room getRoom() {
         return room;
     }
 
-    public PopulationManager getPopulationManager() {
-        return populationManager;
-    }
-
-    public SourcesManager getSourcesManager() {
-        return sourcesManager;
-    }
-
-    public SpawnsManager getSpawnsManager() {
-        return spawnsManager;
-    }
-
-    public EnergyManager getEnergyManager() {
-        return energyManager;
-    }
-
     public void setAlertStatus(int alertStatus) {
         this.alertStatus = alertStatus;
     }
 
-    public Map<String, Object> getSourcesMemory(String id) {
-        if (sourcesMemory.$get(id) == null) {
-            sourcesMemory.$put(id, JSCollections.$map());
-        }
-        return (Map<String, Object>) sourcesMemory.$get(id);
-    }
-
     public int getRoomTotalStorage() {
         return roomTotalStorage - Constants.OFFSET_ROOM_STORAGE;
-    }
-
-    public TaskManager getTasksManager() {
-        return tasksManager;
-    }
-
-    public PathsManager getPathsManager() {
-        return pathsManager;
     }
 
     public int getTimer(String manager) {
@@ -208,7 +238,89 @@ public class RoomController {
         timersMemory.$put(manager, Game.time + (Math.random() * Constants.DELAY_RANDOM));
     }
 
+    public PopulationManager getPopulationManager() {
+        if (populationManager == null) {
+            resetCPU();
+            populationManager = new PopulationManager(this, getMemory("populationMemory"));
+            saveCPU("PopulationManager");
+        }
+        return populationManager;
+    }
+
+    public SourcesManager getSourcesManager() {
+        if (sourcesManager == null) {
+            resetCPU();
+            sourcesManager = new SourcesManager(this, getMemory("sourcesMemory"));
+            saveCPU("SourcesManager");
+        }
+        return sourcesManager;
+    }
+
+    public SpawnsManager getSpawnsManager() {
+        if (spawnsManager == null) {
+            resetCPU();
+            spawnsManager = new SpawnsManager(this, getMemory("spawnsMemory"));
+            saveCPU("SpawnsManager");
+        }
+        return spawnsManager;
+    }
+
+    public EnergyManager getEnergyManager() {
+        if (energyManager == null) {
+            resetCPU();
+            energyManager = new EnergyManager(this, getMemory("energyMemory"));
+            saveCPU("EnergyManager");
+        }
+        return energyManager;
+    }
+
+    public TaskManager getTasksManager() {
+        if (tasksManager == null) {
+            resetCPU();
+            tasksManager = new TaskManager(this, getMemory("taskMemory"));
+            saveCPU("TaskManager");
+        }
+        return tasksManager;
+    }
+
+    public PathsManager getPathsManager() {
+        if (pathsManager == null) {
+            resetCPU();
+            pathsManager = new PathsManager(this, getMemory("pathMemory"));
+            saveCPU("PathsManager");
+        }
+        return pathsManager;
+    }
+
+    public ConstructionManager getConstructionManager() {
+        if (constructionManager == null) {
+            resetCPU();
+            constructionManager = new ConstructionManager(this, getMemory("constructionMemory"));
+            saveCPU("ConstructionManager");
+        }
+        return constructionManager;
+    }
+
     public StructureManager getStructureManager() {
+        if (structureManager == null) {
+            resetCPU();
+            structureManager = new StructureManager(this, getMemory("structureMemory"));
+            saveCPU("StructureManager");
+        }
         return structureManager;
+    }
+
+    private void resetCPU() {
+        cpu = Game.getUsedCpu();
+    }
+
+    private void saveCPU(String name) {
+        Object prevValue = cpuMemory.$get(name);
+        float value = Game.getUsedCpu() - cpu;
+        if (prevValue != null) {
+            value += (Float) prevValue;
+        }
+
+        cpuMemory.$put(name, value);
     }
 }
