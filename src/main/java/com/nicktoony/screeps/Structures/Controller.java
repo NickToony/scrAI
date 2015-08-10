@@ -1,12 +1,9 @@
-package com.nicktoony.screeps.Structures;
-
-import com.nicktoony.screeps.RoomPosition;
-import com.nicktoony.screeps.interfaces.Upgradeable;
+package com.nicktoony.screeps.structures;
 
 /**
  * Created by nick on 30/07/15.
  */
-public class Controller extends Structure implements Upgradeable {
+public abstract class Controller extends Structure {
     public int level;
     public int progress;
     public int progressTotal;

@@ -5,7 +5,8 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.TaskPickupEnergy;
 import com.nicktoony.screeps.Energy;
-import com.nicktoony.screeps.GlobalVariables;
+import com.nicktoony.screeps.global.FindTypes;
+import com.nicktoony.screeps.global.GlobalVariables;
 import com.nicktoony.screeps.Source;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
@@ -28,7 +29,7 @@ public class EnergyManager extends Manager {
         Global.console.log("EnergyManager -> Update");
 
         // Fetch ALL energy
-        Array<Source> foundEnergy = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_DROPPED_ENERGY,
+        Array<Source> foundEnergy = (Array<Source>) this.roomController.getRoom().find(FindTypes.FIND_CONSTRUCTION_SITES,
                 null);
 
         Lodash.forIn(foundEnergy, new LodashCallback1<Energy>() {

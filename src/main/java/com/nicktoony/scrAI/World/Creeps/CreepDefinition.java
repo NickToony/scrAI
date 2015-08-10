@@ -1,6 +1,7 @@
 package com.nicktoony.scrAI.World.Creeps;
 
 import com.nicktoony.scrAI.Controllers.RoomController;
+import com.nicktoony.screeps.global.PartTypes;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
@@ -13,9 +14,9 @@ public class CreepDefinition {
 
     private Map<String, Object> memory;
     private String name;
-    private Array<String> abilities;
+    private Array<PartTypes> abilities;
 
-    public CreepDefinition(String creepId, String creepType, Array<String> abilities, RoomController roomController, Map<String, Object> memory) {
+    public CreepDefinition(String creepId, String creepType, Array<PartTypes> abilities, RoomController roomController, Map<String, Object> memory) {
         this.abilities = abilities;
         this.name = generateName(creepType, roomController);
         this.memory = memory;
@@ -34,7 +35,7 @@ public class CreepDefinition {
         return name;
     }
 
-    public Array<String> getAbilities() {
+    public Array<PartTypes> getAbilities() {
         return abilities;
     }
 

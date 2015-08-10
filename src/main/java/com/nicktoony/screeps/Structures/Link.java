@@ -1,17 +1,10 @@
-package com.nicktoony.screeps.Structures;
+package com.nicktoony.screeps.structures;
 
-import com.nicktoony.screeps.Creep;
-import com.nicktoony.screeps.interfaces.Depositable;
-import com.nicktoony.screeps.interfaces.Transferable;
+import com.nicktoony.screeps.interfaces.DepositableStructure;
 
 /**
  * Created by nick on 10/08/15.
  */
-public class Link extends Structure implements Depositable, Transferable {
+public abstract class Link extends DepositableStructure {
     public int cooldown;
-
-    @Override
-    public int transferEnergy(Creep creep, int amount) {
-        return 0;
-    }
 }

@@ -1,10 +1,10 @@
-package com.nicktoony.screeps.Structures;
+package com.nicktoony.screeps.structures;
 
-import com.nicktoony.screeps.interfaces.Decayable;
+import com.nicktoony.screeps.interfaces.DecayableStructure;
 
 /**
  * Created by nick on 10/08/15.
  */
-public class Rampart extends Structure implements Decayable {
+public abstract class Rampart extends DecayableStructure {
 
 }

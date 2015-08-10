@@ -7,6 +7,7 @@ import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepMiner;
 import com.nicktoony.screeps.RoomPosition;
 import com.nicktoony.screeps.Source;
+import com.nicktoony.screeps.global.LookTypes;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.Map;
@@ -33,7 +34,7 @@ public class SourceWrapper extends MemoryWrapper {
         for (int x = -1; x <= 1; x ++) {
             for (int y = -1; y <= 1; y ++) {
                 RoomPosition position = new RoomPosition(this.source.pos.x + x, this.source.pos.y + y, this.source.pos.roomName);
-                Array objects = position.lookFor("terrain");
+                Array objects = position.lookFor(LookTypes.terrain);
                 if (objects.$length() > 0 && objects.$get(0) == "plain" && (x != 0 || y != 0)) {
                     count ++;
                 }

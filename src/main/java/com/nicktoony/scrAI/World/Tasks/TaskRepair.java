@@ -4,7 +4,7 @@ import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.Structures.Structure;
+import com.nicktoony.screeps.structures.Structure;
 
 /**
  * Created by nick on 02/08/15.

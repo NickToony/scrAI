@@ -1,6 +1,10 @@
 package com.nicktoony.screeps;
 
-import com.nicktoony.screeps.Structures.Controller;
+import com.nicktoony.screeps.global.FindTypes;
+import com.nicktoony.screeps.global.GlobalVariables;
+import com.nicktoony.screeps.global.ResponseTypes;
+import com.nicktoony.screeps.global.StructureTypes;
+import com.nicktoony.screeps.structures.Controller;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 import org.stjs.javascript.annotation.STJSBridge;
@@ -14,9 +18,9 @@ public abstract class Room {
     public Map<String, Object> memory;
     public Controller controller;
 
-    public abstract Array<?> find(String type, Map parameters);
+    public abstract Array<?> find(FindTypes type, Map parameters);
 
     public abstract Array<Map<String, Object>>  findPath(RoomPosition pos, RoomPosition pos1, Map<String, Object> strings);
 
-    public abstract int createConstructionSite(int x, int y, String structureRoad);
+    public abstract ResponseTypes createConstructionSite(int x, int y, StructureTypes structureRoad);
 }

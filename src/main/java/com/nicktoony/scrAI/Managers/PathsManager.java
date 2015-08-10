@@ -5,8 +5,10 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.GlobalVariables;
-import com.nicktoony.screeps.Structures.Structure;
+import com.nicktoony.screeps.global.GlobalVariables;
+import com.nicktoony.screeps.global.ResponseTypes;
+import com.nicktoony.screeps.global.StructureTypes;
+import com.nicktoony.screeps.structures.Structure;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
@@ -86,7 +88,7 @@ public class PathsManager extends Manager {
                                 // Create a road for the path position
                                 int x = (Integer) pathStep.$get("x");
                                 int y = (Integer) pathStep.$get("y");
-                                if (roomController.getRoom().createConstructionSite(x, y, GlobalVariables.STRUCTURE_ROAD) == GlobalVariables.OK) {
+                                if (roomController.getRoom().createConstructionSite(x, y, StructureTypes.STRUCTURE_ROAD) == ResponseTypes.OK) {
                                     roadsCreated++;
                                 }
 

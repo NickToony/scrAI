@@ -11,8 +11,9 @@ import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.scrAI.World.Tasks.Task;
 import com.nicktoony.screeps.Creep;
 import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.GlobalVariables;
-import com.nicktoony.screeps.Memory;
+import com.nicktoony.screeps.global.FindTypes;
+import com.nicktoony.screeps.global.GlobalVariables;
+import com.nicktoony.screeps.global.Memory;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
@@ -33,7 +34,7 @@ public class PopulationManager extends Manager {
         super(roomController, memory);
         this.allCreeps = new Array<CreepWrapper>();
 
-        Array<Creep> foundCreeps = (Array<Creep>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_CREEPS, null);
+        Array<Creep> foundCreeps = (Array<Creep>) this.roomController.getRoom().find(FindTypes.FIND_MY_CREEPS, null);
         this.sortedCreeps = JSCollections.$map();
         Lodash.forIn(foundCreeps, new LodashCallback1<Creep>() {
             @Override

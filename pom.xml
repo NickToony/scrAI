@@ -38,6 +38,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <includes>
+                        <include>com/nicktoony/scrAI/**</include>
+                    </includes>
+                </configuration>
             </plugin>
 
             <plugin>

@@ -1,4 +1,4 @@
-package com.nicktoony.screeps.Helpers;
+package com.nicktoony.screeps.helpers;
 
 /**
  * Created by nick on 10/08/15.

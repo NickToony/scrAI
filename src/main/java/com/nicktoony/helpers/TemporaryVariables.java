@@ -2,7 +2,7 @@ package com.nicktoony.helpers;
 
 import com.nicktoony.scrAI.World.SourceWrapper;
 import com.nicktoony.screeps.Energy;
-import com.nicktoony.screeps.Structures.Spawn;
+import com.nicktoony.screeps.structures.Spawn;
 
 /**
  * Created by nick on 26/07/15.

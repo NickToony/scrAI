@@ -5,7 +5,8 @@ import com.nicktoony.helpers.LodashCallback1;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.TaskBuild;
 import com.nicktoony.screeps.ConstructionSite;
-import com.nicktoony.screeps.GlobalVariables;
+import com.nicktoony.screeps.global.FindTypes;
+import com.nicktoony.screeps.global.GlobalVariables;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.Map;
@@ -27,7 +28,7 @@ public class ConstructionManager extends Manager {
         Global.console.log("ConstructionManager -> Update");
 
         // Fetch ALL energy
-        Array<ConstructionSite> foundSites = (Array<ConstructionSite>) this.roomController.getRoom().find(GlobalVariables.FIND_CONSTRUCTION_SITES,
+        Array<ConstructionSite> foundSites = (Array<ConstructionSite>) this.roomController.getRoom().find(FindTypes.FIND_CONSTRUCTION_SITES,
                 null);
 
         Lodash.forIn(foundSites, new LodashCallback1<ConstructionSite>() {

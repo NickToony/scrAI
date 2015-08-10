@@ -6,8 +6,9 @@ import com.nicktoony.helpers.TemporaryVariables;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
 import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.GlobalVariables;
-import com.nicktoony.screeps.Structures.Spawn;
+import com.nicktoony.screeps.global.FindTypes;
+import com.nicktoony.screeps.global.GlobalVariables;
+import com.nicktoony.screeps.structures.Spawn;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.Map;
@@ -71,7 +72,7 @@ public class SpawnsManager extends Manager {
 
         spawnIds = new Array<String>();
 
-        this.spawns = (Array<Spawn>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_SPAWNS, null);
+        this.spawns = (Array<Spawn>) this.roomController.getRoom().find(FindTypes.FIND_MY_SPAWNS, null);
         Lodash.forIn(spawns, new LodashCallback1<Spawn>() {
             @Override
             public boolean invoke(Spawn spawn) {

@@ -1,20 +1,13 @@
-package com.nicktoony.screeps.Structures;
+package com.nicktoony.screeps.structures;
 
-import com.nicktoony.screeps.Creep;
-import com.nicktoony.screeps.Helpers.Store;
-import com.nicktoony.screeps.interfaces.Depositable;
-import com.nicktoony.screeps.interfaces.Transferable;
+import com.nicktoony.screeps.helpers.Store;
+import com.nicktoony.screeps.interfaces.DepositableStructure;
 
 /**
  * Created by nick on 10/08/15.
  */
-public class Storage extends Structure implements Depositable, Transferable {
+public abstract class Storage extends DepositableStructure {
 
     public Store store;
     public int storeCapacity;
-
-    @Override
-    public int transferEnergy(Creep creep, int amount) {
-        return 0;
-    }
 }

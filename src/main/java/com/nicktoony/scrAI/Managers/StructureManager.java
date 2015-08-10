@@ -6,9 +6,11 @@ import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.SourceWrapper;
 import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
 import com.nicktoony.scrAI.World.Tasks.TaskRepair;
-import com.nicktoony.screeps.*;
-import com.nicktoony.screeps.Structures.Extension;
-import com.nicktoony.screeps.Structures.Structure;
+import com.nicktoony.screeps.global.FindTypes;
+import com.nicktoony.screeps.global.GlobalVariables;
+import com.nicktoony.screeps.global.StructureTypes;
+import com.nicktoony.screeps.structures.Extension;
+import com.nicktoony.screeps.structures.Structure;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.Map;
@@ -34,7 +36,7 @@ public class StructureManager extends Manager {
         Global.console.log("StructureManager -> Update");
 
         // Fetch ALL structures
-        Array<Structure> foundSites = (Array<Structure>) this.roomController.getRoom().find(GlobalVariables.FIND_MY_STRUCTURES,
+        Array<Structure> foundSites = (Array<Structure>) this.roomController.getRoom().find(FindTypes.FIND_MY_STRUCTURES,
                 null);
         // An array of structures to road to
         roadableStructureIds = new Array<String>();
@@ -64,7 +66,7 @@ public class StructureManager extends Manager {
                 }
 
                 // If it's an extension
-                if (structure.structureType == GlobalVariables.STRUCTURE_EXTENSION) {
+                if (structure.structureType == StructureTypes.STRUCTURE_EXTENSION) {
                     // If it has no task, and energy requirements
                     if (roomController.getTasksManager().getTaskMemory().$get(structure.id) == null
                             && ((Extension) structure).energy < ((Extension) structure).energyCapacity) {
@@ -76,7 +78,7 @@ public class StructureManager extends Manager {
                     totalStorageCalculation += ((Extension) structure).energyCapacity;
                     // Road to it
                     roadableStructureIds.push(structure.id);
-                } else if (structure.structureType == GlobalVariables.STRUCTURE_SPAWN) {
+                } else if (structure.structureType == StructureTypes.STRUCTURE_SPAWN) {
                     // Spawn? add its storage capacity
                     totalStorageCalculation += ((Extension) structure).energyCapacity;
                     // Force to start of road!

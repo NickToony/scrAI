@@ -1,21 +1,21 @@
-package com.nicktoony.screeps.Structures;
+package com.nicktoony.screeps.structures;
 
-import com.nicktoony.screeps.ScreepsObject;
-import com.nicktoony.screeps.interfaces.Depositable;
-import com.nicktoony.screeps.interfaces.Ownable;
-import com.nicktoony.screeps.interfaces.Repairable;
+import com.nicktoony.screeps.global.GlobalVariables;
+import com.nicktoony.screeps.global.StructureTypes;
+import com.nicktoony.screeps.helpers.OwnerProperties;
+import com.nicktoony.screeps.global.ScreepsObject;
 
 /**
  * Created by nick on 02/08/15.
  */
-public class Structure extends ScreepsObject implements Repairable, Ownable {
-    public String structureType;
+public abstract class Structure extends ScreepsObject {
+    public StructureTypes structureType;
+    public int hits = 0;
+    public int hitsMax = 0;
+    public boolean my = false;
+    public OwnerProperties owner = null;
 
-    public int destroy() {
-        return 0;
-    }
+    public abstract int destroy();
 
-    public int notifyWhenAttacked(boolean enabled) {
-        return 0;
-    }
+    public abstract int notifyWhenAttacked(boolean enabled);
 }

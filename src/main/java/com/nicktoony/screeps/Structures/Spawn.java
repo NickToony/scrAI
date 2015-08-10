@@ -1,7 +1,9 @@
-package com.nicktoony.screeps.Structures;
+package com.nicktoony.screeps.structures;
 
 import com.nicktoony.screeps.Creep;
-import com.nicktoony.screeps.Helpers.SpawningCreep;
+import com.nicktoony.screeps.global.PartTypes;
+import com.nicktoony.screeps.global.ResponseTypes;
+import com.nicktoony.screeps.helpers.SpawningCreep;
 import com.nicktoony.screeps.interfaces.*;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
@@ -9,20 +11,16 @@ import org.stjs.javascript.Map;
 /**
  * Created by nick on 26/07/15.
  */
-public class Spawn extends Structure implements Depositable, ConvenientMemory, Nameable, Transferable {
+public abstract class Spawn extends DepositableStructure {
 
     public SpawningCreep spawning;
+    public String name;
+    public Map<String, Object> memory;
 
-    public int canCreateCreep(Array<String> abilities, String name) {
-        return 0;
-    }
+    public abstract ResponseTypes canCreateCreep(Array<PartTypes> abilities, String name);
 
-    public int createCreep(Array<String> abilities, String name, Map<String, Object> memory) {
-        return 0;
-    }
+    public abstract ResponseTypes createCreep(Array<PartTypes> abilities, String name, Map<String, Object> memory);
 
     @Override
-    public int transferEnergy(Creep creep, int amount) {
-        return 0;
-    }
+    public abstract ResponseTypes transferEnergy(Creep creep, int amount);
 }

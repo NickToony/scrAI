@@ -5,7 +5,8 @@ import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.SourceWrapper;
 import com.nicktoony.screeps.Creep;
 import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.GlobalVariables;
+import com.nicktoony.screeps.global.FindTypes;
+import com.nicktoony.screeps.global.GlobalVariables;
 import com.nicktoony.screeps.Source;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
@@ -50,14 +51,14 @@ public class SourcesManager extends Manager {
         maxMiners = 0;
 
         // Fetch ALL sourceWrappers
-        Array<Source> foundSources = (Array<Source>) this.roomController.getRoom().find(GlobalVariables.FIND_SOURCES,
+        Array<Source> foundSources = (Array<Source>) this.roomController.getRoom().find(FindTypes.FIND_SOURCES,
                 null);
 
         Lodash.forIn(foundSources, new LodashCallback1<Source>() {
             @Override
             public boolean invoke(Source source) {
                 // Check for enemies near the source;
-                Array<Creep> targets = (Array<Creep>) source.pos.findInRange(GlobalVariables.FIND_HOSTILE_CREEPS, 3);
+                Array<Creep> targets = (Array<Creep>) source.pos.findInRange(FindTypes.FIND_HOSTILE_CREEPS, 3, null);
 
                 boolean safe = targets.$length() == 0;
                 SourceWrapper sourceWrapper = addSourceWrapper(source, safe);

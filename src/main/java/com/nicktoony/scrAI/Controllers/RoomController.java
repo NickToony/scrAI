@@ -9,9 +9,10 @@ import com.nicktoony.scrAI.Managers.*;
 import com.nicktoony.scrAI.World.Creeps.CreepDefinition;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.GlobalVariables;
+import com.nicktoony.screeps.global.GlobalVariables;
 import com.nicktoony.screeps.Room;
-import com.nicktoony.screeps.Structures.Spawn;
+import com.nicktoony.screeps.global.ResponseTypes;
+import com.nicktoony.screeps.structures.Spawn;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
@@ -117,7 +118,7 @@ public class RoomController {
                 }
 
                 if (request != null) {
-                    if (spawn.canCreateCreep(request.getAbilities(), request.getName()) == GlobalVariables.OK) {
+                    if (spawn.canCreateCreep(request.getAbilities(), request.getName()) == ResponseTypes.OK) {
                         Global.console.log("BUILD: " + request.getName());
                         spawn.createCreep(request.getAbilities(), request.getName(), request.getMemory());
                     }
