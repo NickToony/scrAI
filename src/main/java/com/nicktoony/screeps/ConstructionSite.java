@@ -1,5 +1,7 @@
 package com.nicktoony.screeps;
 
+import com.nicktoony.screeps.interfaces.Buildable;
+
 /**
  * Created by nick on 02/08/15.
  */

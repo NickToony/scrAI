@@ -4,9 +4,9 @@ import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
 import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
-import com.nicktoony.screeps.Depositable;
+import com.nicktoony.screeps.Structures.Structure;
+import com.nicktoony.screeps.interfaces.Depositable;
 import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.Spawn;
 
 /**
  * Created by nick on 02/08/15.
@@ -34,7 +34,7 @@ public class TaskDeposit extends Task {
 
     @Override
     public boolean act(CreepWorker creepWorker) {
-        if (creepWorker.moveTo(spawn.pos)) {
+        if (creepWorker.moveTo(((Structure) spawn).pos)) {
             creepWorker.getCreep().transferEnergy(spawn);
             return false;
         }

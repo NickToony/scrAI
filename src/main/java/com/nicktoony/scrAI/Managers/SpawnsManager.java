@@ -7,7 +7,7 @@ import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
 import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.GlobalVariables;
-import com.nicktoony.screeps.Spawn;
+import com.nicktoony.screeps.Structures.Spawn;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.Map;

@@ -3,10 +3,8 @@ package com.nicktoony.scrAI.World.Tasks;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
-import com.nicktoony.screeps.ConstructionSite;
 import com.nicktoony.screeps.Game;
-import com.nicktoony.screeps.Structure;
-import org.stjs.javascript.Global;
+import com.nicktoony.screeps.Structures.Structure;
 
 /**
  * Created by nick on 02/08/15.

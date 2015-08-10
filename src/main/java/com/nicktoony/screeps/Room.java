@@ -1,5 +1,6 @@
 package com.nicktoony.screeps;
 
+import com.nicktoony.screeps.Structures.Controller;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 import org.stjs.javascript.annotation.STJSBridge;

@@ -7,6 +7,8 @@ import com.nicktoony.scrAI.World.SourceWrapper;
 import com.nicktoony.scrAI.World.Tasks.TaskDeposit;
 import com.nicktoony.scrAI.World.Tasks.TaskRepair;
 import com.nicktoony.screeps.*;
+import com.nicktoony.screeps.Structures.Extension;
+import com.nicktoony.screeps.Structures.Structure;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.Map;
@@ -64,18 +66,19 @@ public class StructureManager extends Manager {
                 // If it's an extension
                 if (structure.structureType == GlobalVariables.STRUCTURE_EXTENSION) {
                     // If it has no task, and energy requirements
-                    if (roomController.getTasksManager().getTaskMemory().$get(structure.id) == null && structure.energy < structure.energyCapacity) {
+                    if (roomController.getTasksManager().getTaskMemory().$get(structure.id) == null
+                            && ((Extension) structure).energy < ((Extension) structure).energyCapacity) {
                         // Give it a deposit task
-                        roomController.getTasksManager().addTask(new TaskDeposit(roomController, structure.id, structure));
+                        roomController.getTasksManager().addTask(new TaskDeposit(roomController, structure.id, (Extension) structure));
                     }
 
                     // Add to total storage
-                    totalStorageCalculation += structure.energyCapacity;
+                    totalStorageCalculation += ((Extension) structure).energyCapacity;
                     // Road to it
                     roadableStructureIds.push(structure.id);
                 } else if (structure.structureType == GlobalVariables.STRUCTURE_SPAWN) {
                     // Spawn? add its storage capacity
-                    totalStorageCalculation += structure.energyCapacity;
+                    totalStorageCalculation += ((Extension) structure).energyCapacity;
                     // Force to start of road!
                     roadableStructureIds.unshift(structure.id);
                 }

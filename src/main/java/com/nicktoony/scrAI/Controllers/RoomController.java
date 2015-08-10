@@ -11,7 +11,7 @@ import com.nicktoony.scrAI.World.Creeps.CreepWrapper;
 import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.GlobalVariables;
 import com.nicktoony.screeps.Room;
-import com.nicktoony.screeps.Spawn;
+import com.nicktoony.screeps.Structures.Spawn;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;

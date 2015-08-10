@@ -6,7 +6,7 @@ import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.GlobalVariables;
-import com.nicktoony.screeps.Structure;
+import com.nicktoony.screeps.Structures.Structure;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;

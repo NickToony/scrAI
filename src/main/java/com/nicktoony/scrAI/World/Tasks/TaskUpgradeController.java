@@ -3,7 +3,7 @@ package com.nicktoony.scrAI.World.Tasks;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Creeps.CreepWorker;
-import com.nicktoony.screeps.Controller;
+import com.nicktoony.screeps.Structures.Controller;
 import com.nicktoony.screeps.Game;
 
 /**

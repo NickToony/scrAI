@@ -1,6 +1,6 @@
 package com.nicktoony.screeps;
 
-import org.stjs.javascript.Array;
+import com.nicktoony.screeps.Structures.Spawn;
 import org.stjs.javascript.Map;
 
 /**
