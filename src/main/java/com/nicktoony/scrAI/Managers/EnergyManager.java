@@ -29,7 +29,7 @@ public class EnergyManager extends Manager {
         Global.console.log("EnergyManager -> Update");
 
         // Fetch ALL energy
-        Array<Source> foundEnergy = (Array<Source>) this.roomController.getRoom().find(FindTypes.FIND_CONSTRUCTION_SITES,
+        Array<Energy> foundEnergy = (Array<Energy>) this.roomController.getRoom().find(FindTypes.FIND_DROPPED_ENERGY,
                 null);
 
         Lodash.forIn(foundEnergy, new LodashCallback1<Energy>() {
