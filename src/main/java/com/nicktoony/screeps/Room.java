@@ -17,6 +17,8 @@ public abstract class Room {
     public String name;
     public Map<String, Object> memory;
     public Controller controller;
+    public int energyAvailable;
+    public int energyCapacityAvailable;
 
     public abstract Array<?> find(FindTypes type, Map parameters);
 

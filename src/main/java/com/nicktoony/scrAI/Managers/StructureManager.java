@@ -19,7 +19,6 @@ import org.stjs.javascript.Map;
  * Created by nick on 26/07/15.
  */
 public class StructureManager extends Manager {
-    private int totalStorageCalculation = 0;
     private Array<String> roadableStructureIds;
 
     public StructureManager(RoomController roomController, Map<String, Object> memory) {
@@ -74,13 +73,9 @@ public class StructureManager extends Manager {
                         roomController.getTasksManager().addTask(new TaskDeposit(roomController, structure.id, (Extension) structure));
                     }
 
-                    // Add to total storage
-                    totalStorageCalculation += ((Extension) structure).energyCapacity;
                     // Road to it
                     roadableStructureIds.push(structure.id);
                 } else if (structure.structureType == StructureTypes.STRUCTURE_SPAWN) {
-                    // Spawn? add its storage capacity
-                    totalStorageCalculation += ((Extension) structure).energyCapacity;
                     // Force to start of road!
                     roadableStructureIds.unshift(structure.id);
                 }
@@ -88,9 +83,6 @@ public class StructureManager extends Manager {
                 return true;
             }
         }, this);
-
-        // Update room controllers total storage
-        roomController.setRoomTotalStorage(totalStorageCalculation);
 
         // Save the roadable structures to memory
         memory.$put("roadableStructureIds", roadableStructureIds);

@@ -39,7 +39,6 @@ public class RoomController {
     private int alertStatus;
     private Map<String, Object> timersMemory;
     private Map<String, Object> cpuMemory;
-    private int roomTotalStorage = 0;
     private float cpu = 0;
 
     public RoomController(Room room) {
@@ -53,8 +52,6 @@ public class RoomController {
         }
         this.timersMemory = getMemory("timersMemory");
         this.cpuMemory = getMemory("cpuMemory");
-
-        this.roomTotalStorage = (Integer) getMemoryOrDefault("roomTotalStorage", 300);
 
         // Advisors
         this.economyAdvisor = new EconomyAdvisor(this);
@@ -71,11 +68,6 @@ public class RoomController {
 
     private void putMemory(String key, Object value) {
         this.room.memory.$put(key, value);
-    }
-
-    public void setRoomTotalStorage(int value) {
-        this.roomTotalStorage = value;
-        putMemory("roomTotalStorage", value);
     }
 
     public void step() {
@@ -223,7 +215,7 @@ public class RoomController {
     }
 
     public int getRoomTotalStorage() {
-        return roomTotalStorage - Constants.OFFSET_ROOM_STORAGE;
+        return room.energyCapacityAvailable - Constants.OFFSET_ROOM_STORAGE;
     }
 
     public int getTimer(String manager) {
