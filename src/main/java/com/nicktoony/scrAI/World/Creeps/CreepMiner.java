@@ -9,6 +9,8 @@ import com.nicktoony.screeps.Source;
 import com.nicktoony.screeps.global.PartTypes;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.JSCollections;
+import org.stjs.javascript.Map;
+
 import static com.nicktoony.screeps.global.GlobalVariables.*;
 
 /**
@@ -54,7 +56,13 @@ public class CreepMiner extends CreepWrapper {
             if (atSource) {
                 this.creep.harvest(target);
             } else {
-                this.creep.moveTo(target, null);
+                Map<String, Object> parameters = JSCollections.$map();
+                parameters.$put("heuristicWeight", 100);
+                parameters.$put("reusePath", Constants.SETTINGS_PATH_REUSE); // reuse the path for a long time
+                parameters.$put("noPathFinding", roomController.hasPathFound); // if have already done some pathfinding.. delay it.
+                this.creep.moveTo(target, parameters);
+
+                // If reached destination
                 if (this.creep.pos.inRangeTo(target.pos, 1)) {
                     memory.$put("atSource", true);
                 }
