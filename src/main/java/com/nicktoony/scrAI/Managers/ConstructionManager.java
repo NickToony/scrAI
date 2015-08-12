@@ -19,14 +19,28 @@ import org.stjs.javascript.Map;
  * Created by nick on 26/07/15.
  */
 public class ConstructionManager extends Manager {
+    int totalConstructions = 0;
+
     public ConstructionManager(RoomController roomController, Map<String, Object> memory) {
         super(roomController, memory);
+
+        totalConstructions = (Integer) memory.$get("totalConstructions");
     }
 
     @Override
     protected void init() {
         memory.$put("layer", 3);
         memory.$put("state", 0);
+        memory.$put("totalConstructions", 0);
+    }
+
+    public int getTotalConstructions() {
+        return totalConstructions;
+    }
+
+    public void addConstruction() {
+        totalConstructions += 1;
+        memory.$put("totalConstructions", totalConstructions);
     }
 
     public void update() {
@@ -46,55 +60,62 @@ public class ConstructionManager extends Manager {
             }
         }, this);
 
+        totalConstructions = foundSites.$length();
 
         // no build sites?
-        if (foundSites.$length() == 0) {
-            Spawn spawn = roomController.getSpawnsManager().getSpawns().$get(0);
-            if (spawn == null) return;
-
-            int layer = (Integer) memory.$get("layer");
-            int state = (Integer) memory.$get("state");
-            Global.console.log("LAYER: " + layer);
-
-            int topLeftX = spawn.pos.x-layer;
-            int topLeftY = spawn.pos.y-layer;
-
-            // Left side
-            if (state == 0 && tryToBuildSpawn(topLeftX, topLeftY,topLeftX, topLeftY + layer * 2)) {
-                memory.$put("state", state);
-                return;
-            } else if (state == 0) {
-                state = 1;
-            }
-            // Right side
-            if (state == 1 && tryToBuildSpawn(topLeftX + layer * 2, topLeftY,topLeftX + layer * 2, topLeftY + layer * 2)) {
-                memory.$put("state", state);
-                return;
-            } else if (state == 1) {
-                state = 2;
-            }
-            // Top side
-            if (state == 2 && tryToBuildSpawn(topLeftX, topLeftY,topLeftX + layer * 2, topLeftY)) {
-                memory.$put("state", state);
-                return;
-            } else if (state == 2) {
-                state = 3;
-            }
-            // Bottom side
-            if (state == 3 && tryToBuildSpawn(topLeftX, topLeftY + layer * 2,topLeftX + layer * 2, topLeftY + layer * 2)) {
-                memory.$put("state", state);
-                return;
-            } else if (state == 3) {
-                state = 4;
-            }
-
-            layer += 2;
-            state = 0;
-            // If gone beyond 10, that's not good
-            if (layer > 10) layer = 3;
-            memory.$put("layer", layer);
-            memory.$put("state", state);
+        if (totalConstructions == 0) {
+            buildExtensions();
         }
+
+        memory.$put("totalConstructions", totalConstructions);
+    }
+
+    private void buildExtensions() {
+        Spawn spawn = roomController.getSpawnsManager().getSpawns().$get(0);
+        if (spawn == null) return;
+
+        int layer = (Integer) memory.$get("layer");
+        int state = (Integer) memory.$get("state");
+        Global.console.log("LAYER: " + layer);
+
+        int topLeftX = spawn.pos.x-layer;
+        int topLeftY = spawn.pos.y-layer;
+
+        // Left side
+        if (state == 0 && tryToBuildSpawn(topLeftX, topLeftY,topLeftX, topLeftY + layer * 2)) {
+            memory.$put("state", state);
+            return;
+        } else if (state == 0) {
+            state = 1;
+        }
+        // Right side
+        if (state == 1 && tryToBuildSpawn(topLeftX + layer * 2, topLeftY,topLeftX + layer * 2, topLeftY + layer * 2)) {
+            memory.$put("state", state);
+            return;
+        } else if (state == 1) {
+            state = 2;
+        }
+        // Top side
+        if (state == 2 && tryToBuildSpawn(topLeftX, topLeftY,topLeftX + layer * 2, topLeftY)) {
+            memory.$put("state", state);
+            return;
+        } else if (state == 2) {
+            state = 3;
+        }
+        // Bottom side
+        if (state == 3 && tryToBuildSpawn(topLeftX, topLeftY + layer * 2,topLeftX + layer * 2, topLeftY + layer * 2)) {
+            memory.$put("state", state);
+            return;
+        } else if (state == 3) {
+            state = 4;
+        }
+
+        layer += 2;
+        state = 0;
+        // If gone beyond 10, that's not good
+        if (layer > 10) layer = 3;
+        memory.$put("layer", layer);
+        memory.$put("state", state);
     }
 
     private boolean tryToBuildSpawn(int fromX, int fromY, int toX, int toY) {
@@ -105,6 +126,7 @@ public class ConstructionManager extends Manager {
                 if (objects.$length() > 0 && objects.$get(0) == "plain") {
                     ResponseTypes created = position.createConstructionSite(StructureTypes.STRUCTURE_EXTENSION);
                     if (created == ResponseTypes.OK) {
+                        totalConstructions += 1;
                         return true;
                     } else if (created == ResponseTypes.ERR_RCL_NOT_ENOUGH) {
                         return true;

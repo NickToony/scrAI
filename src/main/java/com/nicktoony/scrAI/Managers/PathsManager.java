@@ -45,64 +45,69 @@ public class PathsManager extends Manager {
         this.roadsCreated = 0;
 
         // For all structure ids
-        Lodash.forIn(roomController.getStructureManager().getRoadableStructureIds(), new LodashCallback1<String>() {
-            @Override
-            public boolean invoke(String structureId) {
+        if (roomController.getConstructionManager().getTotalConstructions() == 0) {
+            Lodash.forIn(roomController.getStructureManager().getRoadableStructureIds(), new LodashCallback1<String>() {
+                @Override
+                public boolean invoke(String structureId) {
 
-                // Attempt to find the specified structure
-                Structure structure = (Structure) Game.getObjectById(structureId);
-                // If it exists
-                if (structure != null) {
+                    // Attempt to find the specified structure
+                    Structure structure = (Structure) Game.getObjectById(structureId);
+                    // If it exists
+                    if (structure != null) {
 
-                    // Do we have a base structure?
-                    if (baseStructure == null) {
-                        // Use as base structure, don't calculate path
-                        baseStructure = structure;
-                        return true;
-                    }
+                        // Do we have a base structure?
+                        if (baseStructure == null) {
+                            // Use as base structure, don't calculate path
+                            baseStructure = structure;
+                            return true;
+                        }
 
-                    // Check if it has a path
-                    Array<Map<String, Object>> path = paths.$get(structureId);
+                        // Check if it has a path
+                        Array<Map<String, Object>> path = paths.$get(structureId);
 
-                    // No path? Generate one
-                    if (path == null) {
+                        // No path? Generate one
+                        if (path == null) {
 
-                        // Find the path
-                        Map<String, Object> parameters = JSCollections.$map();
-                        parameters.$put("ignoreCreeps", true);
-                        parameters.$put("ignoreDestructibleStructures", true);
-                        parameters.$put("heuristicWeight", 100);
-                        paths.$put(structureId, roomController.getRoom().findPath(baseStructure.pos, structure.pos, parameters));
+                            // Find the path
+                            Map<String, Object> parameters = JSCollections.$map();
+                            parameters.$put("ignoreCreeps", true);
+                            parameters.$put("ignoreDestructibleStructures", true);
+                            parameters.$put("heuristicWeight", 100);
+                            paths.$put(structureId, roomController.getRoom().findPath(baseStructure.pos, structure.pos, parameters));
 
-                        // Don't do anymore paths, it's a lot of CPU
-                        return false;
-                    } else {
+                            roomController.hasPathFound = true;
 
-                        Global.console.log("RUNNING PATH MANAGER: BUILTPATH");
+                            // Don't do anymore paths, it's a lot of CPU
+                            return false;
+                        } else {
 
-                        // For each step of the path
-                        Lodash.forIn(path, new LodashCallback1<Map<String, Object>>() {
-                            @Override
-                            public boolean invoke(Map<String, Object> pathStep) {
+                            Global.console.log("RUNNING PATH MANAGER: BUILTPATH");
 
-                                // Create a road for the path position
-                                int x = (Integer) pathStep.$get("x");
-                                int y = (Integer) pathStep.$get("y");
-                                if (roomController.getRoom().createConstructionSite(x, y, StructureTypes.STRUCTURE_ROAD) == ResponseTypes.OK) {
-                                    roadsCreated++;
+                            // For each step of the path
+                            Lodash.forIn(path, new LodashCallback1<Map<String, Object>>() {
+                                @Override
+                                public boolean invoke(Map<String, Object> pathStep) {
+
+                                    // Create a road for the path position
+                                    int x = (Integer) pathStep.$get("x");
+                                    int y = (Integer) pathStep.$get("y");
+                                    if (roomController.getRoom().createConstructionSite(x, y, StructureTypes.STRUCTURE_ROAD) == ResponseTypes.OK) {
+                                        roadsCreated++;
+                                        roomController.getConstructionManager().addConstruction();
+                                    }
+
+                                    // Keep going as long as not created too many roads
+                                    return (roadsCreated < Constants.SETTING_MAX_ROAD_CREATE);
                                 }
+                            }, this);
 
-                                // Keep going as long as not created too many roads
-                                return (roadsCreated < Constants.SETTING_MAX_ROAD_CREATE);
-                            }
-                        }, this);
-
+                            return true;
+                        }
+                    } else {
                         return true;
                     }
-                } else {
-                    return true;
                 }
-            }
-        }, this);
+            }, this);
+        }
     }
 }
