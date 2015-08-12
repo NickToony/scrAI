@@ -34,7 +34,7 @@ public class SourceWrapper extends MemoryWrapper {
         for (int x = -1; x <= 1; x ++) {
             for (int y = -1; y <= 1; y ++) {
                 RoomPosition position = new RoomPosition(this.source.pos.x + x, this.source.pos.y + y, this.source.pos.roomName);
-                Array objects = position.lookFor(LookTypes.terrain);
+                Array objects = position.lookFor("terrain");
                 if (objects.$length() > 0 && objects.$get(0) == "plain" && (x != 0 || y != 0)) {
                     count ++;
                 }

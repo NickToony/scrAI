@@ -30,7 +30,7 @@ public class EconomyAdvisor {
 
         // Calculate how many workers we need
         int totalWorkers = Math.max((int) Math.ceil(this.roomController.getTasksManager().getTaskCount() / 2f),
-                this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length());
+                this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_MINER_ID).$length()*2);
         // Calculate how many we have
         Lodash.forIn(this.roomController.getPopulationManager().getSortedCreeps(Constants.CREEP_WORKER_ID), new LodashCallback1<CreepWorker>() {
             @Override

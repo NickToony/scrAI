@@ -8,6 +8,7 @@ import com.nicktoony.scrAI.World.Tasks.Task;
 import com.nicktoony.screeps.*;
 import com.nicktoony.screeps.global.PartTypes;
 import org.stjs.javascript.Array;
+import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
 import org.stjs.javascript.Map;
 
@@ -69,7 +70,7 @@ public class CreepWorker extends CreepWrapper {
         } else {
             // move to target
             Map<String, Object> parameters = JSCollections.$map();
-            parameters.$put("ignoreCreeps", !(this.creep.pos.inRangeTo(position, 2)));
+//            parameters.$put("ignoreCreeps", !(this.creep.pos.inRangeTo(position, 2)));
             parameters.$put("ignoreDestructibleStructures", false);
             parameters.$put("heuristicWeight", 100);
             parameters.$put("reusePath", Constants.SETTINGS_PATH_REUSE); // reuse the path for a long time

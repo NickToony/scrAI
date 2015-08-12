@@ -5,7 +5,6 @@ import com.nicktoony.screeps.helpers.SurvivalInfo;
 import com.nicktoony.screeps.helpers.Targetable;
 import com.nicktoony.screeps.structures.Controller;
 import com.nicktoony.screeps.structures.Storage;
-import com.sun.istack.internal.Nullable;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 import org.stjs.javascript.annotation.STJSBridge;
@@ -28,9 +27,9 @@ public abstract class Room {
 
     public abstract ResponseTypes createConstructionSite(RoomPosition position, StructureTypes type);
 
-    public abstract ResponseTypes createFlag(int x, int y, @Nullable String name, @Nullable ColorTypes color);
+    public abstract ResponseTypes createFlag(int x, int y, String name, ColorTypes color);
 
-    public abstract ResponseTypes createFlag(RoomPosition position, @Nullable String name, @Nullable ColorTypes color);
+    public abstract ResponseTypes createFlag(RoomPosition position, String name, ColorTypes color);
 
     public abstract Array<? extends ScreepsObject> find(FindTypes type, Map<String, Object> options);
 
@@ -38,7 +37,7 @@ public abstract class Room {
 
     public abstract RoomDirectionTypes findExitTo(String roomName);
 
-    public abstract Array<Map<String, Object>>  findPath(RoomPosition fromPos, RoomPosition toPos, @Nullable Map<String, Object> options);
+    public abstract Array<Map<String, Object>>  findPath(RoomPosition fromPos, RoomPosition toPos, Map<String, Object> options);
 
     public abstract RoomPosition getPositionAt(int x, int y);
 
@@ -48,9 +47,9 @@ public abstract class Room {
 
     public abstract Array<Map<String, Object>> lookAtArea(int top, int left, int bottom, int right);
 
-    public abstract Array<? extends ScreepsObject> lookForAt(LookTypes type, int x, int y);
+    public abstract Array<? extends ScreepsObject> lookForAt(String type, int x, int y);
 
-    public abstract Array<? extends ScreepsObject> lookForAt(LookTypes type, Targetable targetable);
+    public abstract Array<? extends ScreepsObject> lookForAt(String type, Targetable targetable);
 
-    public abstract Map<String, Map<String, Object>> lookForAtArea(LookTypes type, int top, int left, int bottom, int right);
+    public abstract Map<String, Map<String, Object>> lookForAtArea(String type, int top, int left, int bottom, int right);
 }

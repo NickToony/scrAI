@@ -2,7 +2,6 @@ package com.nicktoony.screeps;
 
 import com.nicktoony.screeps.global.*;
 import com.nicktoony.screeps.helpers.Targetable;
-import com.sun.istack.internal.Nullable;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 
@@ -46,7 +45,7 @@ public class RoomPosition extends Targetable {
      * @param color The color of a new flag. The default value is COLOR_WHITE.
      * @return result
      */
-    public ResponseTypes createFlag(@Nullable String name, @Nullable ColorTypes color) {
+    public ResponseTypes createFlag(String name, ColorTypes color) {
         return ResponseTypes.OK;
     }
 
@@ -57,27 +56,27 @@ public class RoomPosition extends Targetable {
      * @param options parameters for the search
      * @return response
      */
-    public ResponseTypes findClosest(FindTypes type, @Nullable Map<String, Object> options) {
+    public ResponseTypes findClosest(FindTypes type, Map<String, Object> options) {
         return ResponseTypes.OK;
     }
 
-    public ResponseTypes findClosest(Array<Targetable> objects, @Nullable Map<String, Object> options) {
+    public ResponseTypes findClosest(Array<Targetable> objects, Map<String, Object> options) {
         return ResponseTypes.OK;
     }
 
-    public Array<? extends ScreepsObject> findInRange(FindTypes type, int range, @Nullable Map<String, Object> options) {
+    public Array<? extends ScreepsObject> findInRange(FindTypes type, int range, Map<String, Object> options) {
         return null;
     }
 
-    public Array<? extends ScreepsObject> findInRange(Array<Targetable> objects, int range, @Nullable Map<String, Object> options) {
+    public Array<? extends ScreepsObject> findInRange(Array<Targetable> objects, int range, Map<String, Object> options) {
         return null;
     }
 
-    public Array<Map<String, Object>> findPathTo(int x, int y, @Nullable Map<String, Object> options) {
+    public Array<Map<String, Object>> findPathTo(int x, int y, Map<String, Object> options) {
         return null;
     }
 
-    public Array<Map<String, Object>> findPathTo(Targetable target, @Nullable Map<String, Object> options) {
+    public Array<Map<String, Object>> findPathTo(Targetable target, Map<String, Object> options) {
         return null;
     }
 
@@ -113,7 +112,7 @@ public class RoomPosition extends Targetable {
         return null;
     }
 
-    public Array<Map<String, Object>> lookFor(LookTypes type) {
+    public Array<Map<String, Object>> lookFor(String type) {
         return null;
     }
 }
