@@ -22,7 +22,7 @@ public class TaskBuild extends Task {
     @Override
     public boolean canAssign(CreepWorker creepWorker) {
         return canAct(creepWorker)
-                && (creeps.$length() == 0);
+                && (creeps.$length() <= 1);
     }
 
     @Override
