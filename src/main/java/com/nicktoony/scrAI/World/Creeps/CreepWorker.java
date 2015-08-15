@@ -72,7 +72,7 @@ public class CreepWorker extends CreepWrapper {
             Map<String, Object> parameters = JSCollections.$map();
 //            parameters.$put("ignoreCreeps", !(this.creep.pos.inRangeTo(position, 2)));
             parameters.$put("ignoreDestructibleStructures", false);
-            parameters.$put("heuristicWeight", 100);
+//            parameters.$put("heuristicWeight", 100);
             parameters.$put("reusePath", Constants.SETTINGS_PATH_REUSE); // reuse the path for a long time
             parameters.$put("noPathFinding", roomController.hasPathFound); // if have already done some pathfinding.. delay it.
             this.creep.moveTo(position, parameters);
