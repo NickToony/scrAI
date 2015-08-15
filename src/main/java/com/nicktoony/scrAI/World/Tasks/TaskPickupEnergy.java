@@ -29,7 +29,7 @@ public class TaskPickupEnergy extends Task {
     public boolean canAssign(CreepWorker creepWorker) {
         return canAct(creepWorker)
                 && energyAvailable > 0
-                && (creepWorker.getCreep().carry.energy <= (creepWorker.getCarryCapacity()/2));
+                && (creepWorker.getCreep().carry.energy <= 0);
     }
 
     @Override
