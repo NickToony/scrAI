@@ -141,17 +141,17 @@ public class TaskManager extends Manager{
         }
     }
 
-    public Array<Task> getSortedTasks() {
-        if (sortedTasks == null) {
-            sortedTasks = (Array<Task>) Lodash.sortBy(getTasks(), new LodashSortCallback2<Task, String>() {
-                @Override
-                public int invoke(Task variable1, String variable2) {
-                    return -variable1.getPriority();
-                }
-            }, this);
-        }
+    public Map<String, Task> getSortedTasks() {
+//        if (sortedTasks == null) {
+//            sortedTasks = (Array<Task>) Lodash.sortBy(getTasks(), new LodashSortCallback2<Task, String>() {
+//                @Override
+//                public int invoke(Task variable1, String variable2) {
+//                    return -variable1.getPriority();
+//                }
+//            }, this);
+//        }
 
-        return sortedTasks;
+        return getTasks();
     }
 
     public int getTaskCount() {

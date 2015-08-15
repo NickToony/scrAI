@@ -1,7 +1,9 @@
 package com.nicktoony.scrAI.World.Creeps;
 
 import com.nicktoony.helpers.Lodash;
+import com.nicktoony.helpers.LodashCallback;
 import com.nicktoony.helpers.LodashCallback1;
+import com.nicktoony.helpers.LodashCallback2;
 import com.nicktoony.scrAI.Constants;
 import com.nicktoony.scrAI.Controllers.RoomController;
 import com.nicktoony.scrAI.World.Tasks.Task;
@@ -40,13 +42,14 @@ public class CreepWorker extends CreepWrapper {
     public void step() {
         if (task == null) {
 
-            Lodash.forIn(roomController.getTasksManager().getSortedTasks(), new LodashCallback1<Task>() {
+            Lodash.forIn(roomController.getTasksManager().getSortedTasks(), new LodashCallback2<Task, String>() {
                 @Override
-                public boolean invoke(Task possibleTask) {
+                public boolean invoke(Task possibleTask, String id) {
                     if (possibleTask.canAssign(myself)) {
-                        task = possibleTask;
-                        taskId = possibleTask.getAssociatedId();
-                        return false;
+                        if (task == null || possibleTask.getPriority() > task.getPriority()) {
+                            task = possibleTask;
+                            taskId = possibleTask.getAssociatedId();
+                        }
                     }
                     return true;
                 }
