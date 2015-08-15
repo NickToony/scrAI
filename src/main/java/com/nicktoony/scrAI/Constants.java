@@ -22,7 +22,7 @@ public class Constants {
 
     public static int OFFSET_ROOM_STORAGE = 100; // useful to stop the AI spending too much early on
     public static int DELAY_RANDOM = 20;
-    public static int DELAY_PATH_MANAGER = 100; // how many ticks between checking paths are okay
+    public static int DELAY_PATH_MANAGER = 50; // how many ticks between checking paths are okay
     public static int DELAY_ENERGY_MANAGER = 20;
     public static int DELAY_ADVISORS = 15;
     public static int DELAY_CONSTRUCTION_MANAGER = 50;
@@ -48,6 +48,7 @@ public class Constants {
     public static int SETTING_MINER_PER_SPAWN = 2;
     public static int SETTING_MAX_ROAD_CREATE = 1;
     public static int SETTINGS_PATH_REUSE = 50;
+    public static int SETTINGS_PATH_EXPIRE_TIME = 200;
 
     // Source constants
     public static final int SOURCE_REGEN = 300;
