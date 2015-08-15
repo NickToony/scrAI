@@ -78,7 +78,7 @@ public class SourceWrapper extends MemoryWrapper {
     }
 
     public int getMiningRate() {
-        return miningRate;
+        return miningRate * 2; // because each work part harvests 2 per tick
     }
 
     public int getOptimalWork() {
