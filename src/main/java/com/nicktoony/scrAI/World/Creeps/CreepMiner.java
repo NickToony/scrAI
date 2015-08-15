@@ -21,11 +21,6 @@ public class CreepMiner extends CreepWrapper {
         super(roomController, creep);
     }
 
-    @Override
-    public void save() {
-
-    }
-
     private Source target;
     private boolean atSource;
     private int workParts;

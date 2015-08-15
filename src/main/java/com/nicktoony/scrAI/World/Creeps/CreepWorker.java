@@ -55,11 +55,14 @@ public class CreepWorker extends CreepWrapper {
                 }
             }, this);
 
+            memory.$put("taskId", taskId);
+
         } else {
 
             if (!task.canAct(this) || !task.act(this)) {
                 taskId = null;
                 task = null;
+                memory.$put("taskId", taskId);
             }
 
         }
@@ -88,11 +91,6 @@ public class CreepWorker extends CreepWrapper {
 
             return false;
         }
-    }
-
-    @Override
-    public void save() {
-        memory.$put("taskId", taskId);
     }
 
     public static CreepDefinition define(RoomController roomController) {
