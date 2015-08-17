@@ -56,12 +56,12 @@ public class RoomPosition extends Targetable {
      * @param options parameters for the search
      * @return response
      */
-    public ResponseTypes findClosest(FindTypes type, Map<String, Object> options) {
-        return ResponseTypes.OK;
+    public Object findClosest(FindTypes type, Map<String, Object> options) {
+        return null;
     }
 
-    public ResponseTypes findClosest(Array<Targetable> objects, Map<String, Object> options) {
-        return ResponseTypes.OK;
+    public Object findClosest(Array<Targetable> objects, Map<String, Object> options) {
+        return null;
     }
 
     public Array<? extends ScreepsObject> findInRange(FindTypes type, int range, Map<String, Object> options) {

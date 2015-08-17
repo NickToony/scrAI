@@ -11,7 +11,9 @@ import com.nicktoony.screeps.callbacks.LodashCallback1;
 import com.nicktoony.screeps.callbacks.LodashSortCallback1;
 import com.nicktoony.screeps.global.ColorTypes;
 import com.nicktoony.screeps.global.FindTypes;
+import com.nicktoony.screeps.global.ScreepsObject;
 import com.nicktoony.screeps.structures.Spawn;
+import com.nicktoony.screeps.structures.Structure;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
@@ -109,6 +111,12 @@ public class RoomPlanner extends MemoryController {
                 }
             };
             if (planStructures(1, -1, 13, 13, callback)) {
+                stage ++;
+            }
+        } else if (stage == 4) {
+            Global.console.log("PLANNING -> PLANNING PATHS");
+
+            if (planPaths()) {
                 stage ++;
             }
         }
@@ -251,23 +259,98 @@ public class RoomPlanner extends MemoryController {
     private Array<RoomPosition> calculateAvoidAreas(boolean miners, boolean extensions) {
         final Array<RoomPosition> positions = new Array<RoomPosition>();
         if (miners) {
-            minerLocations.forEach(new Callback1<Map<String, Object>>() {
+            Lodash.forIn(minerLocations, new LodashCallback1<Map<String, Object>>() {
                 @Override
-                public void $invoke(Map<String, Object> strings) {
-                    RoomPosition roomPosition = new RoomPosition((Integer) strings.$get("x"), (Integer) strings.$get("y"), roomController.room.name);
+                public boolean invoke(Map<String, Object> variable) {
+                    RoomPosition roomPosition = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), roomController.room.name);
                     positions.push(roomPosition);
+                    return true;
                 }
-            });
+            }, this);
         }
         if (extensions) {
-            extensionLocations.forEach(new Callback1<Map<String, Object>>() {
+            Lodash.forIn(extensionLocations, new LodashCallback1<Map<String, Object>>() {
                 @Override
-                public void $invoke(Map<String, Object> strings) {
-                    RoomPosition roomPosition = new RoomPosition((Integer) strings.$get("x"), (Integer) strings.$get("y"), roomController.room.name);
+                public boolean invoke(Map<String, Object> variable) {
+                    RoomPosition roomPosition = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), roomController.room.name);
                     positions.push(roomPosition);
+                    return true;
                 }
-            });
+            }, this);
         }
         return positions;
+    }
+
+    private boolean planPaths() {
+        final Array<RoomPosition> avoidPositions = calculateAvoidAreas(true, true);
+
+        Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
+        if (spawn == null) {
+            return false;
+        }
+        final RoomPosition startPosition = new RoomPosition(spawn.pos.x + 1, spawn.pos.y, spawn.pos.roomName);
+
+        Lodash.forIn(minerLocations, new LodashCallback1<Map<String, Object>>() {
+            @Override
+            public boolean invoke(Map<String, Object> variable) {
+                createPath(startPosition,
+                        new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName),
+                        avoidPositions);
+                return true;
+            }
+        }, this);
+
+        Lodash.forIn(extensionLocations, new LodashCallback1<Map<String, Object>>() {
+            @Override
+            public boolean invoke(Map<String, Object> variable) {
+                createPath(startPosition,
+                        new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName),
+                        avoidPositions);
+                return true;
+            }
+        }, this);
+
+        RoomPosition exits;
+        exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_BOTTOM, null);
+        Global.console.log(exits);
+        if (exits != null) {
+            createPath(startPosition, exits, avoidPositions);
+            Global.console.log("FOUND");
+        }
+        exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_TOP, null);
+        if (exits != null) {
+            createPath(startPosition, exits, avoidPositions);
+            Global.console.log("FOUND");
+        }
+        exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_LEFT, null);
+        if (exits != null) {
+            createPath(startPosition, exits, avoidPositions);
+            Global.console.log("FOUND");
+        }
+        exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_RIGHT, null);
+        if (exits != null) {
+            createPath(startPosition, exits, avoidPositions);
+            Global.console.log("FOUND");
+        }
+
+        return true;
+    }
+
+    private void createPath(final RoomPosition from, final RoomPosition to, Array<RoomPosition> avoids) {
+        Map<String, Object> options = JSCollections.$map();
+        options.$put("avoid", avoids);
+        options.$put("heuristicWeight", 100);
+        Array<Map<String, Object>> path = roomController.room.findPath(from, to, options);
+        Lodash.forIn(path, new LodashCallback1<Map<String, Object>>() {
+            @Override
+            public boolean invoke(Map<String, Object> variable) {
+                RoomPosition position = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), from.roomName);
+//                if (position.x != from.x && position.y != from.y)
+                    if (position.x != to.x && position.y != to.y) {
+                        position.createFlag(null, ColorTypes.COLOR_GREEN);
+                    }
+                return true;
+            }
+        }, this);
     }
 }
