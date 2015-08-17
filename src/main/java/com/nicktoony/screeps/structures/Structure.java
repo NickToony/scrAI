@@ -1,9 +1,8 @@
 package com.nicktoony.screeps.structures;
 
-import com.nicktoony.screeps.global.GlobalVariables;
+import com.nicktoony.screeps.global.ScreepsObject;
 import com.nicktoony.screeps.global.StructureTypes;
 import com.nicktoony.screeps.helpers.OwnerProperties;
-import com.nicktoony.screeps.global.ScreepsObject;
 
 /**
  * Created by nick on 02/08/15.

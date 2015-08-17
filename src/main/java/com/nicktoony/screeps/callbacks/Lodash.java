@@ -1,4 +1,4 @@
-package com.nicktoony.helpers;
+package com.nicktoony.screeps.callbacks;
 
 import org.stjs.javascript.Array;
 

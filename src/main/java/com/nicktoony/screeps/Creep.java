@@ -1,9 +1,9 @@
 package com.nicktoony.screeps;
 
 import com.nicktoony.screeps.global.ScreepsObject;
+import com.nicktoony.screeps.interfaces.DepositableStructure;
 import com.nicktoony.screeps.structures.Controller;
 import com.nicktoony.screeps.structures.Structure;
-import com.nicktoony.screeps.interfaces.DepositableStructure;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 

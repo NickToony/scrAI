@@ -4,7 +4,7 @@ import com.nicktoony.screeps.Creep;
 import com.nicktoony.screeps.global.PartTypes;
 import com.nicktoony.screeps.global.ResponseTypes;
 import com.nicktoony.screeps.helpers.SpawningCreep;
-import com.nicktoony.screeps.interfaces.*;
+import com.nicktoony.screeps.interfaces.DepositableStructure;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Map;
 

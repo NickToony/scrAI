@@ -62,4 +62,6 @@ public class Constants {
     public static final int HEAL_COST = 250;
     public static final int TOUGH_COST = 10;
 
+    public static final int HARVEST_PER_WORK = 2;
+
 }
