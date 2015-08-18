@@ -60,7 +60,7 @@ public class RoomPosition extends Targetable {
         return null;
     }
 
-    public Object findClosest(Array<Targetable> objects, Map<String, Object> options) {
+    public Object findClosest(Array<? extends Targetable> objects, Map<String, Object> options) {
         return null;
     }
 

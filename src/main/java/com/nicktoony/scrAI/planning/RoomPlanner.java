@@ -11,9 +11,8 @@ import com.nicktoony.screeps.callbacks.LodashCallback1;
 import com.nicktoony.screeps.callbacks.LodashSortCallback1;
 import com.nicktoony.screeps.global.ColorTypes;
 import com.nicktoony.screeps.global.FindTypes;
-import com.nicktoony.screeps.global.ScreepsObject;
+import com.nicktoony.screeps.helpers.Path;
 import com.nicktoony.screeps.structures.Spawn;
-import com.nicktoony.screeps.structures.Structure;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
@@ -27,7 +26,10 @@ public class RoomPlanner extends MemoryController {
 
     private Array<Map<String, Object>> minerLocations;
     private Array<Map<String, Object>> extensionLocations;
+    private Map<String, Path> paths;
     private Map<String, Object> tempMemory;
+    private RoomPosition tempPosition;
+    private int tempDistance = 0;
 
     public RoomPlanner(Map<String, Object> memory, RoomController roomController) {
         super(memory, roomController);
@@ -43,6 +45,7 @@ public class RoomPlanner extends MemoryController {
         // Clear all stored memory
         memory.$put("minerLocations", new Array<Map<String, Object>>());
         memory.$put("extensionLocations", new Array<Map<String, Object>>());
+        memory.$put("paths", JSCollections.$map());
 
         // clear temp memory
         memory.$put("tempMemory", JSCollections.$map());
@@ -66,6 +69,8 @@ public class RoomPlanner extends MemoryController {
         this.minerLocations = (Array<Map<String, Object>>) memory.$get("minerLocations");
         // extension locations memory
         this.extensionLocations = (Array<Map<String, Object>>) memory.$get("extensionLocations");
+        // path storage
+        this.paths = (Map<String, Path>) memory.$get("paths");
 
         if (stage == 0) {
             Global.console.log("PLANNING -> INIT");
@@ -78,10 +83,10 @@ public class RoomPlanner extends MemoryController {
             Global.console.log("PLANNING -> MINING LOCATIONS");
 
             // Plan mining locations
-            planMiners();
-
-            // next stage
-            stage ++;
+            if (planMiners()) {
+                // next stage
+                stage++;
+            }
         } else if (stage == 2) {
             Global.console.log("PLANNING -> EXTENSION LOCATIONS");
 
@@ -127,50 +132,79 @@ public class RoomPlanner extends MemoryController {
         memory.$put("stage", stage);
     }
 
-    private void planMiners() {
+    /**
+     * for all sources in the room, plan the amount of miners for each
+     * @return
+     */
+    private boolean planMiners() {
+        // get base
+        final Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
+        if (spawn == null) return false;
+
+        // Get all sources
         Array<Source> sources = (Array<Source>) roomController.room.find(FindTypes.FIND_SOURCES, null);
 
+        // For each source
         Lodash.forIn(sources, new LodashCallback1<Source>() {
             @Override
             public boolean invoke(Source source) {
-                planSource(source);
+                // Plan how many miners for that source
+                planSource(source, spawn.pos);
                 return true;
             }
         }, this);
 
+        return true;
     }
 
-    private void planSource(final Source source) {
+    /**
+     * Plans the number of miners for the given source
+     * @param source
+     */
+    private void planSource(final Source source, final RoomPosition base) {
         Array<RoomPosition> roomPositions = new Array<RoomPosition>();
+        // For all spaces immediately around the source
         for (int x = -1; x <= 1; x ++) {
             for (int y = -1; y <= 1; y ++) {
+                // If the position is clear
                 RoomPosition position = new RoomPosition(source.pos.x + x, source.pos.y + y, source.pos.roomName);
                 Array objects = position.lookFor("terrain");
                 if (objects.$length() > 0 && isTerrainClear(objects.$get(0)) && (x != 0 || y != 0)) {
+                    // Add to available positions
                     roomPositions.push(position);
                 }
             }
         }
 
+        // Sort by range from spawn
         Lodash.sortBy(roomPositions, new LodashSortCallback1<RoomPosition>() {
             @Override
             public int invoke(RoomPosition roomPosition) {
-                return roomPosition.getRangeTo(source.pos);
+                return roomPosition.getRangeTo(base);
             }
         }, this);
 
+        // Calculate total available spots
         int totalSpots = Math.min(Constants.SETTING_MINER_PER_SPAWN, roomPositions.$length());
+        // Calculate optimal work parts for that source
         float optimalWork = (source.energyCapacity / Constants.SOURCE_REGEN) / Constants.HARVEST_PER_WORK;
         int totalCovered = 0;
+        // for each spot
         for (int i = 0; i < totalSpots; i ++) {
+            // Calculate the creeps ideal work parts
             double value = Math.floor(optimalWork / totalSpots);
+            // If it's the final spot
             if (i + 1 == totalSpots) {
+                // just give this creep the remaining work parts
                 value = optimalWork - totalCovered;
             }
             totalCovered += value;
 
+            // get the room position
             RoomPosition position = roomPositions.$get(i);
+            // create a flag
             position.createFlag(null, ColorTypes.COLOR_BLUE);
+            // Store the position
             Map<String, Object> map = JSCollections.$map();
             map.$put("x", position.x);
             map.$put("y", position.y);
@@ -180,10 +214,18 @@ public class RoomPlanner extends MemoryController {
 
     }
 
+    /**
+     * Returns whether the terrain is free to move/build upon
+     * @param terrain
+     * @return
+     */
     private boolean isTerrainClear(Object terrain) {
         return (terrain == "plain" || terrain == "swamp");
     }
 
+    /**
+     * A callback class. Binds to the RoomPlanner
+     */
     public abstract class PlanStructureCallback {
         protected RoomPlanner self;
         public PlanStructureCallback(RoomPlanner roomPlanner) {
@@ -192,6 +234,15 @@ public class RoomPlanner extends MemoryController {
         public abstract boolean callback(RoomPosition roomPosition);
     }
 
+    /**
+     * Plan the position of structures of given type
+     * @param spacing
+     * @param maxBuild
+     * @param layerFrom
+     * @param layerTo
+     * @param planStructureCallback
+     * @return
+     */
     private boolean planStructures(int spacing, int maxBuild, int layerFrom, int layerTo, PlanStructureCallback planStructureCallback) {
         Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
         if (spawn == null) return false;
@@ -210,16 +261,16 @@ public class RoomPlanner extends MemoryController {
 
         if (state == 0) {
             // Left side
-            count += buildFlags(topLeftX, topLeftY, topLeftX, topLeftY + layer * 2, spacing, planStructureCallback);
+            count += buildStructures(topLeftX, topLeftY, topLeftX, topLeftY + layer * 2, spacing, planStructureCallback);
         } else if (state == 1 ) {
             // Right side
-            count += buildFlags(topLeftX + layer * 2, topLeftY, topLeftX + layer * 2, topLeftY + layer * 2, spacing, planStructureCallback);
+            count += buildStructures(topLeftX + layer * 2, topLeftY, topLeftX + layer * 2, topLeftY + layer * 2, spacing, planStructureCallback);
         } else if (state == 2) {
             // Top side
-            count += buildFlags(topLeftX + spacing, topLeftY, topLeftX + layer * 2 - spacing, topLeftY, spacing, planStructureCallback);
+            count += buildStructures(topLeftX + spacing, topLeftY, topLeftX + layer * 2 - spacing, topLeftY, spacing, planStructureCallback);
         } else if (state == 3 ) {
             // Bottom side
-            count += buildFlags(topLeftX + spacing, topLeftY + layer * 2, topLeftX + layer * 2 - spacing, topLeftY + layer * 2, spacing, planStructureCallback);
+            count += buildStructures(topLeftX + spacing, topLeftY + layer * 2, topLeftX + layer * 2 - spacing, topLeftY + layer * 2, spacing, planStructureCallback);
         }
 
         state ++;
@@ -239,7 +290,17 @@ public class RoomPlanner extends MemoryController {
         return false;
     }
 
-    private int buildFlags(int fromX, int fromY, int toX, int toY, int spacing, PlanStructureCallback planStructureCallback) {
+    /**
+     * Build flags
+     * @param fromX
+     * @param fromY
+     * @param toX
+     * @param toY
+     * @param spacing
+     * @param planStructureCallback
+     * @return
+     */
+    private int buildStructures(int fromX, int fromY, int toX, int toY, int spacing, PlanStructureCallback planStructureCallback) {
         int count = 0;
         for (int x = fromX; x <= toX; x += spacing) {
             for (int y = fromY; y <= toY; y+= spacing) {
@@ -256,6 +317,12 @@ public class RoomPlanner extends MemoryController {
         return count;
     }
 
+    /**
+     * Calculates the avoid area
+     * @param miners
+     * @param extensions
+     * @return
+     */
     private Array<RoomPosition> calculateAvoidAreas(boolean miners, boolean extensions) {
         final Array<RoomPosition> positions = new Array<RoomPosition>();
         if (miners) {
@@ -281,6 +348,10 @@ public class RoomPlanner extends MemoryController {
         return positions;
     }
 
+    /**
+     * Plan the creep paths
+     * @return
+     */
     private boolean planPaths() {
         final Array<RoomPosition> avoidPositions = calculateAvoidAreas(true, true);
 
@@ -295,7 +366,8 @@ public class RoomPlanner extends MemoryController {
             public boolean invoke(Map<String, Object> variable) {
                 createPath(startPosition,
                         new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName),
-                        avoidPositions);
+                        avoidPositions,
+                        true);
                 return true;
             }
         }, this);
@@ -305,7 +377,8 @@ public class RoomPlanner extends MemoryController {
             public boolean invoke(Map<String, Object> variable) {
                 createPath(startPosition,
                         new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName),
-                        avoidPositions);
+                        avoidPositions,
+                        false);
                 return true;
             }
         }, this);
@@ -314,43 +387,132 @@ public class RoomPlanner extends MemoryController {
         exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_BOTTOM, null);
         Global.console.log(exits);
         if (exits != null) {
-            createPath(startPosition, exits, avoidPositions);
+            createPath(startPosition, exits, avoidPositions, true);
             Global.console.log("FOUND");
         }
         exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_TOP, null);
         if (exits != null) {
-            createPath(startPosition, exits, avoidPositions);
+            createPath(startPosition, exits, avoidPositions, true);
             Global.console.log("FOUND");
         }
         exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_LEFT, null);
         if (exits != null) {
-            createPath(startPosition, exits, avoidPositions);
+            createPath(startPosition, exits, avoidPositions, true);
             Global.console.log("FOUND");
         }
         exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_RIGHT, null);
         if (exits != null) {
-            createPath(startPosition, exits, avoidPositions);
+            createPath(startPosition, exits, avoidPositions, true);
             Global.console.log("FOUND");
         }
 
         return true;
     }
 
-    private void createPath(final RoomPosition from, final RoomPosition to, Array<RoomPosition> avoids) {
+    /**
+     * Create a path from one position to another
+     * @param from
+     * @param to
+     * @param avoids
+     * @param reuse
+     */
+    private void createPath(final RoomPosition from, final RoomPosition to, Array<RoomPosition> avoids, boolean reuse) {
         Map<String, Object> options = JSCollections.$map();
         options.$put("avoid", avoids);
         options.$put("heuristicWeight", 100);
-        Array<Map<String, Object>> path = roomController.room.findPath(from, to, options);
-        Lodash.forIn(path, new LodashCallback1<Map<String, Object>>() {
-            @Override
-            public boolean invoke(Map<String, Object> variable) {
-                RoomPosition position = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), from.roomName);
+
+        RoomPosition intermediateObject = null;
+        if (reuse) {
+            reuse = false;
+            intermediateObject = findClosest(to, avoids);
+            // if another nearby object is found, and it's within 8, and it has a path
+            if (intermediateObject != null && intermediateObject.getRangeTo(to) < 5) {
+                Path path = loadPath(from, intermediateObject);
+                if (path != null) {
+                    Global.console.log("Possibility of reusing path!! " + intermediateObject);
+                    Map<String, Object> pos = path.$get(path.$length() - 2);
+                    intermediateObject = new RoomPosition((Integer) pos.$get("x"), (Integer) pos.$get("y"), intermediateObject.roomName);
+                    reuse = true;
+                } else {
+//                Global.console.log("Possibility of reusing path, but no path");
+                }
+            }
+        }
+
+
+        Array<Map<String, Object>> path;
+        if (reuse) {
+            path = roomController.room.findPath(intermediateObject, to, options);
+            Lodash.forIn(path, new LodashCallback1<Map<String, Object>>() {
+                @Override
+                public boolean invoke(Map<String, Object> variable) {
+                    RoomPosition position = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), from.roomName);
 //                if (position.x != from.x && position.y != from.y)
-                    if (position.x != to.x && position.y != to.y) {
+                    if (position.x != to.x || position.y != to.y) {
+                        position.createFlag(null, ColorTypes.COLOR_YELLOW);
+                    }
+                    return true;
+                }
+            }, this);
+        } else {
+            path = roomController.room.findPath(from, to, options);
+            Lodash.forIn(path, new LodashCallback1<Map<String, Object>>() {
+                @Override
+                public boolean invoke(Map<String, Object> variable) {
+                    RoomPosition position = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), from.roomName);
+//                if (position.x != from.x && position.y != from.y)
+                    if (position.x != to.x || position.y != to.y) {
                         position.createFlag(null, ColorTypes.COLOR_GREEN);
                     }
+                    return true;
+                }
+            }, this);
+        }
+
+        savePath(from, to, (Path) path);
+    }
+
+    /**
+     * Store the path in memory
+     * @param from
+     * @param to
+     * @param path
+     */
+    private void savePath(RoomPosition from, RoomPosition to, Path path) {
+        this.paths.$put(from.x + "," + from.y + "->" + to.x + "," + to.y, path);
+    }
+
+    /**
+     * Get a path from memory
+     * @param from
+     * @param to
+     * @return
+     */
+    private Path loadPath(RoomPosition from, RoomPosition to) {
+        return this.paths.$get(from.x + "," + from.y + "->" + to.x + "," + to.y);
+    }
+
+    /**
+     * Find the closest point in an array of roomPositions
+     * @param position
+     * @param avoids
+     * @return
+     */
+    private RoomPosition findClosest(final RoomPosition position, Array<RoomPosition> avoids) {
+        tempPosition = null;
+        tempDistance = 0;
+        Lodash.forIn(avoids, new LodashCallback1<RoomPosition>() {
+            @Override
+            public boolean invoke(RoomPosition variable) {
+                if (variable.x != position.x || variable.y != position.y) {
+                    if (tempPosition == null || position.getRangeTo(variable) < tempDistance) {
+                        tempPosition = variable;
+                        tempDistance = position.getRangeTo(variable);
+                    }
+                }
                 return true;
             }
         }, this);
+        return tempPosition;
     }
 }
