@@ -12,6 +12,7 @@ import com.nicktoony.screeps.callbacks.LodashSortCallback1;
 import com.nicktoony.screeps.global.ColorTypes;
 import com.nicktoony.screeps.global.FindTypes;
 import com.nicktoony.screeps.helpers.Path;
+import com.nicktoony.screeps.structures.Controller;
 import com.nicktoony.screeps.structures.Spawn;
 import org.stjs.javascript.Array;
 import org.stjs.javascript.Global;
@@ -26,6 +27,7 @@ public class RoomPlanner extends MemoryController {
 
     private Array<Map<String, Object>> minerLocations;
     private Array<Map<String, Object>> extensionLocations;
+    private Array<Map<String, Object>> upgraderLocations;
     private Map<String, Path> paths;
     private Map<String, Object> tempMemory;
     private RoomPosition tempPosition;
@@ -45,6 +47,7 @@ public class RoomPlanner extends MemoryController {
         // Clear all stored memory
         memory.$put("minerLocations", new Array<Map<String, Object>>());
         memory.$put("extensionLocations", new Array<Map<String, Object>>());
+        memory.$put("upgraderLocations", new Array<Map<String, Object>>());
         memory.$put("paths", JSCollections.$map());
 
         // clear temp memory
@@ -69,6 +72,8 @@ public class RoomPlanner extends MemoryController {
         this.minerLocations = (Array<Map<String, Object>>) memory.$get("minerLocations");
         // extension locations memory
         this.extensionLocations = (Array<Map<String, Object>>) memory.$get("extensionLocations");
+        // upgrader locations memory
+        this.upgraderLocations = (Array<Map<String, Object>>) memory.$get("upgraderLocations");
         // path storage
         this.paths = (Map<String, Path>) memory.$get("paths");
 
@@ -88,6 +93,14 @@ public class RoomPlanner extends MemoryController {
                 stage++;
             }
         } else if (stage == 2) {
+            Global.console.log("PLANNING -> UPGRADER LOCATIONS");
+
+            // Plan mining locations
+            if (planUpgraders()) {
+                // next stage
+                stage++;
+            }
+        } else if (stage == 3) {
             Global.console.log("PLANNING -> EXTENSION LOCATIONS");
 
             PlanStructureCallback callback = new PlanStructureCallback(this) {
@@ -105,7 +118,7 @@ public class RoomPlanner extends MemoryController {
             if (planStructures(2, 50, 2, 10, callback)) {
                 stage ++;
             }
-        } else if (stage == 3) {
+        } else if (stage == 4) {
             Global.console.log("PLANNING -> PLANNING WALLS");
 
             PlanStructureCallback callback = new PlanStructureCallback(this) {
@@ -118,7 +131,7 @@ public class RoomPlanner extends MemoryController {
             if (planStructures(1, -1, 13, 13, callback)) {
                 stage ++;
             }
-        } else if (stage == 4) {
+        } else if (stage == 5) {
             Global.console.log("PLANNING -> PLANNING PATHS");
 
             if (planPaths()) {
@@ -158,6 +171,40 @@ public class RoomPlanner extends MemoryController {
     }
 
     /**
+     * Plan the positions of upgraders
+     * @return
+     */
+    private boolean planUpgraders() {
+        // get base
+        final Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
+        if (spawn == null) return false;
+
+        // Get all sources
+        Controller controller = roomController.room.controller;
+        if (controller == null) return false;
+
+        // For all spaces immediately around the controller
+        for (int x = -1; x <= 1; x ++) {
+            for (int y = -1; y <= 1; y ++) {
+                // If the position is clear
+                RoomPosition position = new RoomPosition(controller.pos.x + x, controller.pos.y + y, controller.pos.roomName);
+                Array objects = position.lookFor("terrain");
+                if (objects.$length() > 0 && isTerrainClear(objects.$get(0)) && (x != 0 || y != 0)) {
+                    // create a flag
+                    position.createFlag(null, ColorTypes.COLOR_BLUE);
+                    // Store the position
+                    Map<String, Object> map = JSCollections.$map();
+                    map.$put("x", position.x);
+                    map.$put("y", position.y);
+                    upgraderLocations.push(map);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Plans the number of miners for the given source
      * @param source
      */
@@ -169,8 +216,8 @@ public class RoomPlanner extends MemoryController {
                 // If the position is clear
                 RoomPosition position = new RoomPosition(source.pos.x + x, source.pos.y + y, source.pos.roomName);
                 Array objects = position.lookFor("terrain");
+                // if is free
                 if (objects.$length() > 0 && isTerrainClear(objects.$get(0)) && (x != 0 || y != 0)) {
-                    // Add to available positions
                     roomPositions.push(position);
                 }
             }
@@ -323,7 +370,7 @@ public class RoomPlanner extends MemoryController {
      * @param extensions
      * @return
      */
-    private Array<RoomPosition> calculateAvoidAreas(boolean miners, boolean extensions) {
+    private Array<RoomPosition> calculateAvoidAreas(boolean miners, boolean extensions, boolean upgraders) {
         final Array<RoomPosition> positions = new Array<RoomPosition>();
         if (miners) {
             Lodash.forIn(minerLocations, new LodashCallback1<Map<String, Object>>() {
@@ -345,6 +392,16 @@ public class RoomPlanner extends MemoryController {
                 }
             }, this);
         }
+        if (upgraders) {
+            Lodash.forIn(upgraderLocations, new LodashCallback1<Map<String, Object>>() {
+                @Override
+                public boolean invoke(Map<String, Object> variable) {
+                    RoomPosition roomPosition = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), roomController.room.name);
+                    positions.push(roomPosition);
+                    return true;
+                }
+            }, this);
+        }
         return positions;
     }
 
@@ -353,7 +410,7 @@ public class RoomPlanner extends MemoryController {
      * @return
      */
     private boolean planPaths() {
-        final Array<RoomPosition> avoidPositions = calculateAvoidAreas(true, true);
+        final Array<RoomPosition> avoidPositions = calculateAvoidAreas(true, true, true);
 
         Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
         if (spawn == null) {
@@ -361,6 +418,7 @@ public class RoomPlanner extends MemoryController {
         }
         final RoomPosition startPosition = new RoomPosition(spawn.pos.x + 1, spawn.pos.y, spawn.pos.roomName);
 
+        // find paths to all miner locations (combine: yes)
         Lodash.forIn(minerLocations, new LodashCallback1<Map<String, Object>>() {
             @Override
             public boolean invoke(Map<String, Object> variable) {
@@ -372,6 +430,7 @@ public class RoomPlanner extends MemoryController {
             }
         }, this);
 
+        // Find paths to all extension locations (combine: false)
         Lodash.forIn(extensionLocations, new LodashCallback1<Map<String, Object>>() {
             @Override
             public boolean invoke(Map<String, Object> variable) {
@@ -379,6 +438,18 @@ public class RoomPlanner extends MemoryController {
                         new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName),
                         avoidPositions,
                         false);
+                return true;
+            }
+        }, this);
+
+        // Find paths to all upgrader locations (combine: true)
+        Lodash.forIn(upgraderLocations, new LodashCallback1<Map<String, Object>>() {
+            @Override
+            public boolean invoke(Map<String, Object> variable) {
+                createPath(startPosition,
+                        new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName),
+                        avoidPositions,
+                        true);
                 return true;
             }
         }, this);
@@ -429,12 +500,9 @@ public class RoomPlanner extends MemoryController {
             if (intermediateObject != null && intermediateObject.getRangeTo(to) < 5) {
                 Path path = loadPath(from, intermediateObject);
                 if (path != null) {
-                    Global.console.log("Possibility of reusing path!! " + intermediateObject);
                     Map<String, Object> pos = path.$get(path.$length() - 2);
                     intermediateObject = new RoomPosition((Integer) pos.$get("x"), (Integer) pos.$get("y"), intermediateObject.roomName);
                     reuse = true;
-                } else {
-//                Global.console.log("Possibility of reusing path, but no path");
                 }
             }
         }
