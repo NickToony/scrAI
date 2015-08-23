@@ -32,6 +32,7 @@ public class RoomPlanner extends MemoryController {
     private Map<String, Object> tempMemory;
     private RoomPosition tempPosition;
     private int tempDistance = 0;
+    private boolean tempBoolean = false;
 
     public RoomPlanner(Map<String, Object> memory, RoomController roomController) {
         super(memory, roomController);
@@ -114,13 +115,8 @@ public class RoomPlanner extends MemoryController {
                     return true;
                 }
             };
-//
-//            if (planStructures(2, 50, 2, 10, callback)) {
-////                stage ++;
-//                stage = 20;
-//            }
 
-            if (planExtensions(true, 50, callback)) {
+            if (planExtensions(50, callback)) {
                 stage ++;
             }
         } else if (stage == 4) {
@@ -342,7 +338,7 @@ public class RoomPlanner extends MemoryController {
         return false;
     }
 
-    private boolean planExtensions(boolean spacing, int maxBuild,  PlanStructureCallback planStructureCallback) {
+    private boolean planExtensions(int maxBuild,  PlanStructureCallback planStructureCallback) {
         Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
         if (spawn == null) return false;
 
@@ -448,6 +444,104 @@ public class RoomPlanner extends MemoryController {
         return false;
     }
 
+    private boolean planWalls(PlanStructureCallback planStructureCallback) {
+        Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
+        if (spawn == null) return false;
+
+        Map<String, Object> spacesDone;
+        Map<String, Object> builtSpaces;
+        Array<Integer> spacesNextX;
+        Array<Integer> spacesNextY;
+        int innerX;
+        int innerY;
+        boolean terrainClear;
+        int clearSpaces;
+
+        if (tempMemory.$get("init") == null) {
+            tempMemory.$put("init", true);
+
+            spacesDone = JSCollections.$map();
+            spacesNextX = new Array<Integer>();
+            spacesNextY = new Array<Integer>();
+            for (int x = -2; x <= 2; x ++) {
+                for (int y = -2; y <= 2; y ++) {
+                    innerX = spawn.pos.x + x;
+                    innerY = spawn.pos.y + y;
+
+                    if (Math.abs(x) != 2 && Math.abs(y) != 2) {
+
+                    } else {
+                        if (isTerrainClear(new RoomPosition(innerX, innerY, spawn.pos.roomName).lookFor("terrain"))) {
+                            spacesNextX.push(innerX);
+                            spacesNextY.push(innerY);
+                        }
+                    }
+                    spacesDone.$put(innerX + "," + innerY, true);
+                }
+            }
+            tempMemory.$put("spacesDone", spacesDone);
+            tempMemory.$put("builtSpaces", JSCollections.$map());
+            tempMemory.$put("spacesNextX", spacesNextX);
+            tempMemory.$put("spacesNextY", spacesNextY);
+        }
+
+        spacesDone = (Map<String, Object>) tempMemory.$get("spacesDone");
+        builtSpaces = (Map<String, Object>) tempMemory.$get("builtSpaces");
+        spacesNextX = (Array<Integer>) tempMemory.$get("spacesNextX");
+        spacesNextY = (Array<Integer>) tempMemory.$get("spacesNextY");
+
+        int currentX = spacesNextX.shift();
+        int currentY = spacesNextY.shift();
+
+        spacesDone.$put(currentX + "," + currentY, true);
+
+        clearSpaces = 0;
+        for (int x = -1; x <= 1; x ++) {
+            for (int y = -1; y <= 1; y++) {
+                innerX = currentX + x;
+                innerY = currentY + y;
+                terrainClear = isTerrainClear(roomController.room.lookForAt("terrain", innerX, innerY));
+
+                if (spacesDone.$get(innerX + "," + innerY) == null
+                        && terrainClear) {
+                    spacesNextX.push(innerX);
+                    spacesNextY.push(innerY);
+                    spacesDone.$put(innerX + "," + innerY, true);
+                }
+
+                if (terrainClear && (x != 0 && y != 0)) {
+                    clearSpaces ++;
+                }
+            }
+        }
+
+        boolean clear = true;
+        if (builtSpaces.$get((currentX+1) + "," + (currentY)) != null) {
+            clearSpaces -= 1;
+            clear = false;
+        }
+        if (builtSpaces.$get((currentX-1) + "," + (currentY)) != null) {
+            clearSpaces -= 1;
+            clear = false;
+        }
+        if (builtSpaces.$get((currentX) + "," + (currentY+1)) != null) {
+            clearSpaces -= 1;
+            clear = false;
+        }
+        if (builtSpaces.$get((currentX) + "," + (currentY-1)) != null) {
+            clearSpaces -= 1;
+            clear = false;
+        }
+        if (clear || clearSpaces < 2)
+        {
+            if (planStructureCallback.callback(new RoomPosition(currentX, currentY, spawn.pos.roomName))) {
+                builtSpaces.$put(currentX + "," + currentY, true);
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Build flags
      * @param fromX
@@ -529,66 +623,106 @@ public class RoomPlanner extends MemoryController {
         }
         final RoomPosition startPosition = new RoomPosition(spawn.pos.x + 1, spawn.pos.y, spawn.pos.roomName);
 
-        // find paths to all miner locations (combine: yes)
-        Lodash.forIn(minerLocations, new LodashCallback1<Map<String, Object>>() {
-            @Override
-            public boolean invoke(Map<String, Object> variable) {
-                createPath(startPosition,
-                        new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName),
-                        avoidPositions,
-                        true);
-                return true;
+        if (tempMemory.$get("init") == null) {
+            tempMemory.$put("init", true);
+            tempMemory.$put("stage", 0);
+        }
+        int stage = (Integer) tempMemory.$get("stage");
+        tempBoolean = false;
+
+        if (stage == 0) {
+            // find paths to all miner locations (combine: yes)
+            Lodash.forIn(minerLocations, new LodashCallback1<Map<String, Object>>() {
+                @Override
+                public boolean invoke(Map<String, Object> variable) {
+                    RoomPosition position = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName);
+                    if (loadPath(startPosition, position) == null) {
+                        createPath(startPosition, position, avoidPositions, true);
+                        tempBoolean = true;
+                        return false;
+                    }
+                    return true;
+                }
+            }, this);
+
+            if (!tempBoolean) {
+                stage ++;
             }
-        }, this);
 
-        // Find paths to all extension locations (combine: false)
-        Lodash.forIn(extensionLocations, new LodashCallback1<Map<String, Object>>() {
-            @Override
-            public boolean invoke(Map<String, Object> variable) {
-                createPath(startPosition,
-                        new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName),
-                        avoidPositions,
-                        false);
-                return true;
+        } else if (stage == 1) {
+
+            // Find paths to all extension locations (combine: false)
+            Lodash.forIn(extensionLocations, new LodashCallback1<Map<String, Object>>() {
+                @Override
+                public boolean invoke(Map<String, Object> variable) {
+                    RoomPosition position = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName);
+                    if (loadPath(startPosition, position) == null) {
+                        createPath(startPosition, position, avoidPositions, false);
+                        tempBoolean = true;
+                        return false;
+                    }
+                    return true;
+                }
+            }, this);
+
+            if (!tempBoolean) {
+                stage ++;
             }
-        }, this);
+        } else if (stage == 2) {
 
-        // Find paths to all upgrader locations (combine: true)
-        Lodash.forIn(upgraderLocations, new LodashCallback1<Map<String, Object>>() {
-            @Override
-            public boolean invoke(Map<String, Object> variable) {
-                createPath(startPosition,
-                        new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName),
-                        avoidPositions,
-                        true);
-                return true;
+            // Find paths to all upgrader locations (combine: true)
+            Lodash.forIn(upgraderLocations, new LodashCallback1<Map<String, Object>>() {
+                @Override
+                public boolean invoke(Map<String, Object> variable) {
+                    RoomPosition position = new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), startPosition.roomName);
+                    if (loadPath(startPosition, position) == null) {
+                        createPath(startPosition, position, avoidPositions, true);
+                        tempBoolean = true;
+                        return false;
+                    }
+                    return true;
+                }
+            }, this);
+
+            if (!tempBoolean) {
+                stage ++;
             }
-        }, this);
 
-        RoomPosition exits;
-        exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_BOTTOM, null);
-        Global.console.log(exits);
-        if (exits != null) {
-            createPath(startPosition, exits, avoidPositions, true);
-            Global.console.log("FOUND");
-        }
-        exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_TOP, null);
-        if (exits != null) {
-            createPath(startPosition, exits, avoidPositions, true);
-            Global.console.log("FOUND");
-        }
-        exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_LEFT, null);
-        if (exits != null) {
-            createPath(startPosition, exits, avoidPositions, true);
-            Global.console.log("FOUND");
-        }
-        exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_RIGHT, null);
-        if (exits != null) {
-            createPath(startPosition, exits, avoidPositions, true);
-            Global.console.log("FOUND");
+        } else if (stage == 3) {
+            RoomPosition exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_BOTTOM, null);
+            Global.console.log(exits);
+            if (exits != null) {
+                createPath(startPosition, exits, avoidPositions, true);
+                Global.console.log("FOUND");
+            }
+            stage += 1;
+        } else if (stage == 4) {
+            RoomPosition exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_TOP, null);
+            if (exits != null) {
+                createPath(startPosition, exits, avoidPositions, true);
+                Global.console.log("FOUND");
+            }
+            stage += 1;
+        } else if (stage == 5) {
+            RoomPosition exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_LEFT, null);
+            if (exits != null) {
+                createPath(startPosition, exits, avoidPositions, true);
+                Global.console.log("FOUND");
+            }
+            stage += 1;
+        } else if (stage == 6) {
+            RoomPosition exits = (RoomPosition) startPosition.findClosest(FindTypes.FIND_EXIT_RIGHT, null);
+            if (exits != null) {
+                createPath(startPosition, exits, avoidPositions, true);
+                Global.console.log("FOUND");
+            }
+            stage += 1;
+        } else if (stage == 7) {
+            return true;
         }
 
-        return true;
+        tempMemory.$put("stage", stage);
+        return false;
     }
 
     /**

@@ -25,7 +25,7 @@ public class RoomController extends MemoryController {
 
     public void step() {
         RoomPlanner roomPlanner = new RoomPlanner(getMemory("RoomPlanner"), this);
-        while (Game.getUsedCpu() < 100) {
+        while (Game.getUsedCpu() < 50) {
             roomPlanner.plan();
         }
     }
