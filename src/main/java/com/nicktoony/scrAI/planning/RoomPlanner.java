@@ -22,7 +22,10 @@ import org.stjs.javascript.functions.Callback1;
 
 /**
  * Created by nick on 16/08/15.
+ *
+ * This class takes a room with a Spawn, and plans all structures, defenses and paths
  */
+@SuppressWarnings("unchecked")
 public class RoomPlanner extends MemoryController {
 
     private Array<Map<String, Object>> minerLocations;
@@ -150,7 +153,7 @@ public class RoomPlanner extends MemoryController {
 
     /**
      * for all sources in the room, plan the amount of miners for each
-     * @return
+     * @return whether the planning was complete or not
      */
     private boolean planMiners() {
         // get base
@@ -175,7 +178,7 @@ public class RoomPlanner extends MemoryController {
 
     /**
      * Plan the positions of upgraders
-     * @return
+     * @return whether or not the planning was completed
      */
     private boolean planUpgraders() {
         // get base
@@ -209,7 +212,8 @@ public class RoomPlanner extends MemoryController {
 
     /**
      * Plans the number of miners for the given source
-     * @param source
+     * @param source the source to plan
+     * @param base the spawn
      */
     private void planSource(final Source source, final RoomPosition base) {
         Array<RoomPosition> roomPositions = new Array<RoomPosition>();
@@ -266,8 +270,8 @@ public class RoomPlanner extends MemoryController {
 
     /**
      * Returns whether the terrain is free to move/build upon
-     * @param terrain
-     * @return
+     * @param terrain the results of a look("terrain")
+     * @return whether the terrain is clear (i.e. can build on)
      */
     private boolean isTerrainClear(Object terrain) {
         return (terrain == "plain" || terrain == "swamp");
@@ -284,61 +288,61 @@ public class RoomPlanner extends MemoryController {
         public abstract boolean callback(RoomPosition roomPosition);
     }
 
-    /**
-     * Plan the position of structures of given type
-     * @param spacing
-     * @param maxBuild
-     * @param layerFrom
-     * @param layerTo
-     * @param planStructureCallback
-     * @return
-     */
-    private boolean planStructures(int spacing, int maxBuild, int layerFrom, int layerTo, PlanStructureCallback planStructureCallback) {
-        Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
-        if (spawn == null) return false;
-
-        Integer layer = (Integer) tempMemory.$get("layer");
-        Integer state = (Integer) tempMemory.$get("state");
-        Integer count = (Integer) tempMemory.$get("count");
-        if (layer == null) {
-            state = 0;
-            layer = layerFrom;
-            count = 0;
-        }
-
-        int topLeftX = spawn.pos.x-layer;
-        int topLeftY = spawn.pos.y-layer;
-
-        if (state == 0) {
-            // Left side
-            count += buildStructures(topLeftX, topLeftY, topLeftX, topLeftY + layer * 2, spacing, planStructureCallback);
-        } else if (state == 1 ) {
-            // Right side
-            count += buildStructures(topLeftX + layer * 2, topLeftY, topLeftX + layer * 2, topLeftY + layer * 2, spacing, planStructureCallback);
-        } else if (state == 2) {
-            // Top side
-            count += buildStructures(topLeftX + spacing, topLeftY, topLeftX + layer * 2 - spacing, topLeftY, spacing, planStructureCallback);
-        } else if (state == 3 ) {
-            // Bottom side
-            count += buildStructures(topLeftX + spacing, topLeftY + layer * 2, topLeftX + layer * 2 - spacing, topLeftY + layer * 2, spacing, planStructureCallback);
-        }
-
-        state ++;
-        // If layer is complete
-        if (state >= 4) {
-            // go to next layer
-            state = 0;
-            layer ++;
-        }
-        // If gone beyond 10, that's not good
-        if (layer > layerTo || (count > maxBuild && maxBuild != -1)) {
-            return true;
-        }
-        tempMemory.$put("layer", layer);
-        tempMemory.$put("state", state);
-        tempMemory.$put("count", count);
-        return false;
-    }
+//    /**
+//     * Plan the position of structures of given type
+//     * @param spacing
+//     * @param maxBuild
+//     * @param layerFrom
+//     * @param layerTo
+//     * @param planStructureCallback
+//     * @return
+//     */
+//    private boolean planStructures(int spacing, int maxBuild, int layerFrom, int layerTo, PlanStructureCallback planStructureCallback) {
+//        Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
+//        if (spawn == null) return false;
+//
+//        Integer layer = (Integer) tempMemory.$get("layer");
+//        Integer state = (Integer) tempMemory.$get("state");
+//        Integer count = (Integer) tempMemory.$get("count");
+//        if (layer == null) {
+//            state = 0;
+//            layer = layerFrom;
+//            count = 0;
+//        }
+//
+//        int topLeftX = spawn.pos.x-layer;
+//        int topLeftY = spawn.pos.y-layer;
+//
+//        if (state == 0) {
+//            // Left side
+//            count += buildStructures(topLeftX, topLeftY, topLeftX, topLeftY + layer * 2, spacing, planStructureCallback);
+//        } else if (state == 1 ) {
+//            // Right side
+//            count += buildStructures(topLeftX + layer * 2, topLeftY, topLeftX + layer * 2, topLeftY + layer * 2, spacing, planStructureCallback);
+//        } else if (state == 2) {
+//            // Top side
+//            count += buildStructures(topLeftX + spacing, topLeftY, topLeftX + layer * 2 - spacing, topLeftY, spacing, planStructureCallback);
+//        } else if (state == 3 ) {
+//            // Bottom side
+//            count += buildStructures(topLeftX + spacing, topLeftY + layer * 2, topLeftX + layer * 2 - spacing, topLeftY + layer * 2, spacing, planStructureCallback);
+//        }
+//
+//        state ++;
+//        // If layer is complete
+//        if (state >= 4) {
+//            // go to next layer
+//            state = 0;
+//            layer ++;
+//        }
+//        // If gone beyond 10, that's not good
+//        if (layer > layerTo || (count > maxBuild && maxBuild != -1)) {
+//            return true;
+//        }
+//        tempMemory.$put("layer", layer);
+//        tempMemory.$put("state", state);
+//        tempMemory.$put("count", count);
+//        return false;
+//    }
 
     private boolean planExtensions(int maxBuild,  PlanStructureCallback planStructureCallback) {
         Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
@@ -365,9 +369,7 @@ public class RoomPlanner extends MemoryController {
                     innerX = spawn.pos.x + x;
                     innerY = spawn.pos.y + y;
 
-                    if (Math.abs(x) != 2 && Math.abs(y) != 2) {
-
-                    } else {
+                    if (Math.abs(x) == 2 || Math.abs(y) == 2) {
                         if (isTerrainClear(new RoomPosition(innerX, innerY, spawn.pos.roomName).lookFor("terrain"))) {
                             spacesNextX.push(innerX);
                             spacesNextY.push(innerY);
@@ -439,11 +441,9 @@ public class RoomPlanner extends MemoryController {
         }
 
         tempMemory.$put("built", built);
-        if (built > maxBuild) {
-            return true;
-        }
+        // whether or not built is bigger the maxbuilt
+        return built > maxBuild;
 
-        return false;
     }
 
     private boolean planWalls(PlanStructureCallback planStructureCallback) {
@@ -487,38 +487,39 @@ public class RoomPlanner extends MemoryController {
         return spacesNextX.$length() == 0;
     }
 
-    /**
-     * Build flags
-     * @param fromX
-     * @param fromY
-     * @param toX
-     * @param toY
-     * @param spacing
-     * @param planStructureCallback
-     * @return
-     */
-    private int buildStructures(int fromX, int fromY, int toX, int toY, int spacing, PlanStructureCallback planStructureCallback) {
-        int count = 0;
-        for (int x = fromX; x <= toX; x += spacing) {
-            for (int y = fromY; y <= toY; y+= spacing) {
-                RoomPosition position = new RoomPosition(x, y, roomController.room.name);
-                Array objects = position.lookFor("terrain");
-                if (objects.$length() > 0 && isTerrainClear(objects.$get(0))) {
-                    if (planStructureCallback.callback(position)) {
-                        count++;
-                    }
-                }
-            }
-        }
-
-        return count;
-    }
+//    /**
+//     * Build flags
+//     * @param fromX
+//     * @param fromY
+//     * @param toX
+//     * @param toY
+//     * @param spacing
+//     * @param planStructureCallback
+//     * @return
+//     */
+//    private int buildStructures(int fromX, int fromY, int toX, int toY, int spacing, PlanStructureCallback planStructureCallback) {
+//        int count = 0;
+//        for (int x = fromX; x <= toX; x += spacing) {
+//            for (int y = fromY; y <= toY; y+= spacing) {
+//                RoomPosition position = new RoomPosition(x, y, roomController.room.name);
+//                Array objects = position.lookFor("terrain");
+//                if (objects.$length() > 0 && isTerrainClear(objects.$get(0))) {
+//                    if (planStructureCallback.callback(position)) {
+//                        count++;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return count;
+//    }
 
     /**
      * Calculates the avoid area
-     * @param miners
-     * @param extensions
-     * @return
+     * @param miners whether to include miners in this calculation
+     * @param extensions whether to include extensions in this calculation
+     * @param upgraders whether to include upgraders in this calculation
+     * @return an array of room positions to avoid
      */
     private Array<RoomPosition> calculateAvoidAreas(boolean miners, boolean extensions, boolean upgraders) {
         final Array<RoomPosition> positions = new Array<RoomPosition>();
@@ -557,7 +558,7 @@ public class RoomPlanner extends MemoryController {
 
     /**
      * Plan the creep paths
-     * @return
+     * @return true if complete
      */
     private boolean planPaths() {
         final Array<RoomPosition> avoidPositions = calculateAvoidAreas(true, true, true);
@@ -672,10 +673,10 @@ public class RoomPlanner extends MemoryController {
 
     /**
      * Create a path from one position to another
-     * @param from
-     * @param to
-     * @param avoids
-     * @param reuse
+     * @param from position from
+     * @param to position to
+     * @param avoids array of room positions to avoid
+     * @param reuse whether to reuse a path or not
      */
     private void createPath(final RoomPosition from, final RoomPosition to, Array<RoomPosition> avoids, boolean reuse) {
         Map<String, Object> options = JSCollections.$map();
@@ -732,9 +733,9 @@ public class RoomPlanner extends MemoryController {
 
     /**
      * Store the path in memory
-     * @param from
-     * @param to
-     * @param path
+     * @param from position from
+     * @param to position to
+     * @param path the path
      */
     private void savePath(RoomPosition from, RoomPosition to, Path path) {
         this.paths.$put(from.x + "," + from.y + "->" + to.x + "," + to.y, path);
@@ -742,9 +743,9 @@ public class RoomPlanner extends MemoryController {
 
     /**
      * Get a path from memory
-     * @param from
-     * @param to
-     * @return
+     * @param from position from
+     * @param to position to
+     * @return a path
      */
     private Path loadPath(RoomPosition from, RoomPosition to) {
         return this.paths.$get(from.x + "," + from.y + "->" + to.x + "," + to.y);
@@ -752,9 +753,9 @@ public class RoomPlanner extends MemoryController {
 
     /**
      * Find the closest point in an array of roomPositions
-     * @param position
-     * @param avoids
-     * @return
+     * @param position the position to check with
+     * @param avoids the array of positions to check against
+     * @return a room position
      */
     private RoomPosition findClosest(final RoomPosition position, Array<RoomPosition> avoids) {
         tempPosition = null;
