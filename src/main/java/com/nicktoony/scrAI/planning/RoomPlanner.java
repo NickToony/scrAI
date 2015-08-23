@@ -114,8 +114,13 @@ public class RoomPlanner extends MemoryController {
                     return true;
                 }
             };
+//
+//            if (planStructures(2, 50, 2, 10, callback)) {
+////                stage ++;
+//                stage = 20;
+//            }
 
-            if (planStructures(2, 50, 2, 10, callback)) {
+            if (planExtensions(true, 50, callback)) {
                 stage ++;
             }
         } else if (stage == 4) {
@@ -334,6 +339,112 @@ public class RoomPlanner extends MemoryController {
         tempMemory.$put("layer", layer);
         tempMemory.$put("state", state);
         tempMemory.$put("count", count);
+        return false;
+    }
+
+    private boolean planExtensions(boolean spacing, int maxBuild,  PlanStructureCallback planStructureCallback) {
+        Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
+        if (spawn == null) return false;
+
+        Map<String, Object> spacesDone;
+        Map<String, Object> builtSpaces;
+        Array<Integer> spacesNextX;
+        Array<Integer> spacesNextY;
+        int innerX;
+        int innerY;
+        boolean terrainClear;
+        int clearSpaces;
+
+        if (tempMemory.$get("init") == null) {
+            tempMemory.$put("init", true);
+            tempMemory.$put("built", 0);
+
+            spacesDone = JSCollections.$map();
+            spacesNextX = new Array<Integer>();
+            spacesNextY = new Array<Integer>();
+            for (int x = -2; x <= 2; x ++) {
+                for (int y = -2; y <= 2; y ++) {
+                    innerX = spawn.pos.x + x;
+                    innerY = spawn.pos.y + y;
+
+                    if (Math.abs(x) != 2 && Math.abs(y) != 2) {
+
+                    } else {
+                        if (isTerrainClear(new RoomPosition(innerX, innerY, spawn.pos.roomName).lookFor("terrain"))) {
+                            spacesNextX.push(innerX);
+                            spacesNextY.push(innerY);
+                        }
+                    }
+                    spacesDone.$put(innerX + "," + innerY, true);
+                }
+            }
+            tempMemory.$put("spacesDone", spacesDone);
+            tempMemory.$put("builtSpaces", JSCollections.$map());
+            tempMemory.$put("spacesNextX", spacesNextX);
+            tempMemory.$put("spacesNextY", spacesNextY);
+        }
+
+        int built = (Integer) tempMemory.$get("built");
+        spacesDone = (Map<String, Object>) tempMemory.$get("spacesDone");
+        builtSpaces = (Map<String, Object>) tempMemory.$get("builtSpaces");
+        spacesNextX = (Array<Integer>) tempMemory.$get("spacesNextX");
+        spacesNextY = (Array<Integer>) tempMemory.$get("spacesNextY");
+
+        int currentX = spacesNextX.shift();
+        int currentY = spacesNextY.shift();
+
+        spacesDone.$put(currentX + "," + currentY, true);
+
+        clearSpaces = 0;
+        for (int x = -1; x <= 1; x ++) {
+            for (int y = -1; y <= 1; y++) {
+                innerX = currentX + x;
+                innerY = currentY + y;
+                terrainClear = isTerrainClear(roomController.room.lookForAt("terrain", innerX, innerY));
+
+                if (spacesDone.$get(innerX + "," + innerY) == null
+                        && terrainClear) {
+                    spacesNextX.push(innerX);
+                    spacesNextY.push(innerY);
+                    spacesDone.$put(innerX + "," + innerY, true);
+                }
+
+                if (terrainClear && (x != 0 && y != 0)) {
+                    clearSpaces ++;
+                }
+            }
+        }
+
+        boolean clear = true;
+        if (builtSpaces.$get((currentX+1) + "," + (currentY)) != null) {
+            clearSpaces -= 1;
+            clear = false;
+        }
+        if (builtSpaces.$get((currentX-1) + "," + (currentY)) != null) {
+            clearSpaces -= 1;
+            clear = false;
+        }
+        if (builtSpaces.$get((currentX) + "," + (currentY+1)) != null) {
+            clearSpaces -= 1;
+            clear = false;
+        }
+        if (builtSpaces.$get((currentX) + "," + (currentY-1)) != null) {
+            clearSpaces -= 1;
+            clear = false;
+        }
+        if (clear || clearSpaces < 2)
+        {
+            if (planStructureCallback.callback(new RoomPosition(currentX, currentY, spawn.pos.roomName))) {
+                builtSpaces.$put(currentX + "," + currentY, true);
+                built += 1;
+            }
+        }
+
+        tempMemory.$put("built", built);
+        if (built > maxBuild) {
+            return true;
+        }
+
         return false;
     }
 

@@ -1,6 +1,7 @@
 package com.nicktoony.scrAI.controllers;
 
 import com.nicktoony.scrAI.planning.RoomPlanner;
+import com.nicktoony.screeps.Game;
 import com.nicktoony.screeps.Room;
 import org.stjs.javascript.Global;
 import org.stjs.javascript.JSCollections;
@@ -24,7 +25,9 @@ public class RoomController extends MemoryController {
 
     public void step() {
         RoomPlanner roomPlanner = new RoomPlanner(getMemory("RoomPlanner"), this);
-        roomPlanner.plan();
+        while (Game.getUsedCpu() < 100) {
+            roomPlanner.plan();
+        }
     }
 
     private Map<String, Object> getMemory(String name) {
