@@ -8,6 +8,7 @@ import com.nicktoony.screeps.RoomPosition;
 import com.nicktoony.screeps.Source;
 import com.nicktoony.screeps.callbacks.Lodash;
 import com.nicktoony.screeps.callbacks.LodashCallback1;
+import com.nicktoony.screeps.callbacks.LodashCallback2;
 import com.nicktoony.screeps.callbacks.LodashSortCallback1;
 import com.nicktoony.screeps.global.ColorTypes;
 import com.nicktoony.screeps.global.FindTypes;
@@ -31,6 +32,8 @@ public class RoomPlanner extends MemoryController {
     private Array<Map<String, Object>> minerLocations;
     private Array<Map<String, Object>> extensionLocations;
     private Array<Map<String, Object>> upgraderLocations;
+    private Array<Map<String, Object>> wallLocations;
+    private Array<Map<String, Object>> rampartLocations;
     private Map<String, Path> paths;
     private Map<String, Object> tempMemory;
     private RoomPosition tempPosition;
@@ -56,6 +59,8 @@ public class RoomPlanner extends MemoryController {
         memory.$put("minerLocations", new Array<Map<String, Object>>());
         memory.$put("extensionLocations", new Array<Map<String, Object>>());
         memory.$put("upgraderLocations", new Array<Map<String, Object>>());
+        memory.$put("wallLocations", new Array<Map<String, Object>>());
+        memory.$put("rampartLocations", new Array<Map<String, Object>>());
         memory.$put("paths", JSCollections.$map());
 
         // clear temp memory
@@ -118,12 +123,12 @@ public class RoomPlanner extends MemoryController {
         int initialStage = stage;
         tempMemory = (Map<String, Object>) memory.$get("tempMemory");
 
-        // miner locations memory
+        // locations memory
         this.minerLocations = (Array<Map<String, Object>>) memory.$get("minerLocations");
-        // extension locations memory
         this.extensionLocations = (Array<Map<String, Object>>) memory.$get("extensionLocations");
-        // upgrader locations memory
         this.upgraderLocations = (Array<Map<String, Object>>) memory.$get("upgraderLocations");
+        this.rampartLocations = (Array<Map<String, Object>>) memory.$get("rampartLocations");
+        this.wallLocations = (Array<Map<String, Object>>) memory.$get("wallLocations");
         // path storage
         this.paths = (Map<String, Path>) memory.$get("paths");
 
@@ -175,10 +180,14 @@ public class RoomPlanner extends MemoryController {
                 @Override
                 public boolean callback(RoomPosition roomPosition) {
                     roomPosition.createFlag(null, ColorTypes.COLOR_BROWN);
+                    Map<String, Object> map = JSCollections.$map();
+                    map.$put("x", roomPosition.x);
+                    map.$put("y", roomPosition.y);
+                    self.wallLocations.push(map);
                     return true;
                 }
             };
-//            if (planStructures(1, -1, 13, 13, callback)) {
+
             if (planWalls(callback)) {
                 stage ++;
             }
@@ -186,6 +195,12 @@ public class RoomPlanner extends MemoryController {
             Global.console.log("PLANNING -> PLANNING PATHS");
 
             if (planPaths()) {
+                stage ++;
+            }
+        } else if (stage == 6) {
+            Global.console.log("PLANNING -> PLANNING RAMPARTS");
+
+            if (planRamparts()) {
                 stage ++;
             }
         }
@@ -736,5 +751,84 @@ public class RoomPlanner extends MemoryController {
             }
         }, this);
         return tempPosition;
+    }
+
+    private boolean planRamparts() {
+        // Init
+        if (tempMemory.$get("init") == null) {
+            tempMemory.$put("init", true);
+            tempMemory.$put("pos", 0);
+        }
+        // Load position
+        tempDistance = 0;
+        tempBoolean = false;
+        // For all paths
+        Lodash.forIn(paths, new LodashCallback2<Path, String>() {
+            @Override
+            public boolean invoke(Path variable1, String variable2) {
+                // If it's the right path
+                if ((Integer) tempMemory.$get("pos") == tempDistance) {
+                    tempBoolean = true;
+                    planRampartsPath(variable1);
+                    return false;
+                }
+                // add one to position in array
+                tempDistance ++;
+                return true;
+            }
+        }, this);
+
+        if (tempBoolean) {
+            tempMemory.$put("pos", (Integer) tempMemory.$get("pos") + 1);
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void planRampartsPath(Path path) {
+        Lodash.forIn(path, new LodashCallback1<Map<String, Object>>() {
+            @Override
+            public boolean invoke(Map<String, Object> variable) {
+
+                int x = (Integer) variable.$get("x");
+                int y = (Integer) variable.$get("y");
+                planRampartsPosition(x, y);
+
+                return true;
+            }
+        }, this);
+    }
+
+    private void planRampartsPosition(final int x, final int y) {
+        Lodash.forIn(wallLocations, new LodashCallback1<Map<String, Object>>() {
+            @Override
+            public boolean invoke(Map<String, Object> variable) {
+
+                // if position is on a wall
+                if ((Integer) variable.$get("x") == x && (Integer) variable.$get("y") == y) {
+                    // remove from walllocations
+//                    wallLocations.splice(wallLocations.indexOf(variable), 1);
+                    // add to rampart locations
+                    rampartLocations.push(variable);
+                }
+
+                return true;
+            }
+        }, this);
+
+        Lodash.forIn(rampartLocations, new LodashCallback1<Map<String, Object>>() {
+            @Override
+            public boolean invoke(Map<String, Object> variable) {
+
+                int index = wallLocations.indexOf(variable);
+                if (index >= 0) {
+                    Global.console.log("YES");
+                    wallLocations.splice(index, 1);
+                }
+
+                return true;
+            }
+        }, this);
     }
 }
