@@ -37,6 +37,10 @@ public class RoomPlanner extends MemoryController {
     private int tempDistance = 0;
     private boolean tempBoolean = false;
 
+    private Array<RoomPosition> minerLocationsArray;
+    private Array<RoomPosition> upgraderLocationsArray;
+    private Array<RoomPosition> extensionLocationsArray;
+
     public RoomPlanner(Map<String, Object> memory, RoomController roomController) {
         super(memory, roomController);
     }
@@ -65,6 +69,48 @@ public class RoomPlanner extends MemoryController {
                 flag.remove();
             }
         });
+    }
+
+    public Array<RoomPosition> getMinerLocationsArray() {
+        if (minerLocationsArray == null) {
+            minerLocationsArray = new Array<RoomPosition>();
+            Lodash.forIn(minerLocations, new LodashCallback1<Map<String, Object>>() {
+                @Override
+                public boolean invoke(Map<String, Object> variable) {
+                    minerLocationsArray.push(new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), roomController.room.name));
+                    return true;
+                }
+            }, this);
+        }
+        return minerLocationsArray;
+    }
+
+    public Array<RoomPosition> getUpgraderLocationsArray() {
+        if (upgraderLocationsArray == null) {
+            upgraderLocationsArray = new Array<RoomPosition>();
+            Lodash.forIn(upgraderLocations, new LodashCallback1<Map<String, Object>>() {
+                @Override
+                public boolean invoke(Map<String, Object> variable) {
+                    upgraderLocationsArray.push(new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), roomController.room.name));
+                    return true;
+                }
+            }, this);
+        }
+        return upgraderLocationsArray;
+    }
+
+    public Array<RoomPosition> getExtensionLocationsArray() {
+        if (extensionLocationsArray == null) {
+            extensionLocationsArray = new Array<RoomPosition>();
+            Lodash.forIn(extensionLocations, new LodashCallback1<Map<String, Object>>() {
+                @Override
+                public boolean invoke(Map<String, Object> variable) {
+                    extensionLocationsArray.push(new RoomPosition((Integer) variable.$get("x"), (Integer) variable.$get("y"), roomController.room.name));
+                    return true;
+                }
+            }, this);
+        }
+        return extensionLocationsArray;
     }
 
     public void plan() {
