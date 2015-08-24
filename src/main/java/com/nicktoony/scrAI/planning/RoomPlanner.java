@@ -288,62 +288,6 @@ public class RoomPlanner extends MemoryController {
         public abstract boolean callback(RoomPosition roomPosition);
     }
 
-//    /**
-//     * Plan the position of structures of given type
-//     * @param spacing
-//     * @param maxBuild
-//     * @param layerFrom
-//     * @param layerTo
-//     * @param planStructureCallback
-//     * @return
-//     */
-//    private boolean planStructures(int spacing, int maxBuild, int layerFrom, int layerTo, PlanStructureCallback planStructureCallback) {
-//        Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
-//        if (spawn == null) return false;
-//
-//        Integer layer = (Integer) tempMemory.$get("layer");
-//        Integer state = (Integer) tempMemory.$get("state");
-//        Integer count = (Integer) tempMemory.$get("count");
-//        if (layer == null) {
-//            state = 0;
-//            layer = layerFrom;
-//            count = 0;
-//        }
-//
-//        int topLeftX = spawn.pos.x-layer;
-//        int topLeftY = spawn.pos.y-layer;
-//
-//        if (state == 0) {
-//            // Left side
-//            count += buildStructures(topLeftX, topLeftY, topLeftX, topLeftY + layer * 2, spacing, planStructureCallback);
-//        } else if (state == 1 ) {
-//            // Right side
-//            count += buildStructures(topLeftX + layer * 2, topLeftY, topLeftX + layer * 2, topLeftY + layer * 2, spacing, planStructureCallback);
-//        } else if (state == 2) {
-//            // Top side
-//            count += buildStructures(topLeftX + spacing, topLeftY, topLeftX + layer * 2 - spacing, topLeftY, spacing, planStructureCallback);
-//        } else if (state == 3 ) {
-//            // Bottom side
-//            count += buildStructures(topLeftX + spacing, topLeftY + layer * 2, topLeftX + layer * 2 - spacing, topLeftY + layer * 2, spacing, planStructureCallback);
-//        }
-//
-//        state ++;
-//        // If layer is complete
-//        if (state >= 4) {
-//            // go to next layer
-//            state = 0;
-//            layer ++;
-//        }
-//        // If gone beyond 10, that's not good
-//        if (layer > layerTo || (count > maxBuild && maxBuild != -1)) {
-//            return true;
-//        }
-//        tempMemory.$put("layer", layer);
-//        tempMemory.$put("state", state);
-//        tempMemory.$put("count", count);
-//        return false;
-//    }
-
     private boolean planExtensions(int maxBuild,  PlanStructureCallback planStructureCallback) {
         Spawn spawn = (Spawn) roomController.room.find(FindTypes.FIND_MY_SPAWNS, null).$get(0);
         if (spawn == null) return false;
@@ -486,33 +430,6 @@ public class RoomPlanner extends MemoryController {
         // if the places are empty, we're done
         return spacesNextX.$length() == 0;
     }
-
-//    /**
-//     * Build flags
-//     * @param fromX
-//     * @param fromY
-//     * @param toX
-//     * @param toY
-//     * @param spacing
-//     * @param planStructureCallback
-//     * @return
-//     */
-//    private int buildStructures(int fromX, int fromY, int toX, int toY, int spacing, PlanStructureCallback planStructureCallback) {
-//        int count = 0;
-//        for (int x = fromX; x <= toX; x += spacing) {
-//            for (int y = fromY; y <= toY; y+= spacing) {
-//                RoomPosition position = new RoomPosition(x, y, roomController.room.name);
-//                Array objects = position.lookFor("terrain");
-//                if (objects.$length() > 0 && isTerrainClear(objects.$get(0))) {
-//                    if (planStructureCallback.callback(position)) {
-//                        count++;
-//                    }
-//                }
-//            }
-//        }
-//
-//        return count;
-//    }
 
     /**
      * Calculates the avoid area
