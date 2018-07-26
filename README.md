@@ -1,3 +1,6 @@
+NOTE: This project is VERY outdated. The Java -> JS should still work, but the screeps game has changed a lot since I made this.
+---
+
 scrAI by NickToony
 ===================
 
